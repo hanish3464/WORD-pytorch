@@ -48,10 +48,11 @@ def saveResult(img_file, img, boxes, dir1='./prediction/', dir2='./gt/', vertica
         gt_file = dir2 + "res_" + filename + '.txt'
         predict_image_file = dir1 + "res_" + filename + '.jpg'
 
-        #gt_txt file generation
+        #gt_txt file generation:
         with open(gt_file, 'w') as f:
             for i, box in enumerate(boxes):
                 poly = np.array(box).astype(np.int32).reshape((-1))
+                debug.getScalaValue(poly)
                 strResult = ','.join([str(p) for p in poly]) + '\r\n'
                 debug.getScalaValue(strResult)
                 f.write(strResult)

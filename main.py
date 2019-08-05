@@ -28,7 +28,7 @@ import preprocess
 import file
 import json
 import zipfile
-
+import config
 from wtd import WTD
 
 from collections import OrderedDict
@@ -50,8 +50,8 @@ def copyStateDict(state_dict):
 #ARGUMENT PARSER START
 parser = argparse.ArgumentParser(description='Webtoon Text Localization(Detection)')
 
-parser.add_argument('--pretrained_model_path', default='/home/hanish/workspace2/clova_ai_CRAFT.pth', type=str, help='pretrained model')
-parser.add_argument('--test_images_folder_path', default='/home/hanish/workspace2/test_images',type=str, help='path to test_input images')
+parser.add_argument('--pretrained_model_path', default='/home/hanish/workspace/clova_ai_CRAFT.pth', type=str, help='pretrained model')
+parser.add_argument('--test_images_folder_path', default='/home/hanish/workspace/test_images',type=str, help='path to test_input images')
 parser.add_argument('--image_size', default=3000, type=int, help='image size')
 parser.add_argument('--train', default=False, type=bool, help='train flag')
 parser.add_argument('--test', default=False, type=bool, help='test flag')
@@ -123,9 +123,6 @@ def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly):
     if args.show_time : print("\nPOST PRECESSING TIME : {:.3f}/{:.3f}".format(t0, t1))
     return boxes, polys, ret_score_text
 
-
-
-
 def test ():
 
     #MODEL INITIALIZE
@@ -147,15 +144,12 @@ def test ():
 
     image_list, _,_ = file.get_files(args.test_images_folder_path)
 
-    prediction_folder = './prediction/'
-    mask_folder = './mask/'
-    ground_truth_folder = './ground_truth/'
-    if not os.path.isdir(prediction_folder):
-        os.mkdir(prediction_folder)
-    if not os.path.isdir(mask_folder):
-        os.mkdir(mask_folder)
-    if not os.path.isdir(ground_truth_folder):
-        os.mkdir(ground_truth_folder)
+    if not os.path.isdir(config.prediction_folder):
+        os.mkdir(config.prediction_folder)
+    if not os.path.isdir(config.mask_folder):
+        os.mkdir(config.mask_folder)
+    if not os.path.isdir(config.ground_truth_folder):
+        os.mkdir(config.ground_truth_folder)
 
     for k, image_path in enumerate(image_list):
         print("TEST IMAGE: {:d}/{:d}: {:s}".format(k+1, len(image_list), image_path))
@@ -170,13 +164,37 @@ def test ():
         #image[:,:,::-1] is to change RGB to BGR / final ::-1 means inverse order of channel (RGB->BGR)
         #so, image color is changed as blue tone.
         file.saveResult(image_path, image[:,:,::-1], polys, dir1=prediction_folder, dir2=ground_truth_folder)
-
     print("TOTAL TIME : {}s".format(time.time() - t))
-def train():
 
+def IoU(json_gt_path, predict_gt_path, i):
+    with codecs.open(json_gt_path + 'label_' + str(i) + '.txt', encoding='utf-8_sig') as file:
+        data = file.readlines()
+        for line in data:
+            coor_tmp = line.split(',')
+            coordinate = [int(n) for n in coor_tmp]
+            coordinate[7] = coordinate[7].strip('\r\n')
+            coordinate = np.array(coordinate).reshape([4,2])
+    with codecs.open(predict_gt_path + 'res_' +  str(i) + '.txt', encoding='utf-8_sig') as file1:
+        data2 = file1.readlines()
+        for idx in data2:
+            coor1_tmp = idx.split(',')
+            coordinate1 = [int(x) for x in coor1_tmp]
+            coordinate1[7] = coordinate[7]/strip('\r\n')
+            coordinate1 = np.array(coordinate1).reshape([4.2])
+    print(coordinate)
+
+def evaluation():
+    """MODEL EVALUATION"""
+    true_pos, true_neg, false_pos, false_neg =  [0] * 4
+    for i in range(1, config.gt_json_num):
+         IoU(config.json_gt_folder, config.ground_truth_folder, i)
+def train():
+    pass
 
 if __name__ == '__main__':
     if args.train:
         train()
     if args.test:
          test()
+    if args.evaluation:
+        evaluation()

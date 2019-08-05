@@ -1,0 +1,577 @@
+{
+  "description": "",
+  "tags": [],
+  "size": {
+    "height": 2468,
+    "width": 500
+  },
+  "objects": [
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            107,
+            105
+          ],
+          [
+            151,
+            129
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            158,
+            105
+          ],
+          [
+            265,
+            131
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            274,
+            105
+          ],
+          [
+            337,
+            129
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            345,
+            105
+          ],
+          [
+            395,
+            129
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            74,
+            379
+          ],
+          [
+            428,
+            465
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            77,
+            467
+          ],
+          [
+            179,
+            491
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            185,
+            469
+          ],
+          [
+            210,
+            488
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            218,
+            467
+          ],
+          [
+            356,
+            489
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            364,
+            468
+          ],
+          [
+            430,
+            488
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            350,
+            501
+          ],
+          [
+            383,
+            530
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            388,
+            499
+          ],
+          [
+            455,
+            526
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            172,
+            656
+          ],
+          [
+            192,
+            678
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            205,
+            655
+          ],
+          [
+            241,
+            679
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            268,
+            655
+          ],
+          [
+            336,
+            680
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            158,
+            907
+          ],
+          [
+            253,
+            927
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            351,
+            1137
+          ],
+          [
+            384,
+            1155
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            393,
+            1137
+          ],
+          [
+            426,
+            1154
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            352,
+            1157
+          ],
+          [
+            386,
+            1172
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            393,
+            1155
+          ],
+          [
+            445,
+            1173
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            56,
+            2043
+          ],
+          [
+            106,
+            2061
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            113,
+            2044
+          ],
+          [
+            162,
+            2062
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            54,
+            2062
+          ],
+          [
+            90,
+            2078
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            96,
+            2063
+          ],
+          [
+            162,
+            2081
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            56,
+            2079
+          ],
+          [
+            117,
+            2099
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            343,
+            2256
+          ],
+          [
+            394,
+            2275
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            400,
+            2257
+          ],
+          [
+            434,
+            2274
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "gt_label",
+      "points": {
+        "exterior": [
+          [
+            344,
+            2275
+          ],
+          [
+            453,
+            2293
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "poly1",
+      "points": {
+        "exterior": [
+          [
+            34,
+            881
+          ],
+          [
+            31,
+            951
+          ],
+          [
+            148,
+            973
+          ],
+          [
+            146,
+            899
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "poly1",
+      "points": {
+        "exterior": [
+          [
+            237,
+            979
+          ],
+          [
+            236,
+            999
+          ],
+          [
+            351,
+            1017
+          ],
+          [
+            351,
+            997
+          ]
+        ],
+        "interior": []
+      }
+    }
+  ]
+}
