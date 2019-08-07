@@ -12,7 +12,6 @@ import sys
 import os
 import time
 import argparse
-
 import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
@@ -26,6 +25,7 @@ import numpy as np
 import postprocess
 import preprocess
 import file
+import evaluation
 import json
 import zipfile
 import config
@@ -50,20 +50,11 @@ def copyStateDict(state_dict):
 #ARGUMENT PARSER START
 parser = argparse.ArgumentParser(description='Webtoon Text Localization(Detection)')
 
-parser.add_argument('--pretrained_model_path', default='/home/hanish/workspace/clova_ai_CRAFT.pth', type=str, help='pretrained model')
-parser.add_argument('--test_images_folder_path', default='/home/hanish/workspace/test_images',type=str, help='path to test_input images')
-parser.add_argument('--image_size', default=3000, type=int, help='image size')
 parser.add_argument('--train', default=False, type=bool, help='train flag')
 parser.add_argument('--test', default=False, type=bool, help='test flag')
+parser.add_argument('--evaluation', default=False, type=bool, help='evaluation flag')
 
-#TO STUDY ARGUMENT LIST
-parser.add_argument('--text_threshold', default=0.7, type=float, help='text confidence threshold')
-parser.add_argument('--low_text', default=0.4, type=float, help='text low-bound score')
-parser.add_argument('--link_threshold', default=0.4, type=float, help='link confidence threshold')
-parser.add_argument('--cuda', default=True, type=bool, help='Use cuda to train model')
-parser.add_argument('--mag_ratio', default=1.5, type=float, help='image magnification ratio')
-parser.add_argument('--poly', default=False, action='store_true', help='enable polygon type')
-parser.add_argument('--show_time', default=False, action='store_true', help='show processing time')
+
 
 args = parser.parse_args()
 
@@ -71,7 +62,7 @@ def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly):
     t0 = time.time()
 
     # RESIZE IMAGE
-    img_resized, target_ratio, size_heatmap = preprocess.resize_aspect_ratio(image, args.image_size, interpolation=cv2.INTER_LINEAR, mag_ratio=args.mag_ratio)
+    img_resized, target_ratio, size_heatmap = preprocess.resize_aspect_ratio(image, config.image_size, interpolation=cv2.INTER_LINEAR, mag_ratio=config.mag_ratio)
     ratio_h = ratio_w = 1 / target_ratio
 
     """PREPROCESSING"""
@@ -120,21 +111,21 @@ def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly):
     render_img = np.hstack((render_img, score_link))
     ret_score_text = preprocess.cvt2HeatmapImg(render_img)
     debug.printing(ret_score_text)
-    if args.show_time : print("\nPOST PRECESSING TIME : {:.3f}/{:.3f}".format(t0, t1))
+    if config.show_time : print("\nPOST PRECESSING TIME : {:.3f}/{:.3f}".format(t0, t1))
     return boxes, polys, ret_score_text
 
 def test ():
 
     #MODEL INITIALIZE
     myNet = WTD()
-    print('Loading model from defined path :'  + args.pretrained_model_path)
-    if args.cuda:#GPU
-        myNet.load_state_dict(copyStateDict(torch.load(args.pretrained_model_path)))
+    print('Loading model from defined path :'  + config.pretrained_model_path)
+    if config.cuda:#GPU
+        myNet.load_state_dict(copyStateDict(torch.load(config.pretrained_model_path)))
 
     else:#ONLY CPU
-        myNet.load_state_dict(copyStateDict(torch.load(args.pretrained_model_path, map_location='cpu')))
+        myNet.load_state_dict(copyStateDict(torch.load(config.pretrained_model_path, map_location='cpu')))
 
-    if args.cuda:
+    if config.cuda:
         myNet = myNet.cuda()
         myNet = torch.nn.DataParallel(myNet)
         cudnn.benchmark = False
@@ -142,7 +133,7 @@ def test ():
     myNet.eval()
     t = time.time()
 
-    image_list, _,_ = file.get_files(args.test_images_folder_path)
+    image_list, _,_ = file.get_files(config.test_images_folder_path)
 
     if not os.path.isdir(config.prediction_folder):
         os.mkdir(config.prediction_folder)
@@ -155,39 +146,17 @@ def test ():
         print("TEST IMAGE: {:d}/{:d}: {:s}".format(k+1, len(image_list), image_path))
         image = preprocess.loadImage(image_path)
 
-        bboxes, polys, score_text = test_net(myNet, image, args.text_threshold, args.link_threshold, args.low_text, args.cuda, args.poly)
+        bboxes, polys, score_text = test_net(myNet, image, config.text_threshold, config.link_threshold, config.low_text, config.cuda, config.poly)
         # save score text
         filename, file_ext = os.path.splitext(os.path.basename(image_path))
-        mask_file = mask_folder + "/res_" + filename + '_mask.jpg'
+        mask_file = config.mask_folder + "/res_" + filename + '_mask.jpg'
         cv2.imwrite(mask_file, score_text)
 
         #image[:,:,::-1] is to change RGB to BGR / final ::-1 means inverse order of channel (RGB->BGR)
         #so, image color is changed as blue tone.
-        file.saveResult(image_path, image[:,:,::-1], polys, dir1=prediction_folder, dir2=ground_truth_folder)
+        file.saveResult(image_path, image[:,:,::-1], polys, dir1=config.prediction_folder, dir2=config.ground_truth_folder)
     print("TOTAL TIME : {}s".format(time.time() - t))
 
-def IoU(json_gt_path, predict_gt_path, i):
-    with codecs.open(json_gt_path + 'label_' + str(i) + '.txt', encoding='utf-8_sig') as file:
-        data = file.readlines()
-        for line in data:
-            coor_tmp = line.split(',')
-            coordinate = [int(n) for n in coor_tmp]
-            coordinate[7] = coordinate[7].strip('\r\n')
-            coordinate = np.array(coordinate).reshape([4,2])
-    with codecs.open(predict_gt_path + 'res_' +  str(i) + '.txt', encoding='utf-8_sig') as file1:
-        data2 = file1.readlines()
-        for idx in data2:
-            coor1_tmp = idx.split(',')
-            coordinate1 = [int(x) for x in coor1_tmp]
-            coordinate1[7] = coordinate[7]/strip('\r\n')
-            coordinate1 = np.array(coordinate1).reshape([4.2])
-    print(coordinate)
-
-def evaluation():
-    """MODEL EVALUATION"""
-    true_pos, true_neg, false_pos, false_neg =  [0] * 4
-    for i in range(1, config.gt_json_num):
-         IoU(config.json_gt_folder, config.ground_truth_folder, i)
 def train():
     pass
 
@@ -197,4 +166,4 @@ if __name__ == '__main__':
     if args.test:
          test()
     if args.evaluation:
-        evaluation()
+        evaluation.evaluation()
