@@ -6,20 +6,30 @@ preprocess.py
 import numpy as np
 from skimage import io
 import cv2
+import codecs
 import debug
 from PIL import Image
 def loadImage(img_file): #HCW order ->image channel adjuestment
     img = io.imread(img_file)           # RGB order
 
-    debug.printing(img)
     if img.shape[0] == 2:
         img = img[0] #Height is 2, height will be img itself. but height is not 2
     if len(img.shape) == 2 : img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB) #Channel is 2, fix 3
     if img.shape[2] == 4:   img = img[:,:,:3] #Channel is 4, fix 3
     img = np.array(img) #convert list to numpy
 
-
     return img
+
+def loadText(txt_file):
+    with codecs.open(txt_file, encoding='utf-8_sig') as file:
+        coordinate = file.readlines()
+
+        for line in coordinate:
+            tmp = line.split(',')
+            arr_coordinate = [int(n) for n in tmp]
+            coordinate = np.array(arr_coordinate).reshape([1,4,2])
+
+    return coordinate
 
 def normalizeMeanVariance(in_img, mean=(0.485, 0.456, 0.406), variance=(0.229, 0.224, 0.225)):
     # should be RGB order #Z-score conversion. image pixel value is changed to predict easily.
@@ -27,7 +37,7 @@ def normalizeMeanVariance(in_img, mean=(0.485, 0.456, 0.406), variance=(0.229, 0
 
     img -= np.array([mean[0] * 255.0, mean[1] * 255.0, mean[2] * 255.0], dtype=np.float32)
     img /= np.array([variance[0] * 255.0, variance[1] * 255.0, variance[2] * 255.0], dtype=np.float32)
-    debug.printing(img)
+
     return img
 
 def denormalizeMeanVariance(in_img, mean=(0.485, 0.456, 0.406), variance=(0.229, 0.224, 0.225)):
@@ -65,7 +75,6 @@ def resize_aspect_ratio(img, user_defined_size, interpolation, mag_ratio=1):
     """debug Image external black padding addition"""
     debugTmpImg = np.zeros((target_h32, target_w32, channel), dtype=np.uint8)
     debugTmpImg[0:target_h, 0:target_w, :] = proc
-    debug.printing(debugTmpImg)
 
     target_h, target_w = target_h32, target_w32
     size_heatmap = (int(target_w/2), int(target_h/2)) #heatmap size is half of target

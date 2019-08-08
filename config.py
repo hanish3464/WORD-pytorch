@@ -1,3 +1,4 @@
+train_img_num =2 
 img_num = 3
 gt_xml_num = 500
 
@@ -7,8 +8,11 @@ json_path = './json_gt/'
 prediction_folder = './prediction/'
 mask_folder = './mask/'
 ground_truth_folder = './ground_truth/res_'
+train_ground_truth_folder = './train_ground_truth/'
 pretrained_model_path = '/home/hanish/workspace/clova_ai_CRAFT.pth'
 test_images_folder_path = '/home/hanish/workspace/test_images'
+train_images_folder_path = '/home/hanish/workspace/train_images/'
+train_prediction_folder = './train_prediction/'
 image_size = 3000
 
 #parser.add_argument('--pretrained_model_path', default='/home/hanish/workspace/clova_ai_CRAFT.pth', type=str, help='pretrained model')
@@ -24,6 +28,14 @@ cuda = True
 mag_ratio = 1.5
 poly = False
 show_time = False
+num_of_gpu = 1
+
+#parameter
+learning_rate = 1e-4
+lr_multiply =0.8 #10K iterations
+batch_size = 1 #8 batch per 1 GPU
+epoch = 100000 #50K about synthText 70K
+iterations = 20
 
 
 #parser.add_argument('--text_threshold', default=0.7, type=float, help='text confidence threshold')
