@@ -25,14 +25,14 @@ def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text)
     """ labeling method """
     ret, text_score = cv2.threshold(textmap, low_text, 1, 0)
     #debug.printing(ret)
-    debug.printing(text_score)
+    #debug.printing(text_score)
     ret, link_score = cv2.threshold(linkmap, link_threshold, 1, 0)
-    debug.printing(link_score)
+    #debug.printing(link_score)
 
     text_score_comb = np.clip(text_score + link_score, 0, 1)
-    debug.printing(text_score_comb)
+    #debug.printing(text_score_comb)
     nLabels, labels, stats, centroids = cv2.connectedComponentsWithStats(text_score_comb.astype(np.uint8), connectivity=4)
-    debug.printing(labels)
+    #debug.printing(labels)
 
     #nLabels = the number of labels
     #label map has number per segmentation unit which is number order
@@ -93,7 +93,7 @@ def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text)
         det.append(box)
         mapper.append(k)
     #box creation
-    debug.printing(glbMap)
+    #debug.printing(glbMap)
     return det, labels, mapper
 
 def getPoly_core(boxes, labels, mapper, linkmap):

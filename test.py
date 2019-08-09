@@ -76,7 +76,7 @@ def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly):
     render_img = score_text.copy()
     render_img = np.hstack((render_img, score_link))
     ret_score_text = preprocess.cvt2HeatmapImg(render_img)
-    debug.printing(ret_score_text)
+    #debug.printing(ret_score_text)
     if config.show_time : print("\nPOST PRECESSING TIME : {:.3f}/{:.3f}".format(t0, t1))
     return boxes, polys, ret_score_text
 
@@ -118,5 +118,5 @@ def test ():
         mask_file = config.mask_folder + "/res_" + filename + '_mask.jpg'
         cv2.imwrite(mask_file, score_text)
 
-        file.saveResult(image_path, image[:,:,::-1], polys, dir1=config.prediction_folder, dir2=config.ground_truth_folder)
+        file.saveResult(image_path, image[:,:,::-1], polys, dir1=config.test_prediction_folder, dir2=config.test_ground_truth)
     print("TOTAL TIME : {}s".format(time.time() - t))

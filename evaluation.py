@@ -29,6 +29,11 @@ def calculate_recall():
 
     return recall
 
+def calculate_F1_score(precision, recall):
+    f1_score = 2*precision*recall/(precision+recall)
+
+    return f1_score
+
 def load_box_max_coordinate(path, idx):
 
     boxes = list() ; max_boxes=list() ; len = 0
@@ -107,12 +112,14 @@ def IOU(gt_path, pdt_path, idx, status):
 def evaluation():
     """MODEL EVALUATION"""
 
-    for idx in range(1, config.img_num):
-        IOU(config.json_gt_folder, config.ground_truth_folder, idx, 'Precision')
-        IOU(config.ground_truth_folder, config.json_gt_folder, idx, 'Recall')
+    for idx in range(1, config.img_num + 1):
+        IOU(config.json_gt_folder, config.test_prediction_folder, idx, 'Precision')
+        IOU(config.test_prediction_folder, config.json_gt_folder, idx, 'Recall')
 
         precision = round(calculate_precision(), 6)
         recall = round(calculate_recall(), 6)
-        print('[TEST IMG : ({}/{})] Precision: {} recall : {}'.format(idx, config.img_num-1, precision, recall))
+        f1_score = round(calculate_F1_score(precision, recall),6)
+
+        print('[TEST IMG : ({:<2}/{:<2})] Precision: {:<8} recall : {:<8} F1_score: {:<8}'.format(idx, config.img_num, precision, recall, f1_score))
 
 

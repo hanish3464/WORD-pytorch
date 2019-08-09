@@ -22,7 +22,8 @@ def train_net(myNet, device, dataloader, optimizer, iteration):
     for i in range(config.epoch):
         print('epoch :{} entered'.format(i))
         for i_batch, sample in enumerate(dataloader):
-            images = sample['image'].to(device)
+            images = sample['image'].to(device, dtype=torch.float)
+
             y, _ = myNet(images)
 
             #loss function
@@ -34,9 +35,9 @@ def train_net(myNet, device, dataloader, optimizer, iteration):
             score_text = y[0, :, :, 0].cpu().data.numpy()
             score_link = y[0, :, :, 1].cpu().data.numpy()
 
-            if iteration % config.iterations is 0: #exist bug
-                debug.printing(score_text)
-                debug.printing(score_link)
+            #if iteration % config.iterations is 0: #exist bug
+                #debug.printing(score_text)
+                #debug.printing(score_link)
 
             iteration += 1
 
@@ -45,7 +46,7 @@ def train_net(myNet, device, dataloader, optimizer, iteration):
 
 def train():
     """there is under developing"""
-    print(config.train_images_folder_path)
+
     datasets = dataset.webtoon_text_detection_dataset(config.train_images_folder_path, config.train_ground_truth_folder)
     dataloader = DataLoader(datasets, batch_size = config.batch_size, shuffle = True, num_workers = config.num_of_gpu)
     myNet = WTD()
@@ -54,7 +55,7 @@ def train():
     if config.cuda: #GPU
         device = torch.device("cuda:0")
         myNet = myNet.cuda()
-        myNet = torch.nn.DataParallel(myNet)
+        #myNet = torch.nn.DataParallel(myNet)
 
     else: #CPU
         device = torch.device("cpu")

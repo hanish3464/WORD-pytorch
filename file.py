@@ -52,9 +52,9 @@ def saveResult(img_file, img, boxes, dir1='./prediction/', dir2='./gt/', vertica
         with open(gt_file, 'w') as f:
             for i, box in enumerate(boxes):
                 poly = np.array(box).astype(np.int32).reshape((-1))
-                debug.getScalaValue(poly)
+                #debug.getScalaValue(poly)
                 strResult = ','.join([str(p) for p in poly]) + '\r\n'
-                debug.getScalaValue(strResult)
+                #debug.getScalaValue(strResult)
                 f.write(strResult)
                 #drawing bounding ploy type box with CV
                 poly = poly.reshape(-1, 2)
@@ -73,6 +73,6 @@ def saveResult(img_file, img, boxes, dir1='./prediction/', dir2='./gt/', vertica
 
         # Save result image
         cv2.imwrite(predict_image_file, img)
-        debug.printing(img)
+        #debug.printing(img)
 
 
