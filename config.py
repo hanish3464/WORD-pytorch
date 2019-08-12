@@ -40,6 +40,8 @@ image_size = 3000
 poly = False
 show_time = False
 num_of_gpu = 1
+data_augmentation_rotate = True
+data_augmentation_crop = True
 
 #parameter
 learning_rate = 1e-4

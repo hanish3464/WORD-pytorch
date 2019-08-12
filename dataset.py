@@ -5,6 +5,8 @@ import cv2
 import file
 import preprocess
 import config
+import rotate
+import debug
 
 class webtoon_text_detection_dataset(Dataset):
 
@@ -15,7 +17,6 @@ class webtoon_text_detection_dataset(Dataset):
 
     def __getitem__(self, idx):
         image , gt = self.train_data_transform(idx)
-
         """We should generate gaussian heat map & character region parsing for training about returned gt"""
         return {'image': image, 'gt': gt}
 
@@ -28,10 +29,13 @@ class webtoon_text_detection_dataset(Dataset):
         #image, _, _= \
            # preprocess.resize_aspect_ratio(image, config.image_size, interpolation=cv2.INTER_LINEAR, mag_ratio=config.mag_ratio)
 
+        rotated_img, rotated_gt = rotate.rotation(image, gt)
+        print(rotated_gt)
+        debug.printing(rotated_img)
+
         x = preprocess.normalizeMeanVariance(image)
 
         #resize
-        x = cv2.resize(x, (512,512))
 
         #HCW -> CHW
         x = torch.from_numpy(x).permute(2, 0, 1)
