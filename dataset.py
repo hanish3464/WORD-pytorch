@@ -2,11 +2,14 @@ import torch
 from torch.autograd import Variable
 from torch.utils.data import Dataset
 import cv2
+import random
+
 import file
 import preprocess
 import config
 import rotate
-import debug
+import crop
+
 
 class webtoon_text_detection_dataset(Dataset):
 
@@ -25,15 +28,23 @@ class webtoon_text_detection_dataset(Dataset):
 
     def train_data_transform(self, idx):
         image = preprocess.loadImage(self.image_list.pop(0))
-        gt = preprocess.loadText(self.gt_list.pop(0))
-        #image, _, _= \
-           # preprocess.resize_aspect_ratio(image, config.image_size, interpolation=cv2.INTER_LINEAR, mag_ratio=config.mag_ratio)
+        gt, gt_len = preprocess.loadText(self.gt_list.pop(0))
 
-        rotated_img, rotated_gt = rotate.rotation(image, gt)
-        print(rotated_gt)
-        debug.printing(rotated_img)
+        select = random.randint(0, 3)
 
-        x = preprocess.normalizeMeanVariance(image)
+        if select == 0 and config.data_augmentation_rotate is True:
+            rotated_img, rotated_gt = rotate.rotate(image, gt, gt_len)
+
+        elif select == 1 and config.data_augmentation_crop is True:
+            cropped_img, cropped_gt = crop.crop(image, gt, gt_len)
+
+        elif select == 2:
+            #fliping
+        else:
+            #original
+
+
+        x = preprocess.normalizeMeanVariance(rotated_img)
 
         #resize
 
@@ -42,7 +53,7 @@ class webtoon_text_detection_dataset(Dataset):
 
         #x = Variable(x.unsqueeze(0))
 
-        return x, gt
+        return x, rotated_gt
 
 
 

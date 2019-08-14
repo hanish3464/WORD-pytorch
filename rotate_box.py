@@ -2,29 +2,27 @@ import config
 import codecs
 import cv2
 import numpy as np
-import debug
-
+theta = 78
 def loadText(txt_file_path):
+    a = []
+    length = 0
     with codecs.open(txt_file_path, encoding='utf-8_sig') as file:
-        a = list()
-        while True:
-            coordinate = file.readlines()
-            if coordinate is None:
-                break
-            for line in coordinate:
-                tmp = line.split(',')
-                arr_coordinate = [int(n) for n in tmp]
-                coordinate = np.array(arr_coordinate).astype(float)
-                coordinate = coordinate.tolist()
-                a = a.append(coordinate)
-    return a
+        coordinate = file.readlines()
+        for line in coordinate:
+            tmp = line.split(',')
+            arr_coordinate = [int(n) for n in tmp]
+            arr_coordinate = np.array(arr_coordinate).astype(float).reshape([4,2])
+            arr_coordinate = arr_coordinate.tolist()
+            a.append(arr_coordinate)
+            length += 1
+    return a, length
 
 def rotate_bound(image, angle):
     h,w = image.shape[:2]
     cX, cY = w //2 , h//2
     M = cv2.getRotationMatrix2D((cX,cY),angle,1.0)
     cos = np.abs(M[0,0])
-    sin = np.abs(M[0,0])
+    sin = np.abs(M[0,1])
     nW = int((h*sin) + (w*cos))
     nH = int((h*cos) + (w*sin))
     
@@ -46,29 +44,31 @@ def rotate_box(bb, cx, cy, h, w):
         # adjust the rotation matrix to take into account translation
         M[0, 2] += (nW / 2) - cx
         M[1, 2] += (nH / 2) - cy
+        #print(M)
         # Prepare the vector to be transformed
         v = [coord[0],coord[1],1]
+        #print(v)
         # Perform the actual rotation and return the image
         calculated = np.dot(M,v)
-        new_bb[i] = (calculated[0],calculated[1])
+        new_bb[i] = [calculated[0],calculated[1]]
+
     return new_bb
 
 txt_path = config.json_gt_folder + '1.txt'
 
-coordinate = loadText(txt_path)
-coordinate  = np.array(coordinate)
-
-
-print(coordinate)
+coordinate, length = loadText(txt_path)
 
 # Original image
-img_orig = cv2.imread(config.test_images_folder_path + '0001-001.jpg')
+img_orig = cv2.imread(config.test_images_folder_path + '0001-003.jpg')
 # Rotated image
-rotated_img = rotate_bound(img_orig, 30)
-debug.printing(rotated_img)
+rotated_img = rotate_bound(img_orig, theta)
+rotated_img = cv2.resize(rotated_img, (1150, 450))
+cv2.imwrite('./3.jpg', rotated_img)
+
 
 # Calculate the shape of rotated images
 (heigth, width) = img_orig.shape[:2]
+print(heigth)
 (cx, cy) = (width // 2, heigth // 2)
 (new_height, new_width) = rotated_img.shape[:2]
 (new_cx, new_cy) = (new_width // 2, new_height // 2)
@@ -76,18 +76,16 @@ print(cx,cy,new_cx,new_cy)
 print(new_height, new_width)
 
 ## Calculate the new bounding box coordinates
-new_bb = {}
-for i in range(8):
-    new_bb[i] = rotate_box(coordinate[i], cx, cy, heigth, width)
+new_bb = list()
+#print(coordinate)
+for i in range(length):
+    print(coordinate[i])
+    new_bb = rotate_box(coordinate[i], cx, cy, heigth, width)
 
-## Plot rotated image and bounding boxes
-ax2.imshow(rotated_img[...,::-1], aspect='auto')
-ax2.axis('off')
-ax2.add_patch(mpatches.Polygon(new_bb[0],lw=3.0, fill=False, color='red'))
-ax2.add_patch(mpatches.Polygon(new_bb[1],lw=3.0, fill=False, color='red'))
-ax2.add_patch(mpatches.Polygon(new_bb[2],lw=3.0, fill=False, color='green'))
-ax2.text(0.,0.,'Rotation by: ' + str(theta), transform=ax1.transAxes,
-           horizontalalignment='left', verticalalignment='bottom', fontsize=30)
-name='Output.png'
-plt.savefig(name)
-plt.cla()
+    poly = np.array(new_bb).astype(np.int32).reshape((-1)).reshape(-1, 2)
+    cv2.polylines(rotated_img, [poly.reshape((-1,1,2))], True, color=(255,0,0),thickness = 2)
+    ptColor = (0,255,255)
+
+cv2.imwrite('/home/hanish/workspace/temp_rot.jpg', rotated_img)
+
+
