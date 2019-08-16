@@ -41,12 +41,18 @@ poly = False
 show_time = False
 num_of_gpu = 1
 data_augmentation_rotate = True
+
 data_augmentation_crop = True
+pos_crop_bound_threshold = 5
+neg_crop_bound_threshold = -5
+
+data_augmentation_flip = True
+
 
 #parameter
 learning_rate = 1e-4
 lr_multiply =0.8 #10K iterations
-batch_size = 4 #8 batch per 1 GPU
+batch_size = 1 #8 batch per 1 GPU
 epoch = 100000 #50K about synthText 70K
 iterations = 20
 

@@ -1,8 +1,13 @@
-from PIL import Image
 import numpy as np
 import config
 import random
 import cv2
+import preprocess
+
+#temp_img = config.test_images_folder_path + '0005-001.jpg'
+#img = preprocess.loadImage(temp_img)
+#temp_gt = config.test_ground_truth + 'res_0005-001.txt'
+#gt, gt_len = preprocess.loadText(temp_gt)
 
 def rotate_img(img, angle):
     h, w = img.shape[:2]
@@ -25,7 +30,7 @@ def rotate_gt(gt, cx, cy, h, w, angle):
         M = cv2.getRotationMatrix2D((cx, cy), angle, 1.0)
 
         cos = np.abs(M[0, 0])
-        sin = np.abs(M[0, 0])
+        sin = np.abs(M[0, 1])
 
         nW = float((h * sin) + (w * cos))
         nH = float((h * cos) + (w * sin))
@@ -47,6 +52,16 @@ def rotate(img, gt, gt_len):
     for idx in range(gt_len):
             rotated_gt.append(rotate_gt(gt[idx], center_x, center_y, height, width, angle))
 
+    while True:
+        if not rotated_gt:
+            break
+        new_gt_element = rotated_gt.pop()
+        poly = np.array(new_gt_element).astype(np.int32).reshape((-1)).reshape(-1, 2)
+        cv2.polylines(rotated_img, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=2)
+        ptColor = (0, 255, 255)
+
+    cv2.imwrite('/home/hanish/workspace/debug_image/debug_rotate.jpg', rotated_img)
     return rotated_img, rotated_gt
 
+#rotate(img, gt, gt_len)
 

@@ -9,7 +9,8 @@ import preprocess
 import config
 import rotate
 import crop
-
+import flip
+import time
 
 class webtoon_text_detection_dataset(Dataset):
 
@@ -27,24 +28,30 @@ class webtoon_text_detection_dataset(Dataset):
         return config.train_img_num
 
     def train_data_transform(self, idx):
+        #print(self.image_list)
+        #print(self.gt_list)
+
         image = preprocess.loadImage(self.image_list.pop(0))
         gt, gt_len = preprocess.loadText(self.gt_list.pop(0))
 
         select = random.randint(0, 3)
+        select = 2
 
-        if select == 0 and config.data_augmentation_rotate is True:
-            rotated_img, rotated_gt = rotate.rotate(image, gt, gt_len)
+        if select == 0 and config.data_augmentation_rotate:
+            image, gt = rotate.rotate(image, gt, gt_len)
 
-        elif select == 1 and config.data_augmentation_crop is True:
-            cropped_img, cropped_gt = crop.crop(image, gt, gt_len)
+        elif select == 1 and config.data_augmentation_crop:
+            image, gt = crop.crop(image, gt, gt_len)
 
-        elif select == 2:
-            #fliping
+        elif select == 2 and config.data_augmentation_flip:
+            image, gt = flip.flip(image, gt)
         else:
             #original
+            pass
+        time.sleep(3)
 
 
-        x = preprocess.normalizeMeanVariance(rotated_img)
+        x = preprocess.normalizeMeanVariance(image)
 
         #resize
 
@@ -53,7 +60,7 @@ class webtoon_text_detection_dataset(Dataset):
 
         #x = Variable(x.unsqueeze(0))
 
-        return x, rotated_gt
+        return x, gt
 
 
 
