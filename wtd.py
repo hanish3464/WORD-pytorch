@@ -77,7 +77,7 @@ class WTD(nn.Module):
         feature = self.upconv4(y)
 
         y = self.conv_cls(feature)
-
+        
         return y.permute(0,2,3,1), feature
 
 if __name__ == '__main__':

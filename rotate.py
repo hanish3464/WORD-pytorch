@@ -51,11 +51,11 @@ def rotate(img, gt, gt_len):
     rotated_gt = list()
     for idx in range(gt_len):
             rotated_gt.append(rotate_gt(gt[idx], center_x, center_y, height, width, angle))
-
+    rotated_list_temp = rotated_gt[:]
     while True:
-        if not rotated_gt:
+        if not rotated_list_temp:
             break
-        new_gt_element = rotated_gt.pop()
+        new_gt_element = rotated_list_temp.pop()
         poly = np.array(new_gt_element).astype(np.int32).reshape((-1)).reshape(-1, 2)
         cv2.polylines(rotated_img, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=2)
         ptColor = (0, 255, 255)

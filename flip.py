@@ -29,18 +29,17 @@ def flip(image, gt_list):
     opt = random.choice(['left-right', 'top-bottom'])
     image = image[:, ::-1, ::-1] if opt == 'left-right' else image[::-1, :, ::-1]
     image = np.ascontiguousarray(image, dtype=np.uint8)
-    new_gt_list = adjust_flipped_coordinate(image.shape, gt_list, status=opt)
-
+    new_gt = adjust_flipped_coordinate(image.shape, gt_list, status=opt)
+    new_gt_temp = new_gt[:]
     while True:
-        if not new_gt_list:
+        if not new_gt_temp:
             break
-        new_gt_element = new_gt_list.pop()
+        new_gt_element = new_gt_temp.pop()
         poly = np.array(new_gt_element).astype(np.int32).reshape((-1)).reshape(-1, 2)
         cv2.polylines(image, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=2)
         ptColor = (0, 255, 255)
 
-    cv2.imwrite('/home/hanish/workspace/debug_image/debug_flip1.jpg', image)
-    # cv2.imwrite('/home/hanish/workspace/debug_image/debug_flip2.jpg', image)
+    cv2.imwrite('/home/hanish/workspace/debug_image/debug_flip.jpg', image)
 
-    return image, new_gt_list
+    return image, new_gt
 #flip(img, arr_list)

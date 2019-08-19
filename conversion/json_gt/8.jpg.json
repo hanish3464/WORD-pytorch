@@ -1,0 +1,276 @@
+{
+  "description": "",
+  "tags": [],
+  "size": {
+    "height": 563,
+    "width": 563
+  },
+  "objects": [
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            200,
+            114
+          ],
+          [
+            241,
+            127
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            245,
+            113
+          ],
+          [
+            327,
+            128
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            201,
+            128
+          ],
+          [
+            254,
+            142
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            200,
+            141
+          ],
+          [
+            249,
+            155
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            421,
+            124
+          ],
+          [
+            452,
+            139
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            42,
+            406
+          ],
+          [
+            119,
+            426
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            124,
+            406
+          ],
+          [
+            142,
+            426
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            150,
+            406
+          ],
+          [
+            244,
+            428
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            251,
+            406
+          ],
+          [
+            276,
+            426
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            285,
+            406
+          ],
+          [
+            349,
+            429
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            357,
+            406
+          ],
+          [
+            454,
+            426
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            143,
+            433
+          ],
+          [
+            143,
+            433
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            142,
+            434
+          ],
+          [
+            291,
+            454
+          ]
+        ],
+        "interior": []
+      }
+    },
+    {
+      "description": "",
+      "bitmap": null,
+      "tags": [],
+      "classTitle": "rect",
+      "points": {
+        "exterior": [
+          [
+            297,
+            438
+          ],
+          [
+            342,
+            453
+          ]
+        ],
+        "interior": []
+      }
+    }
+  ]
+}

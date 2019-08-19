@@ -3,6 +3,7 @@ from torch.autograd import Variable
 from torch.utils.data import Dataset
 import cv2
 import random
+import numpy as np
 
 import file
 import preprocess
@@ -10,6 +11,7 @@ import config
 import rotate
 import crop
 import flip
+import resize
 import time
 
 class webtoon_text_detection_dataset(Dataset):
@@ -27,33 +29,50 @@ class webtoon_text_detection_dataset(Dataset):
     def __len__(self):
         return config.train_img_num
 
+    @staticmethod
+    def check_data_augmentation_method(image, gt):
+        new_gt_temp = gt[:]
+        while True:
+            if not new_gt_temp:
+                break
+            new_gt_element = new_gt_temp.pop()
+            poly = np.array(new_gt_element).astype(np.int32).reshape((-1)).reshape(-1, 2)
+            cv2.polylines(image, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=2)
+            ptColor = (0, 255, 255)
+        time.sleep(0.5)
+        cv2.imwrite('/home/hanish/workspace/debug_image/debug_final.jpg', image)
+
     def train_data_transform(self, idx):
         #print(self.image_list)
         #print(self.gt_list)
 
         image = preprocess.loadImage(self.image_list.pop(0))
         gt, gt_len = preprocess.loadText(self.gt_list.pop(0))
+        select = random.choice(['rotate', 'crop', 'flip', 'origin'])
 
-        select = random.randint(0, 3)
-        select = 2
 
-        if select == 0 and config.data_augmentation_rotate:
+
+        if select == 'rotate' and config.data_augmentation_rotate:
             image, gt = rotate.rotate(image, gt, gt_len)
+            #print("rotate : " + str(image.shape))
 
-        elif select == 1 and config.data_augmentation_crop:
-            image, gt = crop.crop(image, gt, gt_len)
+        elif select == 'crop' and config.data_augmentation_crop:
+            image, gt, gt_len = crop.crop(image, gt, gt_len)
+            #print("crop : " + str(image.shape))
 
-        elif select == 2 and config.data_augmentation_flip:
+        elif select == 'flip' and config.data_augmentation_flip:
             image, gt = flip.flip(image, gt)
-        else:
+            #print("flip : " + str(image.shape))
+        elif select == 'origin':
             #original
             pass
-        time.sleep(3)
 
+        # 512 x 512 image resize
+        image, gt = resize.resize(image, gt, gt_len)
+        self.check_data_augmentation_method(image, gt)
+        #print("resized : " + str(image.shape))
 
         x = preprocess.normalizeMeanVariance(image)
-
-        #resize
 
         #HCW -> CHW
         x = torch.from_numpy(x).permute(2, 0, 1)

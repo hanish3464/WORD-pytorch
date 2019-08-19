@@ -33,7 +33,7 @@ def adjust_cropped_coordinate(lt, rt, lb, rb, coord):
 
 def coordinate_bounding_check(gt_list, gt_len, start_X, start_Y, width, height):
     new_gt_list = list()
-
+    new_gt_len = 0
     left_top = np.array([start_X, start_Y])
     right_top = np.array([start_X + width, start_Y])
     left_bot = np.array([start_X, start_Y + height])
@@ -49,8 +49,9 @@ def coordinate_bounding_check(gt_list, gt_len, start_X, start_Y, width, height):
                 [[start_X, start_Y], [start_X, start_Y], [start_X, start_Y], [start_X, start_Y]])
             coord = (np.array(coord) - adjust_coord_x_y).tolist()
             new_gt_list.append(coord)
+            new_gt_len += 1
 
-    return new_gt_list
+    return new_gt_list, new_gt_len
 
 
 def crop(img, gt_list, gt_len):
@@ -65,35 +66,35 @@ def crop(img, gt_list, gt_len):
     if opt == 0:  # left-top cropping
 
         cropped_img = cropped_img[:n_height, :n_width, :]
-        new_gt = coordinate_bounding_check(gt_list, gt_len, 0, 0, n_width, n_height)
+        new_gt, new_gt_len = coordinate_bounding_check(gt_list, gt_len, 0, 0, n_width, n_height)
 
     elif opt == 1:  # right-top cropping
         cropped_img = cropped_img[:n_height, n_width:, :]
-        new_gt = coordinate_bounding_check(gt_list, gt_len, n_width, 0, n_width, n_height)
+        new_gt, new_gt_len = coordinate_bounding_check(gt_list, gt_len, n_width, 0, n_width, n_height)
 
     elif opt == 2:  # left-bottom cropping
         cropped_img = cropped_img[n_height:, :n_width, :]
-        new_gt = coordinate_bounding_check(gt_list, gt_len, 0, n_height, n_width, n_height)
+        new_gt, new_gt_len = coordinate_bounding_check(gt_list, gt_len, 0, n_height, n_width, n_height)
 
     elif opt == 3:  # right-bottom cropping
         cropped_img = cropped_img[n_height:, n_width:, :]
-        new_gt = coordinate_bounding_check(gt_list, gt_len, n_width, n_height, n_width, n_height)
+        new_gt, new_gt_len = coordinate_bounding_check(gt_list, gt_len, n_width, n_height, n_width, n_height)
 
     elif opt == 4:  # center cropping
         half_n_height, half_n_width = n_height // 2, n_width // 2
         cropped_img = cropped_img[half_n_height:n_height + half_n_height, half_n_width:n_width + half_n_width, :]
-        new_gt = coordinate_bounding_check(gt_list, gt_len, half_n_width, half_n_height, n_width, n_height)
-
+        new_gt, new_gt_len = coordinate_bounding_check(gt_list, gt_len, half_n_width, half_n_height, n_width, n_height)
+    new_gt_temp = new_gt[:]
     while True:
-        if not new_gt:
+        if not new_gt_temp:
             break
-        new_gt_element = new_gt.pop()
+        new_gt_element = new_gt_temp.pop()
         poly = np.array(new_gt_element).astype(np.int32).reshape((-1)).reshape(-1, 2)
         cv2.polylines(cropped_img, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=2)
         ptColor = (0, 255, 255)
 
     cv2.imwrite('/home/hanish/workspace/debug_image/debug_crop.jpg', cropped_img)
 
-    return cropped_img, new_gt
+    return cropped_img, new_gt, new_gt_len
 
 #crop(img, arr_list, gt_len)

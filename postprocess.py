@@ -246,7 +246,7 @@ def getDetBoxes(textmap, linkmap, text_threshold, link_threshold, low_text, poly
     boxes, labels, mapper = getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text)
 
     if poly:
-        polys = getPoly_core(boxes, labels, mapper, linkmap)
+        polys = getPoly_core(boxes, labels, mapper, lFwarodddinkmap)
     else:
         polys = [None] * len(boxes)
     #debug.getScalaValue(boxes)

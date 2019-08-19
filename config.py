@@ -1,6 +1,6 @@
 train_img_num = 16
 img_num = 16
-gt_json_num = 16
+gt_json_num = 18
 gt_xml_num = 500
 
 #convertor path
@@ -52,7 +52,7 @@ data_augmentation_flip = True
 #parameter
 learning_rate = 1e-4
 lr_multiply =0.8 #10K iterations
-batch_size = 1 #8 batch per 1 GPU
+batch_size = 4 #8 batch per 1 GPU
 epoch = 100000 #50K about synthText 70K
 iterations = 20
 

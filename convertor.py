@@ -5,6 +5,7 @@ import os
 import argparse
 import xml.etree.ElementTree as elemTree
 import shutil
+import file
 
 parser = argparse.ArgumentParser(description='gt ext setting')
 parser.add_argument('--xml', default=False, type=bool, help='xml flag')
@@ -34,9 +35,14 @@ if args.xml:
 
 
 elif args.json:
-    for i in range(1, config.gt_json_num + 1):
-        with open(json_gt_folder + str(i) + '.txt', 'w') as txt_file:
-            with open(json_path + 'json_gt_' + str(i) + '.json') as json_file:
+    json_path_list = file.get_files(json_path)
+    json_path_list = json_path_list[2]
+    filename, file_ext = os.path.splitext(os.path.basename(json_path_list[0]))
+    print(filename, file_ext)
+    for i in range(0, config.gt_json_num):
+        filename, file_ext = os.path.splitext(os.path.basename(json_path_list[i]))
+        with open(json_gt_folder+ filename + '.txt', 'w') as txt_file:
+            with open(json_path + filename + file_ext) as json_file:
                 json_tmp = json.load(json_file)
                 for j in range(0, len(json_tmp['objects'])):
                     a = json_tmp['objects'][j]['points']['exterior']

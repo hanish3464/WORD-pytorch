@@ -20,7 +20,7 @@ def list_files(in_path):
                 img_files.append(os.path.join(dirpath, file))
             elif ext == '.bmp':
                 mask_files.append(os.path.join(dirpath, file))
-            elif ext == '.xml' or ext == '.gt' or ext == '.txt':
+            elif ext == '.xml' or ext == '.gt' or ext == '.txt' or ext =='.json':
                 gt_files.append(os.path.join(dirpath, file))
             elif ext == '.zip':
                 continue

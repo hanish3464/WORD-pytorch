@@ -16,15 +16,24 @@ import debug
 import time
 import preprocess
 import postprocess
+import numpy as np
+import sys
 
 def train_net(myNet, device, dataloader, optimizer, iteration):
 
     for i in range(config.epoch):
         print('epoch :{} entered'.format(i))
         for i_batch, sample in enumerate(dataloader):
-            images = sample['image'].to(device, dtype=torch.float)
+            x = sample['image'].to(device, dtype=torch.float)
+            print(x.shape)
 
-            y, _ = myNet(images)
+            y, _ = myNet(x)
+
+            score_text = y[0, :, :, 0].cpu().data.numpy() #what is y dimension
+            score_link = y[0, :, :, 1].cpu().data.numpy()
+            print(score_text.shape)
+            np.set_printoptions(threshold=sys.maxsize)
+            print(score_text)
 
             #loss function
 
@@ -32,12 +41,10 @@ def train_net(myNet, device, dataloader, optimizer, iteration):
             #loss.backward()
             #optimizer.step()
 
-            score_text = y[0, :, :, 0].cpu().data.numpy()
-            score_link = y[0, :, :, 1].cpu().data.numpy()
 
-            #if iteration % config.iterations is 0: #exist bug
-                #debug.printing(score_text)
-                #debug.printing(score_link)
+            if iteration % 5 is 0: #exist bug
+                debug.printing(score_text)
+                debug.printing(score_link)
 
             iteration += 1
 
