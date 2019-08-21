@@ -62,7 +62,6 @@ def train():
     if config.cuda: #GPU
         device = torch.device("cuda:0")
         myNet = myNet.cuda()
-        #myNet = torch.nn.DataParallel(myNet)
 
     else: #CPU
         device = torch.device("cpu")
