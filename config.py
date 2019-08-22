@@ -1,6 +1,6 @@
 train_img_num = 16
 img_num = 16
-gt_json_num = 18
+gt_json_num = 19
 gt_xml_num = 500
 
 #convertor path
@@ -45,9 +45,10 @@ data_augmentation_rotate = True
 data_augmentation_crop = True
 pos_crop_bound_threshold = 5
 neg_crop_bound_threshold = -5
-
 data_augmentation_flip = True
 
+gaussian_spread = 1.2
+gaussian_sigma = 10
 
 #parameter
 learning_rate = 1e-4
