@@ -81,7 +81,6 @@ def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly):
     return boxes, polys, ret_score_text
 
 def test ():
-
     #MODEL INITIALIZE
     myNet = WTD()
     print('Loading model from defined path :'  + config.pretrained_model_path)
@@ -101,12 +100,12 @@ def test ():
 
     image_list, _,_ = file.get_files(config.test_images_folder_path)
 
-    if not os.path.isdir(config.prediction_folder):
-        os.mkdir(config.prediction_folder)
-    if not os.path.isdir(config.mask_folder):
-        os.mkdir(config.mask_folder)
-    if not os.path.isdir(config.ground_truth_folder):
-        os.mkdir(config.ground_truth_folder)
+    if not os.path.isdir(config.test_prediction_folder):
+        os.mkdir(config.test_prediction_folder)
+    if not os.path.isdir(config.test_mask):
+        os.mkdir(config.test_mask)
+    if not os.path.isdir(config.test_ground_truth):
+        os.mkdir(config.test_ground_truth)
 
     for k, image_path in enumerate(image_list):
         print("TEST IMAGE: {:d}/{:d}: {:s}".format(k+1, len(image_list), image_path))
@@ -115,7 +114,7 @@ def test ():
         bboxes, polys, score_text = test_net(myNet, image, config.text_threshold, config.link_threshold, config.low_text, config.cuda, config.poly)
 
         filename, file_ext = os.path.splitext(os.path.basename(image_path))
-        mask_file = config.mask_folder + "/res_" + filename + '_mask.jpg'
+        mask_file = config.test_mask + "/res_" + filename + '_mask.jpg'
         cv2.imwrite(mask_file, score_text)
 
         file.saveResult(image_path, image[:,:,::-1], polys, dir1=config.test_prediction_folder, dir2=config.test_ground_truth)

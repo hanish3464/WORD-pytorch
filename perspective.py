@@ -4,6 +4,7 @@ import preprocess
 import config
 import gaussian
 import sys
+import os
 
 np.set_printoptions(threshold=sys.maxsize)
 temp_img = config.train_images_folder_path + 'res_1.jpg'
@@ -12,7 +13,7 @@ temp_gt = config.train_ground_truth_folder + '1.jpg.txt'
 gt, gt_len = preprocess.loadText(temp_gt)
 
 
-def gaussian():  # some bugs exist ; it can generate borderline by adjusting spread value
+def gaussian():  # some bugs exist ; it may generate borderline by adjusting spread value
 
     sigma = config.gaussian_sigma
     spread = config.gaussian_spread
@@ -36,36 +37,45 @@ def gaussian():  # some bugs exist ; it can generate borderline by adjusting spr
     adjust_gaussian_heat_map[h + 1] = adjust_gaussian_heat_map[0]
     adjust_gaussian_heat_map[h] = adjust_gaussian_heat_map[1]
 
+
     cv2.imwrite('./gauss/gauss_img.jpg', isotropicGaussian2dMap)
     cv2.imwrite('./gauss/adjust_img.jpg', adjust_gaussian_heat_map)
     return adjust_gaussian_heat_map
 
 
-def perspective_transform(image, gt):
+def perspective_transform(gauss, cha_box, flags = None):
+    #image :
+    flags = 'text'
+    if flags == 'text':
+        max_x, max_y = np.max(cha_box[:, 0]).astype(np.int32), np.max(cha_box[:, 1]).astype(np.int32)
+    if flags == 'affinity':
+        max_x = np.max(cha_box[:, 0]).astype(np.int32)
+        max_y = int(sum(cha_box[2:4,1])/float(2) - sum(cha_box[:2,1])/float(2))
 
-    max_x, max_y = np.max(gt[:, 0]).astype(np.int32), np.max(gt[:, 1]).astype(np.int32)
-    dst = np.array([
-        [0, 0], [image.shape[1] - 1, 0], [image.shape[1] - 1, image.shape[0] - 1], [0, image.shape[0] - 1]],
+    print(cha_box)
+    #print(gt)
+    #print(max_x, max_y)
+    gauss_region = np.array([
+        [0, 0], [gauss.shape[1] - 1, 0], [gauss.shape[1] - 1, gauss.shape[0] - 1], [0, gauss.shape[0] - 1]],
         dtype="float32")
-    print(gt)
+    #print(gt)
     #print(dst)
     #print(max_x,max_y)
-    M = cv2.getPerspectiveTransform(dst, gt)
-    print(M)
-    warped = cv2.warpPerspective(image, M, (max_x, max_y))
-    #print(warped.shape)
+    M = cv2.getPerspectiveTransform(src= gauss_region, dst = cha_box)
+    #warped = cv2.warpPerspective(gauss, M, (max_x, max_y))
+    warped = cv2.warpPerspective(gauss,  M, (max_x, max_y), borderValue = 0, borderMode=cv2.BORDER_CONSTANT)
     cv2.imwrite('./gauss/warp_img.jpg', warped)
     return warped
 
 
-def add_character(image, bbox, gaussian_heat_map):
+def add_character(image, bbox, gaussian_heat_map, flags = 'text'):
     bbox = np.array(bbox)
     if np.any(bbox < 0) or np.any(bbox[:, 0] > image.shape[1]) or np.any(bbox[:, 1] > image.shape[0]):
         return image
 
     top_left = np.array([np.min(bbox[:, 0]), np.min(bbox[:, 1])]).astype(np.int32)
     bbox -= top_left[None, :]
-    transformed = perspective_transform(gaussian_heat_map.copy(), bbox.astype(np.float32))
+    transformed = perspective_transform(gaussian_heat_map.copy(), bbox.astype(np.float32), flags)
 
     start_row = max(top_left[1], 0) - top_left[1]
     start_col = max(top_left[0], 0) - top_left[0]
@@ -89,8 +99,37 @@ def generate_text_region(img, gt, gt_len):
         cv2.imwrite('./gauss/region_' + str(i) + '.jpg', target_tmp)
     cv2.imwrite('./gauss/final_region_img.jpg', target_tmp)
 
+def affinity_box_valid_check(box):
+    #print(box)
+    filename, file_ext = os.path.splitext(os.path.basename(temp_gt))
+    word_gt_path = config.train_ground_truth_word + filename + file_ext
+    word_gt, word_gt_len = preprocess.loadText(word_gt_path)
+    #print(word_gt)
+    apex_lists = [[True,True], [False,True], [False, False], [True,False]]
+    word_gt, box, idx = np.array(word_gt), np.array(box), 0
+    check_bound_list = list()
+    neg = config.neg_link_threshold
+    pos = config.pos_link_threshold
+    flags =[neg, pos]
+    for i in range(word_gt_len):
+        for apex_list in apex_lists:
+            for flag in flags:
+                #print(word_gt[i][idx], box[idx])
+                apex = ((word_gt[i][idx] - box[idx] <= flag) == apex_list).all()
+
+                if apex:
+                    #print("apexTrue")
+                    break
+            check_bound_list.append(apex)
+            #print(check_bound_list)
+            idx +=1
+        if np.array(check_bound_list).all(): return True
+        check_bound_list[:] = list()
+        idx = 0
+    else: return False
 
 def add_affinity(image, gt, gt_next, gaussian_heat_map):
+    #print(gt)
     center_gt, center_gt_next = np.mean(gt, axis=0), np.mean(gt_next, axis=0)
     top_triangle_center_gt = np.mean([gt[0], gt[1], center_gt], axis=0)
     bot_triangle_center_gt = np.mean([gt[2], gt[3], center_gt], axis=0)
@@ -98,14 +137,19 @@ def add_affinity(image, gt, gt_next, gaussian_heat_map):
     bot_triangle_center_gt_next = np.mean([gt_next[2], gt_next[3], center_gt_next], axis=0)
 
     affinity_box = np.array(
-        [top_triangle_center_gt, bot_triangle_center_gt, top_triangle_center_gt_next, bot_triangle_center_gt_next])
+        [top_triangle_center_gt, top_triangle_center_gt_next, bot_triangle_center_gt_next, bot_triangle_center_gt])
     #print(affinity_box)
-    return add_character(image, affinity_box, gaussian_heat_map)
+    if affinity_box_valid_check(affinity_box):
+        print("--------------------------True-----------------------------------------")
+        return add_character(image, affinity_box, gaussian_heat_map, flags = 'affinity')
+    else:
+        print('--------------------------False----------------------------------------')
+        return image
 
 def generate_affinity_region(img, gt, gt_len):
     gaussian_heat_map = gaussian()
     h, w, _ = img.shape
-    print(h,w)
+    #print(h,w)
     target = np.zeros([h, w], dtype=np.float32)
 
     # generate affinity_region_GT

@@ -1,34 +1,33 @@
 train_img_num = 16
 img_num = 16
-gt_json_num = 19
+gt_json_num = 20
 gt_xml_num = 500
 
 #convertor path
 json_gt_folder = './conversion/json_to_txt_gt/'
 json_path = './conversion/json_gt/'
 
-#pretrained path
-prediction_folder = './original/prediction/'
-test_images = './original/test_images/'
-ground_truth = './original/ground_truth/'
-mask_folder = './original/mask/'
-ground_truth_folder = './original/ground_truth/res_'
-
 #model
 pretrained_model_path = './model/pretrained/clova_ai_CRAFT.pth'
 saving_model = './model/train_model/'
+
+#original path
+orig_ground_truth = "./original/ground_truth/"
+orig_img = './original/test_images/'
+orig_pdt_img = './original/prediction/'
+orig_mask = './original/mask/'
 
 #test path
 test_ground_truth = './test/test_ground_truth/'
 test_images_folder_path = './test/test_images/'
 test_prediction_image = './test/test_prediction_image/'
-test_prediction_folder = './test/test_prediction/'
+test_mask = './test/test_mask/'
 
 #train path
 train_ground_truth_folder = './train/train_ground_truth/'
 train_images_folder_path = './train/train_images/'
 train_prediction_folder = './train/train_prediction/'
-
+train_ground_truth_word = './train/train_ground_truth_word/'
 #threshold
 iou_threshold = 0.4
 text_threshold = 0.7
@@ -45,6 +44,10 @@ data_augmentation_rotate = True
 data_augmentation_crop = True
 pos_crop_bound_threshold = 5
 neg_crop_bound_threshold = -5
+
+pos_link_threshold = 0
+neg_link_threshold = -5
+
 data_augmentation_flip = True
 
 gaussian_spread = 1.2
