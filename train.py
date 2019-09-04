@@ -30,7 +30,7 @@ def train_net(myNet, device, dataloader, optimizer, iteration):
             y, _ = myNet(x)
 
             score_text = y[0, :, :, 0].cpu().data.numpy() #what is y dimension
-            score_link = y[0, :, :, 1].cpu().data.numpy()
+            score_affinity = y[0, :, :, 1].cpu().data.numpy()
             print(score_text.shape)
             np.set_printoptions(threshold=sys.maxsize)
             print(score_text)
@@ -44,7 +44,7 @@ def train_net(myNet, device, dataloader, optimizer, iteration):
 
             if iteration % 5 is 0: #exist bug
                 debug.printing(score_text)
-                debug.printing(score_link)
+                debug.printing(score_affinity)
 
             iteration += 1
 

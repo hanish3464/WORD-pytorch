@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import math
 import preprocess
 import config
 import gaussian
@@ -43,39 +44,54 @@ def gaussian():  # some bugs exist ; it may generate borderline by adjusting spr
     return adjust_gaussian_heat_map
 
 
-def perspective_transform(gauss, cha_box, flags = None):
+def perspective_transform(gauss, cha_box, i, flags = None):
     #image :
-    flags = 'text'
-    if flags == 'text':
-        max_x, max_y = np.max(cha_box[:, 0]).astype(np.int32), np.max(cha_box[:, 1]).astype(np.int32)
-    if flags == 'affinity':
-        max_x = np.max(cha_box[:, 0]).astype(np.int32)
-        max_y = int(sum(cha_box[2:4,1])/float(2) - sum(cha_box[:2,1])/float(2))
-
+    #help_perspective.four_point_transform(gauss, cha_box)
+    #flags = 'text'
     print(cha_box)
-    #print(gt)
-    #print(max_x, max_y)
-    gauss_region = np.array([
-        [0, 0], [gauss.shape[1] - 1, 0], [gauss.shape[1] - 1, gauss.shape[0] - 1], [0, gauss.shape[0] - 1]],
-        dtype="float32")
-    #print(gt)
-    #print(dst)
-    #print(max_x,max_y)
+    if flags == 'text':
+        #max_x, max_y = np.max(cha_box[:, 0]).astype(np.int32), np.max(cha_box[:, 1]).astype(np.int32)
+        max_x, max_y = np.int32(math.ceil(np.max(cha_box[:, 0]))), np.int32(math.ceil(np.max(cha_box[:, 1])))
+    if flags == 'affinity':
+        #max_x, max_y= np.max(cha_box[:, 0]).astype(np.int32), np.max(cha_box[:, 1]).astype(np.int32)
+        max_x, max_y = np.int32(math.ceil(np.max(cha_box[:, 0]))), np.int32(math.ceil(np.max(cha_box[:, 1])))
+        print(cha_box)
+        print(max_x, max_y)
+        x_center1, y_center1 = sum(cha_box[:2,0])/float(2), sum(cha_box[:2,1])/float(2)
+        x_center2, y_center2 = sum(cha_box[2:4,0])/float(2), sum(cha_box[2:4,1])/float(2)
+        affinity_tl = (cha_box[0, 0] + x_center1) / float(2), (cha_box[0, 1] + y_center1) / float(2)
+        affinity_tr = (cha_box[1, 0] + x_center1) / float(2), (cha_box[1, 1] + y_center1) / float(2)
+        affinity_br = (cha_box[2, 0] + x_center2) / float(2), (cha_box[2, 1] + y_center2) / float(2)
+        affinity_bl = (cha_box[3, 0] + x_center2) / float(2), (cha_box[3, 1] + y_center2) / float(2)
+        #print(affinity_tl,affinity_tr,affinity_br, affinity_bl)
+        tr = np.array(affinity_tr) - np.array(affinity_tl)
+        br = np.array(affinity_br) - np.array(affinity_tl)
+        bl = np.array(affinity_bl) - np.array(affinity_tl)
+        new_aff = np.array([[0,0], tr, br, bl], np.float32)
+
+        cha_box = new_aff[:]
+        # print(new_aff)
+        # print(cha_box)
+        # print(cha_box.shape)
+        # print(new_aff.shape)
+    h, w = gauss.shape[:2]
+    #gaussian region size -> character_box size
+    gauss_region = np.array([[0, 0], [w - 1, 0], [h - 1, w - 1], [0, h - 1]], dtype="float32")
+    #print(gauss_region)
     M = cv2.getPerspectiveTransform(src= gauss_region, dst = cha_box)
-    #warped = cv2.warpPerspective(gauss, M, (max_x, max_y))
     warped = cv2.warpPerspective(gauss,  M, (max_x, max_y), borderValue = 0, borderMode=cv2.BORDER_CONSTANT)
-    cv2.imwrite('./gauss/warp_img.jpg', warped)
+    cv2.imwrite('./gauss/warp_img' + str(i) + '.jpg', warped)
     return warped
 
 
-def add_character(image, bbox, gaussian_heat_map, flags = 'text'):
+def add_character(image, bbox, gaussian_heat_map, i, flags = None):
     bbox = np.array(bbox)
     if np.any(bbox < 0) or np.any(bbox[:, 0] > image.shape[1]) or np.any(bbox[:, 1] > image.shape[0]):
         return image
 
     top_left = np.array([np.min(bbox[:, 0]), np.min(bbox[:, 1])]).astype(np.int32)
     bbox -= top_left[None, :]
-    transformed = perspective_transform(gaussian_heat_map.copy(), bbox.astype(np.float32), flags)
+    transformed = perspective_transform(gaussian_heat_map.copy(), bbox.astype(np.float32), i, flags)
 
     start_row = max(top_left[1], 0) - top_left[1]
     start_col = max(top_left[0], 0) - top_left[0]
@@ -94,7 +110,7 @@ def generate_text_region(img, gt, gt_len):
 
     # generate text_region_GT
     for i in range(gt_len):
-        target = add_character(target, gt[i], gaussian_heat_map).astype(float)
+        target = add_character(target, gt[i], gaussian_heat_map, i, flags='text').astype(float)
         target_tmp = cv2.applyColorMap(target.astype(np.uint8), cv2.COLORMAP_JET)
         cv2.imwrite('./gauss/region_' + str(i) + '.jpg', target_tmp)
     cv2.imwrite('./gauss/final_region_img.jpg', target_tmp)
@@ -128,7 +144,7 @@ def affinity_box_valid_check(box):
         idx = 0
     else: return False
 
-def add_affinity(image, gt, gt_next, gaussian_heat_map):
+def add_affinity(image, gt, gt_next, gaussian_heat_map, i):
     #print(gt)
     center_gt, center_gt_next = np.mean(gt, axis=0), np.mean(gt_next, axis=0)
     top_triangle_center_gt = np.mean([gt[0], gt[1], center_gt], axis=0)
@@ -141,7 +157,7 @@ def add_affinity(image, gt, gt_next, gaussian_heat_map):
     #print(affinity_box)
     if affinity_box_valid_check(affinity_box):
         print("--------------------------True-----------------------------------------")
-        return add_character(image, affinity_box, gaussian_heat_map, flags = 'affinity')
+        return add_character(image, affinity_box, gaussian_heat_map, i, flags = 'affinity')
     else:
         print('--------------------------False----------------------------------------')
         return image
@@ -154,10 +170,10 @@ def generate_affinity_region(img, gt, gt_len):
 
     # generate affinity_region_GT
     for i in range(gt_len-1):
-        target = add_affinity(target, gt[i], gt[i+1], gaussian_heat_map).astype(float)
+        target = add_affinity(target, gt[i], gt[i+1], gaussian_heat_map, i).astype(float)
         target_tmp = cv2.applyColorMap(target.astype(np.uint8), cv2.COLORMAP_JET)
         cv2.imwrite('./gauss/affinity_' + str(i) + '.jpg', target_tmp)
     cv2.imwrite('./gauss/final_affinity_img.jpg', target_tmp)
 
-#generate_text_region(img, gt, gt_len)
+generate_text_region(img, gt, gt_len)
 generate_affinity_region(img, gt, gt_len)

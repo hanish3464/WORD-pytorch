@@ -100,8 +100,8 @@ def test ():
 
     image_list, _,_ = file.get_files(config.test_images_folder_path)
 
-    if not os.path.isdir(config.test_prediction_folder):
-        os.mkdir(config.test_prediction_folder)
+    if not os.path.isdir(config.test_prediction_image):
+        os.mkdir(config.test_prediction_image)
     if not os.path.isdir(config.test_mask):
         os.mkdir(config.test_mask)
     if not os.path.isdir(config.test_ground_truth):
@@ -117,5 +117,5 @@ def test ():
         mask_file = config.test_mask + "/res_" + filename + '_mask.jpg'
         cv2.imwrite(mask_file, score_text)
 
-        file.saveResult(image_path, image[:,:,::-1], polys, dir1=config.test_prediction_folder, dir2=config.test_ground_truth)
+        file.saveResult(image_path, image[:,:,::-1], polys, dir1=config.test_prediction_image, dir2=config.test_ground_truth)
     print("TOTAL TIME : {}s".format(time.time() - t))
