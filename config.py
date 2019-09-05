@@ -28,6 +28,12 @@ train_ground_truth_folder = './train/train_ground_truth/'
 train_images_folder_path = './train/train_images/'
 train_prediction_folder = './train/train_prediction/'
 train_ground_truth_word = './train/train_ground_truth_word/'
+
+#PSD path
+jpg_images_folder_path = './psd/jpg_images/'
+jpg_cropped_images_folder_path = './psd/cropped_images/'
+jpg_text_ground_truth= './psd/text_ground_truth/'
+
 #threshold
 iou_threshold = 0.4
 text_threshold = 0.7

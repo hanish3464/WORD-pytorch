@@ -12,6 +12,7 @@ import argparse
 import train
 import test
 import evaluation
+import char_generator
 import config
 
 
@@ -22,16 +23,19 @@ parser.add_argument('--train', default=False, type=bool, help='train flag')
 parser.add_argument('--test', default=False, type=bool, help='test flag')
 parser.add_argument('--evaluation', default=False, type=bool, help='evaluation flag')
 parser.add_argument('--orig', default=False, type=bool, help = 'original image test')
-
+parser.add_argument('--char_gen', default= False, type = bool, help = 'both char and word text annotation is divided from psd file')
 
 args = parser.parse_args()
 
 
 if args.train:
+    '''This is training part'''
     train.train()
 
 if args.test:
+    '''This is test part'''
     if args.orig:
+        '''This configuration selects origin folder path'''
         config.test_prediction_folder = config.orig_pdt_img
         config.test_ground_truth = config.orig_ground_truth
         config.test_images_folder_path = config.orig_img
@@ -39,4 +43,9 @@ if args.test:
     test.test()
 
 if args.evaluation:
+    '''This is evaluation part'''
     evaluation.evaluation()
+
+if args.char_gen:
+    '''This is divided psd part '''
+    char_generator.pseudo_gt_generator()

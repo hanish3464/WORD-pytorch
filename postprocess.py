@@ -24,7 +24,6 @@ def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text)
 
     """ labeling method """
     ret, text_score = cv2.threshold(textmap, low_text, 1, 0)
-    #debug.printing(ret)
     #debug.printing(text_score)
     ret, link_score = cv2.threshold(linkmap, link_threshold, 1, 0)
     #debug.printing(link_score)
@@ -54,7 +53,7 @@ def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text)
         segmap[labels==k] = 255 #if label(segmentation unit) number matches k number, it checks 255
         #debug.printing(segmap)
         segmap[np.logical_and(link_score==1, text_score==0)] = 0   # remove link area
-        #debug.printing(segmap)
+        debug.printing(segmap)
         x, y = stats[k, cv2.CC_STAT_LEFT], stats[k, cv2.CC_STAT_TOP]
         w, h = stats[k, cv2.CC_STAT_WIDTH], stats[k, cv2.CC_STAT_HEIGHT]
         niter = int(math.sqrt(size * min(w, h) / (w * h)) * 2)
@@ -78,6 +77,7 @@ def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text)
         np_contours = np.roll(np.array(np.where(segmap!=0)),1,axis=0).transpose().reshape(-1,2)
         rectangle = cv2.minAreaRect(np_contours)
         box = cv2.boxPoints(rectangle)
+        print(box)
         # align diamond-shape
         w, h = np.linalg.norm(box[0] - box[1]), np.linalg.norm(box[1] - box[2])
         box_ratio = max(w, h) / (min(w, h) + 1e-5)
@@ -93,7 +93,7 @@ def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text)
         det.append(box)
         mapper.append(k)
     #box creation
-    #debug.printing(glbMap)
+    debug.printing(glbMap)
     return det, labels, mapper
 
 def getPoly_core(boxes, labels, mapper, linkmap):
@@ -246,7 +246,7 @@ def getDetBoxes(textmap, linkmap, text_threshold, link_threshold, low_text, poly
     boxes, labels, mapper = getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text)
 
     if poly:
-        polys = getPoly_core(boxes, labels, mapper, lFwarodddinkmap)
+        polys = getPoly_core(boxes, labels, mapper, linkmap)
     else:
         polys = [None] * len(boxes)
     #debug.getScalaValue(boxes)

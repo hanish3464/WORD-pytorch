@@ -27,10 +27,14 @@ def loadText(txt_file):
         for line in coordinate:
             tmp = line.split(',')
             arr_coordinate = [int(n) for n in tmp]
-            coordinate = np.array(arr_coordinate).reshape([4,2]).tolist()
+            if len(arr_coordinate) == 4:
+                coordinate = np.array(arr_coordinate).tolist()
+            else:
+                coordinate = np.array(arr_coordinate).reshape([4,2]).tolist()
             arr_list.append(coordinate)
             length += 1
     return arr_list, length
+
 
 def normalizeMeanVariance(in_img, mean=(0.485, 0.456, 0.406), variance=(0.229, 0.224, 0.225)):
     # should be RGB order #Z-score conversion. image pixel value is changed to predict easily.

@@ -64,7 +64,7 @@ def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly):
     #POSTPROCESSING
     boxes, polys = postprocess.getDetBoxes(score_text, score_link, text_threshold, link_threshold, low_text, poly)
 
-    #COORDINATE ADJUSTMENT
+    #COORDINATE ADJUSTMENT1
     boxes = postprocess.adjustResultCoordinates(boxes, ratio_w, ratio_h)
     polys = postprocess.adjustResultCoordinates(polys, ratio_w, ratio_h)
     for k in range(len(polys)):
