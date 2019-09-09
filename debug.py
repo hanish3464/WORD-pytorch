@@ -1,9 +1,12 @@
 import sys
 import matplotlib.pyplot as plt
+import cv2
 from matplotlib.image import imread
 import skimage as io
 import numpy as np
 def printing(img):
+    h,w = img.shape
+    cv2.resize(img, (w*2,h*2), interpolation = cv2.INTER_LINEAR)
     plt.figure(figsize=(3,9))
     #plt.subplot(raw,column,i)
     plt.axis('off')

@@ -35,7 +35,7 @@ def copyStateDict(state_dict):
 def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly):
     t0 = time.time()
 
-    # RESIZE IMAGE
+    # RESIZE IMAGE (If image ratio is not safe, model prediction is also bad.)
     img_resized, target_ratio, size_heatmap = preprocess.resize_aspect_ratio(image, config.image_size, interpolation=cv2.INTER_LINEAR, mag_ratio=config.mag_ratio)
     ratio_h = ratio_w = 1 / target_ratio
 

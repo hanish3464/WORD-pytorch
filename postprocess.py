@@ -53,7 +53,7 @@ def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text)
         segmap[labels==k] = 255 #if label(segmentation unit) number matches k number, it checks 255
         #debug.printing(segmap)
         segmap[np.logical_and(link_score==1, text_score==0)] = 0   # remove link area
-        debug.printing(segmap)
+        #debug.printing(segmap)
         x, y = stats[k, cv2.CC_STAT_LEFT], stats[k, cv2.CC_STAT_TOP]
         w, h = stats[k, cv2.CC_STAT_WIDTH], stats[k, cv2.CC_STAT_HEIGHT]
         niter = int(math.sqrt(size * min(w, h) / (w * h)) * 2)
@@ -93,7 +93,7 @@ def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text)
         det.append(box)
         mapper.append(k)
     #box creation
-    debug.printing(glbMap)
+    #debug.printing(glbMap)
     return det, labels, mapper
 
 def getPoly_core(boxes, labels, mapper, linkmap):

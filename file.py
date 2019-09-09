@@ -57,8 +57,12 @@ def saveResult(img_file, img, boxes, dir1='./prediction/', dir2='./gt/', vertica
                 #debug.getScalaValue(strResult)
                 f.write(strResult)
                 #drawing bounding ploy type box with CV
+                print("---poly line ----")
+                print(poly)
                 poly = poly.reshape(-1, 2)
+                print(poly)
                 cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=3)
+                print([poly.reshape((-1,1,2))])
                 ptColor = (0, 255, 255)
                 if verticals is not None: #this condition is not executed
                     if verticals[i]:

@@ -1,6 +1,6 @@
 train_img_num = 16
 img_num = 16
-gt_json_num = 20
+gt_json_num = 21
 gt_xml_num = 500
 
 #convertor path
@@ -36,11 +36,17 @@ jpg_text_ground_truth= './psd/text_ground_truth/'
 
 #threshold
 iou_threshold = 0.4
-text_threshold = 0.7
+text_threshold = 0.6
 low_text = 0.4
 link_threshold = 0.4
+
+divide_text_threshold = 0.7
+divide_low_text = 0.4
+divide_link_threshold = 0.4
+
 cuda = True
 mag_ratio = 1.5
+char_annotation_cropped_img_ratio = 2.5
 image_size = 4000
 poly = False
 show_time = False
