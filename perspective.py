@@ -6,13 +6,13 @@ import config
 import gaussian
 import sys
 import os
+import debug
 
-np.set_printoptions(threshold=sys.maxsize)
-temp_img = config.train_images_folder_path + 'res_1.jpg'
-img = preprocess.loadImage(temp_img)
-temp_gt = config.train_ground_truth_folder + '1.jpg.txt'
-gt, gt_len = preprocess.loadText(temp_gt)
-
+# np.set_printoptions(threshold=sys.maxsize)
+# temp_img = config.train_images_folder_path + 'res_1.jpg'
+# img = preprocess.loadImage(temp_img)
+# temp_gt = config.train_ground_truth_folder + '1.jpg.txt'
+# gt, gt_len = preprocess.loadText(temp_gt)
 
 def gaussian():  # some bugs exist ; it may generate borderline by adjusting spread value
 
@@ -39,8 +39,8 @@ def gaussian():  # some bugs exist ; it may generate borderline by adjusting spr
     adjust_gaussian_heat_map[h] = adjust_gaussian_heat_map[1]
 
 
-    cv2.imwrite('./gauss/gauss_img.jpg', isotropicGaussian2dMap)
-    cv2.imwrite('./gauss/adjust_img.jpg', adjust_gaussian_heat_map)
+    #cv2.imwrite('./gauss/gauss_img.jpg', isotropicGaussian2dMap)
+    #cv2.imwrite('./gauss/adjust_img.jpg', adjust_gaussian_heat_map)
     return adjust_gaussian_heat_map
 
 
@@ -80,7 +80,7 @@ def perspective_transform(gauss, cha_box, i, flags = None):
     #print(gauss_region)
     M = cv2.getPerspectiveTransform(src= gauss_region, dst = cha_box)
     warped = cv2.warpPerspective(gauss,  M, (max_x, max_y), borderValue = 0, borderMode=cv2.BORDER_CONSTANT)
-    cv2.imwrite('./gauss/warp_img' + str(i) + '.jpg', warped)
+    #cv2.imwrite('./gauss/warp_img' + str(i) + '.jpg', warped)
     return warped
 
 
@@ -102,23 +102,54 @@ def add_character(image, bbox, gaussian_heat_map, i, flags = None):
                                                                        start_col:end_col - top_left[0]]
     return image
 
+def text_box_valid_check(box, path):
 
-def generate_text_region(img, gt, gt_len):
+    filename, file_ext = os.path.splitext(os.path.basename(path))
+    word_gt_path = './psd/word_ground_truth/' + filename + file_ext
+    word_gt, word_gt_len = preprocess.loadText(word_gt_path)
+    apex_lists = [[True, True], [False, True], [False, False], [True, False]]
+    word_gt, box, idx = np.array(word_gt), np.array(box), 0
+    check_bound_list = list()
+    neg = config.neg_link_threshold
+    pos = config.pos_link_threshold
+    flags = [neg, pos]
+    for i in range(word_gt_len):
+        for apex_list in apex_lists:
+            for flag in flags:
+                apex = ((word_gt[i][idx] - box[idx] <= flag) == apex_list).all()
+                if ((word_gt[i][idx] - box[idx] == 0) == [True,True]).all(): # word boundary == char boundary
+                    apex = True
+                if apex:
+                    break
+            check_bound_list.append(apex)
+            idx +=1
+        if np.array(check_bound_list).all():
+            return np.append(word_gt[i], box).tolist()
+        check_bound_list[:] = list()
+        idx = 0
+
+    return False
+
+
+def generate_text_region(img, gt, gt_len, k, path):
     gaussian_heat_map = gaussian()
     h, w, _ = img.shape
     target = np.zeros([h, w], dtype=np.float32)
-
+    #gt, gt_len = preprocess.sort_gt(gt, gt_len)
     # generate text_region_GT
+    box_in_word = list()
     for i in range(gt_len):
-        target = add_character(target, gt[i], gaussian_heat_map, i, flags='text').astype(float)
-        target_tmp = cv2.applyColorMap(target.astype(np.uint8), cv2.COLORMAP_JET)
-        cv2.imwrite('./gauss/region_' + str(i) + '.jpg', target_tmp)
-    cv2.imwrite('./gauss/final_region_img.jpg', target_tmp)
-
-def affinity_box_valid_check(box):
+        box_in_word.append(text_box_valid_check(gt[i], path))
+        #target = add_character(target, gt[i], gaussian_heat_map, i, flags='text').astype(float)
+        #target_tmp = cv2.applyColorMap(target.astype(np.uint8), cv2.COLORMAP_JET)
+        #cv2.imwrite('./gauss/region_' + str(i) + '.jpg', target_tmp)
+    #cv2.imwrite('./gauss/final_region_img' + str(k) + '.jpg', target_tmp)
+    #print(len(box_in_word))
+    preprocess.sort_gt(box_in_word, len(box_in_word))
+def affinity_box_valid_check(box, path):
     #print(box)
-    filename, file_ext = os.path.splitext(os.path.basename(temp_gt))
-    word_gt_path = config.train_ground_truth_word + filename + file_ext
+    filename, file_ext = os.path.splitext(os.path.basename(path))
+    word_gt_path = './psd/word_ground_truth/' + filename + file_ext
     word_gt, word_gt_len = preprocess.loadText(word_gt_path)
     #print(word_gt)
     apex_lists = [[True,True], [False,True], [False, False], [True,False]]
@@ -144,8 +175,8 @@ def affinity_box_valid_check(box):
         idx = 0
     else: return False
 
-def add_affinity(image, gt, gt_next, gaussian_heat_map, i):
-    #print(gt)
+def add_affinity(image, gt, gt_next, gaussian_heat_map, i, path):
+
     center_gt, center_gt_next = np.mean(gt, axis=0), np.mean(gt_next, axis=0)
     top_triangle_center_gt = np.mean([gt[0], gt[1], center_gt], axis=0)
     bot_triangle_center_gt = np.mean([gt[2], gt[3], center_gt], axis=0)
@@ -154,15 +185,15 @@ def add_affinity(image, gt, gt_next, gaussian_heat_map, i):
 
     affinity_box = np.array(
         [top_triangle_center_gt, top_triangle_center_gt_next, bot_triangle_center_gt_next, bot_triangle_center_gt])
-    #print(affinity_box)
-    if affinity_box_valid_check(affinity_box):
+    print(affinity_box)
+    if affinity_box_valid_check(affinity_box, path):
         print("--------------------------True-----------------------------------------")
         return add_character(image, affinity_box, gaussian_heat_map, i, flags = 'affinity')
     else:
         print('--------------------------False----------------------------------------')
         return image
 
-def generate_affinity_region(img, gt, gt_len):
+def generate_affinity_region(img, gt, gt_len, k, path):
     gaussian_heat_map = gaussian()
     h, w, _ = img.shape
     #print(h,w)
@@ -170,10 +201,15 @@ def generate_affinity_region(img, gt, gt_len):
 
     # generate affinity_region_GT
     for i in range(gt_len-1):
-        target = add_affinity(target, gt[i], gt[i+1], gaussian_heat_map, i).astype(float)
+        target = add_affinity(target, gt[i], gt[i+1], gaussian_heat_map, i, path).astype(float)
         target_tmp = cv2.applyColorMap(target.astype(np.uint8), cv2.COLORMAP_JET)
         cv2.imwrite('./gauss/affinity_' + str(i) + '.jpg', target_tmp)
-    cv2.imwrite('./gauss/final_affinity_img.jpg', target_tmp)
+    cv2.imwrite('./gauss/final_affinity_img' + str(k) +'.jpg', target_tmp)
 
-generate_text_region(img, gt, gt_len)
-generate_affinity_region(img, gt, gt_len)
+for i in range(1,8):
+    temp_img = './psd/resized_jpg_images/' + 'tmp' + str(i) + '.jpg'
+    img = preprocess.loadImage(temp_img)
+    temp_gt = './psd/char_ground_truth/' + 'tmp' + str(i) + '.txt'
+    gt, gt_len = preprocess.loadText(temp_gt)
+    generate_text_region(img, gt, gt_len, i, temp_gt)
+    #generate_affinity_region(img, gt, gt_len, i, temp_gt)

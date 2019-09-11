@@ -46,64 +46,20 @@ def word_patches_cropper(img, gt, gt_len, img_path):
     return cropped_img_list
 
 
-def char_postprocess(text_map, affinity_map, img, img_min_coord, i, cropped_img):
-    # prepare data
-    # print(text_map.shape)
-    affinity_map = affinity_map.copy()  # link score heatamp
+def char_postprocess(text_map):
+
     text_map = text_map.copy()  # text score heatmap
     img_h, img_w = text_map.shape
 
     """ labeling method """
     ret, text_score = cv2.threshold(text_map, config.low_text, 1, 0)
     #debug.printing(text_score)
-    '''watershed algorithm '''
-    # kernel = np.ones((3, 3), np.uint8)
-    # opening = cv2.morphologyEx(text_score, cv2.MORPH_OPEN, kernel, iterations=1)
-    # sure_bg = cv2.dilate(opening, kernel, iterations=2)
-    # debug.printing(opening)
-    # opening = np.uint8(opening)
-    # dist_transform = cv2.distanceTransform(opening, cv2.DIST_L2, 0)
-    # result_dist_transform = cv2.normalize(dist_transform, None, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
-    # ret, sure_fg = cv2.threshold(dist_transform, 0.7 * dist_transform.max(), 255, cv2.THRESH_BINARY)
-    # sure_fg = cv2.dilate(sure_fg, kernel, iterations = 2)
-    # debug.printing(result_dist_transform)
-    # debug.printing(sure_fg)
-    # imgray = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2GRAY)
-    # ret, thr = cv2.threshold(imgray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-    #
-    # kernel = np.ones((3, 3), np.uint8)
-    # opening = cv2.morphologyEx(thr, cv2.MORPH_OPEN, kernel, iterations=2)
-    # border = cv2.dilate(opening, kernel, iterations=3)
-    # border = border - cv2.erode(border, None)
-    # dt = cv2.distanceTransform(opening, cv2.DIST_L2, 5)
-    # dt = ((dt-dt.min()) / (dt.max()-dt.min())*255).astype(np.uint8)
-    # ret, dt = cv2.threshold(dt, 180, 255, cv2.THRESH_BINARY)
-    # marker, ncc = label(dt)
-    # if ncc == 0: ncc = 1
-    # marker = marker*(255/ncc)
-    #
-    # marker[border == 255] = 255
-    # marker = marker.astype(np.int32)
-    # cv2.watershed(cropped_img, marker)
-    # marker[marker==-1] = 0
-    # marker = marker.astype(np.uint8)
-    # marker = 255 - marker
-    # marker[marker!=255] = 0
-    # marker = cv2.dilate(marker, None)
-    # cropped_img[marker==255] = (0,0,255)
-    #
-    # debug.printing(cropped_img)
-
-    '''watershed algorithm'''
-
     nLabels, labels, stats, centroids = cv2.connectedComponentsWithStats(text_score.astype(np.uint8),
                                                                          connectivity=4)
     #print(nLabels)
-    #debug.printing(labels)
     det = []
     mapper = []
     """Debug Global Map"""
-    glbMap = np.zeros(text_map.shape, dtype=np.uint8)
     for k in range(1, nLabels):
         # size filtering
         size = stats[k, cv2.CC_STAT_AREA]
@@ -115,34 +71,26 @@ def char_postprocess(text_map, affinity_map, img, img_min_coord, i, cropped_img)
         # make segmentation map
         segmap = np.zeros(text_map.shape, dtype=np.uint8)  # empty map create
 
-        segmap[labels == k] = 255  # if label(segmentation unit) number matches k number, it checks 255
+        segmap[labels == k] = 255
 
         x, y = stats[k, cv2.CC_STAT_LEFT], stats[k, cv2.CC_STAT_TOP]
         w, h = stats[k, cv2.CC_STAT_WIDTH], stats[k, cv2.CC_STAT_HEIGHT]
-        #print(x,y,w,h)
 
         niter = int(math.sqrt(size * min(w, h) / (w * h)) * 2)
         sx, ex, sy, ey = x - niter, x + w + niter + 1, y - niter, y + h + niter + 1
-        # both margin of bounding box is initialized
 
         # boundary check
-        if sx < 0: sx = 0  # if image pixel extends left, it sets 0
-        if sy < 0: sy = 0  # if image pixel extends bottom, it sets 0
-        if ex >= img_w: ex = img_w  # if image pixel extends width, it sets width
-        if ey >= img_h: ey = img_h  # if image pixel extends height, it sets height
+        if sx < 0: sx = 0
+        if sy < 0: sy = 0
+        if ex >= img_w: ex = img_w
+        if ey >= img_h: ey = img_h
 
-        # niter size is RECTANGLE shape kernel(filter)
-        # maybe kernel is part of bounding box in section.
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1 + niter, 1 + niter))
-        # segmentation blobs are covered with kernel size(rectangle filter)
         segmap[sy:ey, sx:ex] = cv2.dilate(segmap[sy:ey, sx:ex], kernel)
-        #debug.printing(segmap)
-        glbMap += segmap
-        # make box
         np_contours = np.roll(np.array(np.where(segmap != 0)), 1, axis=0).transpose().reshape(-1, 2)
         rectangle = cv2.minAreaRect(np_contours)
         box = cv2.boxPoints(rectangle)
-
+        #debug.printing(segmap)
         # align diamond-shape
         w, h = np.linalg.norm(box[0] - box[1]), np.linalg.norm(box[1] - box[2])
         box_ratio = max(w, h) / (min(w, h) + 1e-5)
@@ -162,7 +110,7 @@ def char_postprocess(text_map, affinity_map, img, img_min_coord, i, cropped_img)
     return det, labels, mapper
 
 
-def gen_character(generator, img, cropped_img, coord, idx):
+def gen_character(generator, img, cropped_img, coord, idx, idx2):
     # prerprocess
     # RESIZE IMAGE (If image ratio is not safe, model prediction is also bad.)
     img_resized, ratio, heat_map = preprocess.resize_aspect_ratio(cropped_img, config.image_size, cv2.INTER_LINEAR, config.char_annotation_cropped_img_ratio)
@@ -178,27 +126,25 @@ def gen_character(generator, img, cropped_img, coord, idx):
     '''predict character with pretrained model'''
     y, _ = generator(x)
     score_text = y[0, :, :, 0].cpu().data.numpy()
-    score_affinity = y[0, :, :, 1].cpu().data.numpy()
-    #cv2.imwrite('./psd/score_text.jpg', score_text)
+
+    '''temp area'''
+    cv2.imwrite('./psd/mask/mask_' +str(idx) + '_' + str(idx2)+ '.jpg', score_text * 255)
 
     '''postprocess'''
-    #postprocess.getDetBoxes_core(score_text, score_affinity, config.text_threshold, config.link_threshold, config.low_text)
-    boxes, polys, _ = char_postprocess(score_text, score_affinity, img, coord, idx, cropped_img)
+    boxes, polys, _ = char_postprocess(score_text)
     box = postprocess.adjustResultCoordinates(boxes, ratio_w, ratio_h)
     for k in range(len(polys)):
         if polys[k] is None: polys[k] = boxes[k]
 
     box = np.array(box, dtype= np.int32)
+    return_box = box[:]
     for i in range(len(box)):
         box[0] = box[0].astype(int) + coord
-        #print(np.int32([box[0].reshape((-1, 1, 2))]))
         cv2.polylines(img, [box[0].reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=1)
-        cv2.imwrite('./psd/psd_draw_box_img' + str(idx) + '.jpg', img)
+        cv2.imwrite('./psd/char_predict/tmp_' + str(idx) + '.jpg', img)
         box = box[1:]
-
-
-    # return bboxes, polys, score_text
-
+    #print(return_box.tolist())
+    return return_box.tolist()
 
 def pseudo_gt_generator():
     generator = WTD()
@@ -216,7 +162,6 @@ def pseudo_gt_generator():
 
     generator.eval()
 
-    # jpg folder path divided from PSD file
     image_list, _, _ = file.get_files(config.jpg_images_folder_path)
     _, _, gt_list = file.get_files(config.jpg_text_ground_truth)
 
@@ -226,23 +171,24 @@ def pseudo_gt_generator():
         os.mkdir(config.jpg_text_ground_truth)
 
     datasets = {'images': image_list, 'gt': gt_list}
-
-    ##config.text_threshold = 0.1
-    # config.low_text = 0.1
-
+    char_boxes_list = list()
     for idx in range(len(datasets['images'])):
-        img_list = preprocess.loadImage(datasets['images'][idx])
-        gt_list, length = preprocess.loadText(datasets['gt'][idx])
-        resized_img_list, resized_gt_list = resize.resize(img_list, gt_list, length)
+        img = preprocess.loadImage(datasets['images'][idx])
+        gt, length = preprocess.loadText(datasets['gt'][idx])
+        resized_img, resized_gt = resize.resize(img, gt, length, idx)
+        resized_gt = np.array(resized_gt).reshape(-1,4,2)
+        gt_list = resize.coord_min_and_max(resized_gt, length)
+        cropped_img_list = word_patches_cropper(resized_img, gt_list, length, datasets['images'][idx])
 
-        #resized gt_list -> x,y min max converting
-
-
-        cropped_img_list = word_patches_cropper(img_list, gt_list, length, datasets['images'][idx])
-
-        # print(cropped_img_list)
-        # print(gt_list)
-        for k in range(len(gt_list)):
-            # print(gt_list[k][:2])
-            gen_character(generator, img_list, cropped_img_list[0], gt_list[k][:2], k)
+        for k in range(length):
+            char_boxes = gen_character(generator, resized_img, cropped_img_list[0], gt_list[k][:2], idx, k)
+            char_boxes_list = np.append(char_boxes_list, char_boxes)
             cropped_img_list = np.delete(cropped_img_list, 0)
+
+        char_boxes_list = char_boxes_list.reshape(-1,4,2)
+        #print(char_boxes_list.shape)
+        file.charSaveResult(datasets['images'][idx], char_boxes_list, dir = './psd/char_ground_truth/')
+        #char_boxes = np.array(char_boxes).reshape(-1,4,2).tolist()
+        #print("-----------image num : {}------------".format(idx))
+        char_boxes_list = []
+

@@ -57,12 +57,8 @@ def saveResult(img_file, img, boxes, dir1='./prediction/', dir2='./gt/', vertica
                 #debug.getScalaValue(strResult)
                 f.write(strResult)
                 #drawing bounding ploy type box with CV
-                print("---poly line ----")
-                print(poly)
                 poly = poly.reshape(-1, 2)
-                print(poly)
                 cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=3)
-                print([poly.reshape((-1,1,2))])
                 ptColor = (0, 255, 255)
                 if verticals is not None: #this condition is not executed
                     if verticals[i]:
@@ -79,4 +75,16 @@ def saveResult(img_file, img, boxes, dir1='./prediction/', dir2='./gt/', vertica
         cv2.imwrite(predict_image_file, img)
         #debug.printing(img)
 
+def charSaveResult(img_file, boxes, dir):
+    filename, file_ext = os.path.splitext(os.path.basename(img_file))
+    print(filename)
+    gt_file = dir + filename + '.txt'
+
+    with open(gt_file, 'w') as f:
+        for i, box in enumerate(boxes):
+            poly = np.array(box).astype(np.int32).reshape((-1))
+            # debug.getScalaValue(poly)
+            strResult = ','.join([str(p) for p in poly]) + '\r\n'
+            # debug.getScalaValue(strResult)
+            f.write(strResult)
 

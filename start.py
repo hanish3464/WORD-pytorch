@@ -13,6 +13,7 @@ import train
 import test
 import evaluation
 import char_generator
+import word_generator
 import config
 
 
@@ -24,7 +25,7 @@ parser.add_argument('--test', default=False, type=bool, help='test flag')
 parser.add_argument('--evaluation', default=False, type=bool, help='evaluation flag')
 parser.add_argument('--orig', default=False, type=bool, help = 'original image test')
 parser.add_argument('--char_gen', default= False, type = bool, help = 'both char and word text annotation is divided from psd file')
-
+parser.add_argument('--word_gen', default= False, type = bool, help = 'both word text annotation is divided from psd file')
 args = parser.parse_args()
 
 
@@ -49,3 +50,5 @@ if args.evaluation:
 if args.char_gen:
     '''This is divided psd part '''
     char_generator.pseudo_gt_generator()
+if args.word_gen:
+    word_generator.word_gt_generator()

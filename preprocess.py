@@ -35,6 +35,16 @@ def loadText(txt_file):
             length += 1
     return arr_list, length
 
+def sort_gt(gt, gt_len):
+    '''extract left-top & right-top coordinates'''
+    for idx in range(gt_len):
+        if gt[idx] is False:
+            continue
+        word_box = gt[idx][:8]
+        print(word_box)
+        #print(idx)
+    print('----------------end line-----------------')
+
 
 def normalizeMeanVariance(in_img, mean=(0.485, 0.456, 0.406), variance=(0.229, 0.224, 0.225)):
     # should be RGB order #Z-score conversion. image pixel value is changed to predict easily.
