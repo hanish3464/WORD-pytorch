@@ -7,7 +7,8 @@ import numpy as np
 from skimage import io
 import cv2
 import codecs
-import debug
+import file
+
 from PIL import Image
 def loadImage(img_file): #HCW order ->image channel adjuestment
     img = io.imread(img_file)           # RGB order
@@ -35,16 +36,42 @@ def loadText(txt_file):
             length += 1
     return arr_list, length
 
-def sort_gt(gt, gt_len):
-    '''extract left-top & right-top coordinates'''
-    for idx in range(gt_len):
-        if gt[idx] is False:
-            continue
-        word_box = gt[idx][:8]
-        print(word_box)
-        #print(idx)
-    print('----------------end line-----------------')
+def bubbles_sort_ground_truth(arr):
+    minimum = arr[0][0]
+    for idx1 in range(len(arr)-1):
+        for idx2 in range(len(arr)-idx1-1):
+            if arr[idx2][0] > arr[idx2+1][0]:
+                arr[idx2], arr[idx2+1] = arr[idx2+1], arr[idx2]
+    return arr
 
+def adjust_ground_truth_order(gt, gt_len, path):
+    '''extract left-top & right-top coordinates'''
+    re_gt = list()
+    for idx in range(gt_len):
+        if gt[idx] is False: continue
+        re_gt.append(gt[idx])
+    word_re_gt = list()
+    for idx in range(len(re_gt)):
+        word_re_gt.append(tuple(re_gt[idx][:8]))
+    word_re_gt = list(set(word_re_gt))
+    for idx in range(len(word_re_gt)):
+        word_re_gt[idx] = list(word_re_gt[idx])
+    final_list = np.array(word_re_gt).copy().tolist()
+    #print(word_re_gt)
+    for idx1 in range(len(word_re_gt)):
+        for idx2 in range(len(re_gt)):
+            if word_re_gt[idx1] == re_gt[idx2][:8]:
+                final_list[idx1].append(re_gt[idx2][8:])
+    final_list = list(final_list)
+    file.charSaveResult(path, word_re_gt, dir='./psd/word_ground_truth/')
+    final_char_list = np.array([])
+    for idx in range(len(final_list)):
+        final_char_list= np.append(final_char_list,bubbles_sort_ground_truth(final_list[idx][8:]))
+
+    print(final_char_list)
+    final_char_list = np.array(final_char_list).reshape(-1,8).astype(int)
+    print(final_char_list)
+    file.charSaveResult(path, final_char_list, dir='./psd/char_ground_truth/')
 
 def normalizeMeanVariance(in_img, mean=(0.485, 0.456, 0.406), variance=(0.229, 0.224, 0.225)):
     # should be RGB order #Z-score conversion. image pixel value is changed to predict easily.

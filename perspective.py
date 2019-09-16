@@ -132,6 +132,7 @@ def text_box_valid_check(box, path):
 
 
 def generate_text_region(img, gt, gt_len, k, path):
+    print(path)
     gaussian_heat_map = gaussian()
     h, w, _ = img.shape
     target = np.zeros([h, w], dtype=np.float32)
@@ -145,7 +146,8 @@ def generate_text_region(img, gt, gt_len, k, path):
         #cv2.imwrite('./gauss/region_' + str(i) + '.jpg', target_tmp)
     #cv2.imwrite('./gauss/final_region_img' + str(k) + '.jpg', target_tmp)
     #print(len(box_in_word))
-    preprocess.sort_gt(box_in_word, len(box_in_word))
+    preprocess.adjust_ground_truth_order(box_in_word, len(box_in_word), path)
+
 def affinity_box_valid_check(box, path):
     #print(box)
     filename, file_ext = os.path.splitext(os.path.basename(path))
