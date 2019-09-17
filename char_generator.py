@@ -56,7 +56,6 @@ def char_postprocess(text_map):
     #debug.printing(text_score)
     nLabels, labels, stats, centroids = cv2.connectedComponentsWithStats(text_score.astype(np.uint8),
                                                                          connectivity=4)
-    #print(nLabels)
     det = []
     mapper = []
     """Debug Global Map"""
@@ -70,27 +69,31 @@ def char_postprocess(text_map):
 
         # make segmentation map
         segmap = np.zeros(text_map.shape, dtype=np.uint8)  # empty map create
-
-        segmap[labels == k] = 255
-
+        segmap[labels == k] = 255 # region of label be checked as 1
+        #debug.printing(segmap)
         x, y = stats[k, cv2.CC_STAT_LEFT], stats[k, cv2.CC_STAT_TOP]
         w, h = stats[k, cv2.CC_STAT_WIDTH], stats[k, cv2.CC_STAT_HEIGHT]
-
         niter = int(math.sqrt(size * min(w, h) / (w * h)) * 2)
         sx, ex, sy, ey = x - niter, x + w + niter + 1, y - niter, y + h + niter + 1
-
+        #print("stat W: {} stat H: {} niter: {}".format(w, h, niter))
         # boundary check
         if sx < 0: sx = 0
         if sy < 0: sy = 0
         if ex >= img_w: ex = img_w
         if ey >= img_h: ey = img_h
 
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1 + niter, 1 + niter))
+        kernel_width = int(round(w/7.0))
+        kernel_height = int(round(h/3.0))
+        if kernel_width is 0: kernel_width = 1
+        if kernel_height is 0: kernel_height = 1
+
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_width, kernel_height))
         segmap[sy:ey, sx:ex] = cv2.dilate(segmap[sy:ey, sx:ex], kernel)
         np_contours = np.roll(np.array(np.where(segmap != 0)), 1, axis=0).transpose().reshape(-1, 2)
         rectangle = cv2.minAreaRect(np_contours)
         box = cv2.boxPoints(rectangle)
         #debug.printing(segmap)
+
         # align diamond-shape
         w, h = np.linalg.norm(box[0] - box[1]), np.linalg.norm(box[1] - box[2])
         box_ratio = max(w, h) / (min(w, h) + 1e-5)
@@ -143,7 +146,6 @@ def gen_character(generator, img, cropped_img, coord, idx, idx2):
         cv2.polylines(img, [box[0].reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=1)
         cv2.imwrite('./psd/char_predict/tmp_' + str(idx) + '.jpg', img)
         box = box[1:]
-    #print(return_box.tolist())
     return return_box.tolist()
 
 def pseudo_gt_generator():
@@ -175,7 +177,7 @@ def pseudo_gt_generator():
     for idx in range(len(datasets['images'])):
         img = preprocess.loadImage(datasets['images'][idx])
         gt, length = preprocess.loadText(datasets['gt'][idx])
-        resized_img, resized_gt = resize.resize(img, gt, length, idx)
+        resized_img, resized_gt = resize.resize_psd(img, gt, length, idx)
         resized_gt = np.array(resized_gt).reshape(-1,4,2)
         gt_list = resize.coord_min_and_max(resized_gt, length)
         cropped_img_list = word_patches_cropper(resized_img, gt_list, length, datasets['images'][idx])
@@ -186,9 +188,6 @@ def pseudo_gt_generator():
             cropped_img_list = np.delete(cropped_img_list, 0)
 
         char_boxes_list = char_boxes_list.reshape(-1,4,2)
-        #print(char_boxes_list.shape)
         file.charSaveResult(datasets['images'][idx], char_boxes_list, dir = './psd/char_ground_truth/')
-        #char_boxes = np.array(char_boxes).reshape(-1,4,2).tolist()
-        #print("-----------image num : {}------------".format(idx))
         char_boxes_list = []
 

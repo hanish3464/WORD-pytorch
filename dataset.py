@@ -37,17 +37,18 @@ class webtoon_text_detection_dataset(Dataset):
                 break
             new_gt_element = new_gt_temp.pop()
             poly = np.array(new_gt_element).astype(np.int32).reshape((-1)).reshape(-1, 2)
-            cv2.polylines(image, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=2)
+            cv2.polylines(image, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=1)
             ptColor = (0, 255, 255)
         time.sleep(0.5)
         cv2.imwrite('/home/hanish/workspace/debug_image/debug_final.jpg', image)
 
     def train_data_transform(self, idx):
+        print(idx)
         #print(self.image_list)
         #print(self.gt_list)
-
-        image = preprocess.loadImage(self.image_list.pop(0))
-        gt, gt_len = preprocess.loadText(self.gt_list.pop(0))
+        print('load img')
+        image = preprocess.loadImage(self.image_list[idx])
+        gt, gt_len = preprocess.loadText(self.gt_list[idx])
         select = random.choice(['rotate', 'crop', 'flip', 'origin'])
 
 
@@ -68,7 +69,7 @@ class webtoon_text_detection_dataset(Dataset):
             pass
 
         # 512 x 512 image resize
-        image, gt = resize.resize(image, gt, gt_len)
+        image, gt = resize.resize_gt(image, gt, gt_len)
         self.check_data_augmentation_method(image, gt)
         #print("resized : " + str(image.shape))
 

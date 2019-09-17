@@ -90,7 +90,7 @@ def crop(img, gt_list, gt_len):
             break
         new_gt_element = new_gt_temp.pop()
         poly = np.array(new_gt_element).astype(np.int32).reshape((-1)).reshape(-1, 2)
-        cv2.polylines(cropped_img, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=2)
+        cv2.polylines(cropped_img, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=1)
         ptColor = (0, 255, 255)
 
     cv2.imwrite('/home/hanish/workspace/debug_image/debug_crop.jpg', cropped_img)

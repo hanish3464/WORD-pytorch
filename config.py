@@ -1,4 +1,4 @@
-train_img_num = 16
+train_img_num = 7
 img_num = 16
 gt_json_num = 21
 gt_xml_num = 500
@@ -43,6 +43,9 @@ link_threshold = 0.4
 divide_text_threshold = 0.7
 divide_low_text = 0.4
 divide_link_threshold = 0.4
+
+char_box_width_threshold = -5
+char_box_height_threshold = 3
 
 cuda = True
 mag_ratio = 1.5

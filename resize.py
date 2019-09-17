@@ -19,9 +19,31 @@ def coord_min_and_max(gt, gt_len):
     gt_list = np.array(gt_list).reshape(-1, 4).tolist()
     return gt_list
 
-def resize(img, gt, gt_len, idx):
+def resize_gt(img, gt, gt_len):
     resized_img = cv2.resize(img, (512, 512), interpolation=cv2.INTER_LINEAR)
-    cv2.imwrite('./psd/resized_jpg_images/tmp_'+ str(idx) + '.jpg', resized_img)
+    gt_list = list()
+    H, W, C = img.shape
+    nH, nW = 512, 512
+    Rx = float(nW) / W
+    Ry = float(nH) / H
+
+    for idx in range(gt_len):
+        if len(gt[0]) == 4:
+            gt = np.array(gt).reshape(-1, 2)
+            gt_4_coord = np.array(
+                [gt[0][0], gt[0][1], gt[1][0], gt[0][1], gt[1][0], gt[1][1], gt[0][0], gt[1][1]]).reshape(-1, 4, 2)
+        else:
+            gt_4_coord = gt[0]
+        gt_list.append(gt_4_coord)
+        gt = gt.reshape(-1, 4)
+        gt = gt[1:]
+    resized_gt_list = adjust_resized_coordinate(gt_list, gt_len, Rx, Ry)
+
+    return resized_img, resized_gt_list
+
+def resize_psd(img, gt, gt_len, idx):
+    resized_img = cv2.resize(img, (512, 512), interpolation=cv2.INTER_LINEAR)
+    cv2.imwrite('./psd/resized_jpg_images/tmp_'+ str(idx+1) + '.jpg', resized_img)
     gt_list = list()
     H, W, C = img.shape
     nH, nW = 512, 512

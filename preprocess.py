@@ -68,9 +68,9 @@ def adjust_ground_truth_order(gt, gt_len, path):
     for idx in range(len(final_list)):
         final_char_list= np.append(final_char_list,bubbles_sort_ground_truth(final_list[idx][8:]))
 
-    print(final_char_list)
+    #print(final_char_list)
     final_char_list = np.array(final_char_list).reshape(-1,8).astype(int)
-    print(final_char_list)
+    #print(final_char_list)
     file.charSaveResult(path, final_char_list, dir='./psd/char_ground_truth/')
 
 def normalizeMeanVariance(in_img, mean=(0.485, 0.456, 0.406), variance=(0.229, 0.224, 0.225)):

@@ -77,7 +77,6 @@ def saveResult(img_file, img, boxes, dir1='./prediction/', dir2='./gt/', vertica
 
 def charSaveResult(img_file, boxes, dir):
     filename, file_ext = os.path.splitext(os.path.basename(img_file))
-    print(filename)
     gt_file = dir + filename + '.txt'
 
     with open(gt_file, 'w') as f:

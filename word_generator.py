@@ -79,9 +79,9 @@ def char_postprocess(text_map, link_map):
         segmap = np.zeros(textmap.shape, dtype=np.uint8)  # empty map create
 
         segmap[labels == k] = 255  # if label(segmentation unit) number matches k number, it checks 255
-        # debug.printing(segmap)
+        #debug.printing(segmap)
         segmap[np.logical_and(link_score == 1, text_score == 0)] = 0  # remove link area
-        # debug.printing(segmap)
+        #debug.printing(segmap)
         x, y = stats[k, cv2.CC_STAT_LEFT], stats[k, cv2.CC_STAT_TOP]
         w, h = stats[k, cv2.CC_STAT_WIDTH], stats[k, cv2.CC_STAT_HEIGHT]
         niter = int(math.sqrt(size * min(w, h) / (w * h)) * 2)
@@ -96,7 +96,7 @@ def char_postprocess(text_map, link_map):
 
         # niter size is RECTANGLE shape kernel(filter)
         # maybe kernel is part of bounding box in section.
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1 + niter, 1 + niter))
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5 + niter, 5 + niter))
         # segmentation blobs are covered with kernel size(rectangle filter)
         segmap[sy:ey, sx:ex] = cv2.dilate(segmap[sy:ey, sx:ex], kernel)
         # debug.printing(segmap)
@@ -191,7 +191,7 @@ def word_gt_generator():
     for idx in range(len(datasets['images'])):
         img = preprocess.loadImage(datasets['images'][idx])
         gt, length = preprocess.loadText(datasets['gt'][idx])
-        resized_img, resized_gt = resize.resize(img, gt, length, idx)
+        resized_img, resized_gt = resize.resize_psd(img, gt, length, idx)
         resized_gt = np.array(resized_gt).reshape(-1, 4, 2)
         gt_list = resize.coord_min_and_max(resized_gt, length)
         cropped_img_list = word_patches_cropper(resized_img, gt_list, length, datasets['images'][idx])
@@ -200,7 +200,7 @@ def word_gt_generator():
             char_boxes = gen_character(generator, resized_img, cropped_img_list[0], gt_list[k][:2], idx, k)
             char_boxes_list = np.append(char_boxes_list, char_boxes)
             cropped_img_list = np.delete(cropped_img_list, 0)
-        print(char_boxes)
+        #print(char_boxes)
         char_boxes_list = char_boxes_list.reshape(-1, 4, 2)
         # print(char_boxes_list.shape)
         file.charSaveResult(datasets['images'][idx], char_boxes_list, dir = './psd/word_ground_truth/')
