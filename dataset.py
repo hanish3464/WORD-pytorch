@@ -12,59 +12,50 @@ import rotate
 import crop
 import flip
 import resize
+from gaussian import GenerateGaussian
 import time
 
-class base_dataset(Dataset):
+class root_dataset(Dataset):
 
-    def __init__(self, image_size = config.train_image_size):
+    def __init__(self, images_path, char_gt_path, word_gt_path, image_size):
         self.image_size = image_size
-        self.gaussian_generator = GaussianGenerator()
+        self.image_list, _, _ = file.get_files(images_path)
+        _, _, self.char_gt_list = file.get_files(char_gt_path)
+        _, _, self.word_gt_list = file.get_files(word_gt_path)
+
+        self.gaussian_generator = GenerateGaussian(config.gaussian_sigma, config.gaussian_spread)
+        print('success gaussian_generator')
+    def __len__(self):
+        return len(self.image_list)
+
+    def load_image_and_gt(self, idx):
+        image = preprocess.loadImage(self.image_list[idx])
+        name = preprocess.loadName(self.image_list[idx])
+        item = {'image': image, 'name': name}
+        charBBox, charBBox_len= preprocess.loadText(self.char_gt_list[idx])
+        wordBBox, wordBBox_len = preprocess.loadText(self.word_gt_list[idx])
+        return item, charBBox, wordBBox, charBBox_len, wordBBox_len
 
     def train_data_transform(self, idx):
-        print(idx)
-        #print(self.image_list)
-        #print(self.gt_list)
-        print('load img')
-        image = preprocess.loadImage(self.image_list[idx])
-        gt, gt_len = preprocess.loadText(self.gt_list[idx])
-        select = random.choice(['rotate', 'crop', 'flip', 'origin'])
+        item, charBBox, wordBBox, charBBox_len, wordBBox_len = self.load_image_and_gt(idx)
+        region_score_GT = self.gaussian_generator.region(item, charBBox, wordBBox, charBBox_len, wordBBox_len)
+        affinity_score_GT = self.gaussian_generator.affinity(item, charBBox, wordBBox, charBBox_len, wordBBox_len)
+        render_img = region_score_GT.copy()
+        render_img = np.hstack((render_img, affinity_score_GT))
+        cv2.imwrite('./train/mask/mask_'+str(idx)+'.jpg', render_img)
 
 
+        image = preprocess.normalizeMeanVariance(item['image'])
+        image = torch.from_numpy(image).float().permute(2, 0, 1)
+        region_score_GT = torch.from_numpy(region_score_GT / 255).float()
+        affinity_score_GT = torch.from_numpy(affinity_score_GT / 255).float()
 
-        if select == 'rotate' and config.data_augmentation_rotate:
-            image, gt = rotate.rotate(image, gt, gt_len)
-            #print("rotate : " + str(image.shape))
+        return image.double(), region_score_GT.double(), affinity_score_GT.double()
 
-        elif select == 'crop' and config.data_augmentation_crop:
-            image, gt, gt_len = crop.crop(image, gt, gt_len)
-            #print("crop : " + str(image.shape))
+class webtoon_dataset(root_dataset):
 
-        elif select == 'flip' and config.data_augmentation_flip:
-            image, gt = flip.flip(image, gt)
-            #print("flip : " + str(image.shape))
-        elif select == 'origin':
-            #original
-            pass
-
-        # 512 x 512 image resize
-        image, gt = resize.resize_gt(image, gt, gt_len)
-        self.check_data_augmentation_method(image, gt)
-        #print("resized : " + str(image.shape))
-
-        x = preprocess.normalizeMeanVariance(image)
-
-        #HCW -> CHW
-        x = torch.from_numpy(x).permute(2, 0, 1)
-
-        #x = Variable(x.unsqueeze(0))
-
-        return x, gt
-
-class webtoon_dataset(base_dataset):
-
-    def __init__(self, images_path, ground_truth_path, image_size = config.train_image_size):
-        self.image_list, _, _ = file.get_files(images_path)
-        _, _, self.gt_list = file.get_files(ground_truth_path)
+    def __init__(self, images_path, char_gt_path, word_gt_path, image_size):
+        super(webtoon_dataset, self).__init__(images_path, char_gt_path, word_gt_path, image_size)
 
     def __getitem__(self, idx):
         image , region_score_GT, affinity_score_GT  = self.train_data_transform(idx)
@@ -72,20 +63,8 @@ class webtoon_dataset(base_dataset):
         return {'image': image, 'region_score_GT': region_score_GT, 'affinity_score_GT': affinity_score_GT}
 
     def __len__(self):
-        return len(self.image_list)
+        return super(webtoon_dataset, self).__len__()
 
-    @staticmethod
-    def check_data_augmentation_method(image, gt):
-        new_gt_temp = gt[:]
-        while True:
-            if not new_gt_temp:
-                break
-            new_gt_element = new_gt_temp.pop()
-            poly = np.array(new_gt_element).astype(np.int32).reshape((-1)).reshape(-1, 2)
-            cv2.polylines(image, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=1)
-            ptColor = (0, 255, 255)
-        time.sleep(0.5)
-        cv2.imwrite('/home/hanish/workspace/debug_image/debug_final.jpg', image)
 
 
 

@@ -75,10 +75,8 @@ def saveResult(img_file, img, boxes, dir1='./prediction/', dir2='./gt/', vertica
         cv2.imwrite(predict_image_file, img)
         #debug.printing(img)
 
-def charSaveResult(img_file, boxes, dir):
-    filename, file_ext = os.path.splitext(os.path.basename(img_file))
+def charSaveResult(filename, boxes, dir):
     gt_file = dir + filename + '.txt'
-
     with open(gt_file, 'w') as f:
         for i, box in enumerate(boxes):
             poly = np.array(box).astype(np.int32).reshape((-1))

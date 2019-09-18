@@ -24,10 +24,10 @@ test_prediction_image = './test/test_prediction_image/'
 test_mask = './test/test_mask/'
 
 #train path
-train_gt_path = './train/train_ground_truth/'
+train_char_gt_path = './train/train_char_gt_path/'
 train_images_path = './train/train_images/'
 train_prediction_path = './train/train_prediction/'
-train_ground_truth_word = './train/train_ground_truth_word/'
+train_word_gt_path = './train/train_word_gt_path/'
 
 #PSD path
 jpg_images_folder_path = './psd/jpg_images/'
@@ -51,7 +51,7 @@ cuda = True
 mag_ratio = 1.5
 char_annotation_cropped_img_ratio = 2.5
 image_size = 4000
-train_image_size = 512
+train_image_size = 256
 poly = False
 show_time = False
 num_of_gpu = 1
