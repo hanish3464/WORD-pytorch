@@ -1,0 +1,2 @@
+class WTD_LOSS():
+    

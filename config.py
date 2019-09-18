@@ -24,9 +24,9 @@ test_prediction_image = './test/test_prediction_image/'
 test_mask = './test/test_mask/'
 
 #train path
-train_ground_truth_folder = './train/train_ground_truth/'
-train_images_folder_path = './train/train_images/'
-train_prediction_folder = './train/train_prediction/'
+train_gt_path = './train/train_ground_truth/'
+train_images_path = './train/train_images/'
+train_prediction_path = './train/train_prediction/'
 train_ground_truth_word = './train/train_ground_truth_word/'
 
 #PSD path
@@ -51,6 +51,7 @@ cuda = True
 mag_ratio = 1.5
 char_annotation_cropped_img_ratio = 2.5
 image_size = 4000
+train_image_size = 512
 poly = False
 show_time = False
 num_of_gpu = 1
@@ -69,9 +70,10 @@ gaussian_spread = 1.2
 gaussian_sigma = 10
 
 #parameter
-learning_rate = 1e-4
+lr = 1e-4
+weight_decay = 5e-4
 lr_multiply =0.8 #10K iterations
-batch_size = 4 #8 batch per 1 GPU
+batch = 4 #8 batch per 1 GPU
 epoch = 100000 #50K about synthText 70K
 iterations = 20
 

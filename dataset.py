@@ -14,33 +14,11 @@ import flip
 import resize
 import time
 
-class webtoon_text_detection_dataset(Dataset):
+class base_dataset(Dataset):
 
-    def __init__(self, images_path, ground_truth_path):
-        self.image_list, _, _ = file.get_files(images_path)
-        #print(self.image_list)
-        _, _, self.gt_list = file.get_files(ground_truth_path)
-
-    def __getitem__(self, idx):
-        image , gt = self.train_data_transform(idx)
-        """We should generate gaussian heat map & character region parsing for training about returned gt"""
-        return {'image': image, 'gt': gt}
-
-    def __len__(self):
-        return config.train_img_num
-
-    @staticmethod
-    def check_data_augmentation_method(image, gt):
-        new_gt_temp = gt[:]
-        while True:
-            if not new_gt_temp:
-                break
-            new_gt_element = new_gt_temp.pop()
-            poly = np.array(new_gt_element).astype(np.int32).reshape((-1)).reshape(-1, 2)
-            cv2.polylines(image, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=1)
-            ptColor = (0, 255, 255)
-        time.sleep(0.5)
-        cv2.imwrite('/home/hanish/workspace/debug_image/debug_final.jpg', image)
+    def __init__(self, image_size = config.train_image_size):
+        self.image_size = image_size
+        self.gaussian_generator = GaussianGenerator()
 
     def train_data_transform(self, idx):
         print(idx)
@@ -81,6 +59,35 @@ class webtoon_text_detection_dataset(Dataset):
         #x = Variable(x.unsqueeze(0))
 
         return x, gt
+
+class webtoon_dataset(base_dataset):
+
+    def __init__(self, images_path, ground_truth_path, image_size = config.train_image_size):
+        self.image_list, _, _ = file.get_files(images_path)
+        _, _, self.gt_list = file.get_files(ground_truth_path)
+
+    def __getitem__(self, idx):
+        image , region_score_GT, affinity_score_GT  = self.train_data_transform(idx)
+
+        return {'image': image, 'region_score_GT': region_score_GT, 'affinity_score_GT': affinity_score_GT}
+
+    def __len__(self):
+        return len(self.image_list)
+
+    @staticmethod
+    def check_data_augmentation_method(image, gt):
+        new_gt_temp = gt[:]
+        while True:
+            if not new_gt_temp:
+                break
+            new_gt_element = new_gt_temp.pop()
+            poly = np.array(new_gt_element).astype(np.int32).reshape((-1)).reshape(-1, 2)
+            cv2.polylines(image, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=1)
+            ptColor = (0, 255, 255)
+        time.sleep(0.5)
+        cv2.imwrite('/home/hanish/workspace/debug_image/debug_final.jpg', image)
+
+
 
 
 
