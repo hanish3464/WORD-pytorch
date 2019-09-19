@@ -26,6 +26,7 @@ class root_dataset(Dataset):
         self.gaussian_generator = GenerateGaussian(config.gaussian_sigma, config.gaussian_spread)
         print('success gaussian_generator')
     def __len__(self):
+        print('root dataset len : {}'.format(len(self.image_list)))
         return len(self.image_list)
 
     def load_image_and_gt(self, idx):
@@ -36,20 +37,21 @@ class root_dataset(Dataset):
         wordBBox, wordBBox_len = preprocess.loadText(self.word_gt_list[idx])
         return item, charBBox, wordBBox, charBBox_len, wordBBox_len
 
+    def train_data_resize(self, region_score_GT, affinity_score_GT):
+        region_score_GT = cv2.resize(region_score_GT, (self.image_size//2 , self.image_size//2))
+        affinity_score_GT = cv2.resize(affinity_score_GT, (self.image_size // 2, self.image_size // 2))
+        return region_score_GT, affinity_score_GT
+
     def train_data_transform(self, idx):
         item, charBBox, wordBBox, charBBox_len, wordBBox_len = self.load_image_and_gt(idx)
         region_score_GT = self.gaussian_generator.region(item, charBBox, wordBBox, charBBox_len, wordBBox_len)
         affinity_score_GT = self.gaussian_generator.affinity(item, charBBox, wordBBox, charBBox_len, wordBBox_len)
-        render_img = region_score_GT.copy()
-        render_img = np.hstack((render_img, affinity_score_GT))
-        cv2.imwrite('./train/mask/mask_'+str(idx)+'.jpg', render_img)
-
+        region_score_GT, affinity_score_GT = self.train_data_resize(region_score_GT, affinity_score_GT)
 
         image = preprocess.normalizeMeanVariance(item['image'])
         image = torch.from_numpy(image).float().permute(2, 0, 1)
         region_score_GT = torch.from_numpy(region_score_GT / 255).float()
         affinity_score_GT = torch.from_numpy(affinity_score_GT / 255).float()
-
         return image.double(), region_score_GT.double(), affinity_score_GT.double()
 
 class webtoon_dataset(root_dataset):
@@ -60,9 +62,10 @@ class webtoon_dataset(root_dataset):
     def __getitem__(self, idx):
         image , region_score_GT, affinity_score_GT  = self.train_data_transform(idx)
 
-        return {'image': image, 'region_score_GT': region_score_GT, 'affinity_score_GT': affinity_score_GT}
+        return image, region_score_GT, affinity_score_GT
 
     def __len__(self):
+        print('wtd dataset len: {}'.format(super(webtoon_dataset, self).__len__()))
         return super(webtoon_dataset, self).__len__()
 
 

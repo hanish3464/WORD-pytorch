@@ -1,5 +1,6 @@
 """train.py"""
 
+import cv2
 import torch
 from torch import optim
 from torch.utils.data import DataLoader
@@ -24,13 +25,11 @@ def train():
 
     datasets = webtoon_dataset(config.train_images_path, config.train_char_gt_path, config.train_word_gt_path,
                                config.train_image_size)
-    train_data_loader = DataLoader(datasets, batch_size=config.batch, shuffle=True, num_workers=config.num_of_gpu,
+    train_data_loader = DataLoader(datasets, batch_size=config.batch, shuffle=True, num_workers=0,
                                    drop_last=True, pin_memory=True)
-
     myNet = WTD()
 
     if config.cuda:  # GPU
-        device = torch.device("cuda:0")
         myNet = myNet.cuda()
     else:  # CPU
         device = torch.device("cpu")
@@ -49,28 +48,34 @@ def train():
 
         print('epoch :{} entered'.format(i))
 
-        for idx, sample in enumerate(train_data_loader):
+        for idx, (image, region_score_GT, affinity_score_GT) in enumerate(train_data_loader):
+            print(len(train_data_loader))
+
             if idx % 20000 == 0 and idx != 0:
                 step_idx += 1
                 adjust_learning_rate(optimizer, step_idx)
 
-            images = sample['image'].type(torch.FloatTensor)
+            images = image.type(torch.FloatTensor)
             print(images.shape)
-            region_score_GT = sample['region_score_GT'].type(torch.FloatTensor)
-            affinity_score_GT = sample['affinity_score_GT'].type(torch.FloatTensor)
-            print(region_score_GT.shape, affinity_score_GT.shape)
+            region_score_GT = region_score_GT.type(torch.FloatTensor)
+            affinity_score_GT = affinity_score_GT.type(torch.FloatTensor)
             images = Variable(images).cuda()
             region_score_GT = Variable(region_score_GT).cuda()
             affinity_score_GT = Variable(affinity_score_GT).cuda()
-            confidence = np.ones((region_score_GT.shape[0], region_score_GT.shape[1]), np.float32)
+            confidence = np.ones((region_score_GT.shape[0], region_score_GT.shape[1],region_score_GT.shape[2]), np.float32)
             confidence = torch.from_numpy(confidence).float()
             confidence = Variable(confidence.type(torch.FloatTensor)).cuda()
-            print(images.shape)
             y, _ = myNet(images)
 
-            score_region = y[0, :, :, 0].cuda() # what is y dimension
-            score_affinity = y[0, :, :, 1].cuda()
-            print(score_region.shape, score_affinity.shape)
+            score_region = y[:, :, :, 0].cuda() # what is y dimension
+            score_affinity = y[:, :, :, 1].cuda()
+            for idx2 in range(config.batch):
+                render_img1 = score_region[idx2].cpu().detach().numpy().copy() * 255.0
+                render_img2 = score_affinity[idx2].cpu().detach().numpy().copy() * 255.0
+                render_img = np.hstack((render_img1, render_img2))
+                cv2.imwrite('./train/mask/mask_' + str(idx) + '_' + str(idx2) + '.jpg', render_img)
+
+
             '''loss function'''
 
             optimizer.zero_grad()
@@ -79,6 +84,7 @@ def train():
             loss.backward()
             optimizer.step()
             loss_value += loss.item()
+            print(idx)
             if idx % 2 == 0 and idx > 0:
                 et = time.time()
                 print('epoch {}:({}/{}) batch || training time for 2 batch {} || training loss {} ||'.format(i, idx,len(train_data_loader),et - st,loss_value / 2))

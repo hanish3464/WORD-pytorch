@@ -37,23 +37,17 @@ class WTD_LOSS(nn.Module):
         return sum_loss
 
     def forward(self, region_score_GT, affinity_score_GT, score_region, score_affinity, confidence):
-        print('debug1')
         region_score_GT =region_score_GT
         affinity_score_GT=affinity_score_GT
         score_region =score_region
         score_affinity = score_affinity
-        print('debug2')
         loss_fn = torch.nn.MSELoss(reduce=False, size_average=False)
         #loss_fn = torch.nn.MSELoss(reduction='none')
-        print('debug3')
         #assert score_region.size() == region_score_GT.size() and score_affinity.size() == affinity_score_GT.size()
         loss1 = loss_fn(score_region, region_score_GT)
         loss2 = loss_fn(score_affinity, affinity_score_GT)
-        print('debug5')
         loss_g = torch.mul(loss1, confidence)
         loss_a = torch.mul(loss2, confidence)
-        print('debug6')
         char_loss = self.single_image_loss(loss_g, region_score_GT)
         affi_loss = self.single_image_loss(loss_a, affinity_score_GT)
-        print('debug7')
         return char_loss / loss_g.shape[0] + affi_loss / loss_a.shape[0]

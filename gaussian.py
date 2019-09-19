@@ -251,7 +251,7 @@ class GenerateGaussian(object):
     #     else:
     #         return False
 
-    def add_affinity(self, target, charBBox, next_charBBox, wordBBox, wordBBox_len):
+    def calculate_affinity_box(self, target, charBBox, next_charBBox, wordBBox, wordBBox_len):
 
         center_box, center_next_box = np.mean(charBBox, axis=0), np.mean(next_charBBox, axis=0)
         top_triangle_center_point = np.mean([charBBox[0], charBBox[1], center_box], axis=0)
@@ -271,7 +271,7 @@ class GenerateGaussian(object):
 
         # generate affinity_region_GT
         for i in range(charBBox_len-1):
-            affinity_score_GT = self.add_affinity(target, charBBox[i], charBBox[i+1], wordBBox, wordBBox_len).astype(float)
+            affinity_score_GT = self.calculate_affinity_box(target, charBBox[i], charBBox[i+1], wordBBox, wordBBox_len).astype(float)
         cv2.imwrite('./gauss/affinity.jpg', affinity_score_GT)
         return affinity_score_GT
 
