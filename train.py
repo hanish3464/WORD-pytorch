@@ -4,6 +4,7 @@ import cv2
 import torch
 from torch import optim
 from torch.utils.data import DataLoader
+from torch.utils.data.sampler import  RandomSampler, WeightedRandomSampler
 from torch.autograd import Variable
 import os
 import torch.backends.cudnn as cudnn
@@ -13,6 +14,7 @@ from loss import WTD_LOSS
 from dataset import webtoon_dataset
 import time
 import numpy as np
+import sys
 
 def adjust_learning_rate(optimizer, step):
     lr = config.lr * (0.8 ** step)
@@ -25,17 +27,19 @@ def train():
 
     datasets = webtoon_dataset(config.train_images_path, config.train_char_gt_path, config.train_word_gt_path,
                                config.train_image_size)
-    train_data_loader = DataLoader(datasets, batch_size=config.batch, shuffle=True, num_workers=0,
-                                   drop_last=True, pin_memory=True)
+    print('datasets len : {}'.format(len(datasets)))
+    train_data_loader = DataLoader(datasets, batch_size=config.batch, shuffle=False, num_workers=4,drop_last =False, pin_memory =False)
+    print('dataloader len : {}'.format(len(train_data_loader)))
     myNet = WTD()
 
     if config.cuda:  # GPU
         myNet = myNet.cuda()
+        #myNet = torch.nn.DataParallel(myNet).cuda()
     else:  # CPU
         device = torch.device("cpu")
 
     optimizer = optim.Adam(myNet.parameters(), lr=config.lr, weight_decay=config.weight_decay)
-    cudnn.benchmark = True
+    #cudnn.benchmark = True
     criterion = WTD_LOSS()
 
     if not os.path.isdir(config.train_prediction_path):  os.mkdir(config.train_prediction_path)
@@ -45,18 +49,15 @@ def train():
     step_idx = 0
     loss_value = 0
     for i in range(config.epoch):
-
-        print('epoch :{} entered'.format(i))
-
+        st = time.time()
+        loss_value = 0
         for idx, (image, region_score_GT, affinity_score_GT) in enumerate(train_data_loader):
-            print(len(train_data_loader))
 
             if idx % 20000 == 0 and idx != 0:
                 step_idx += 1
                 adjust_learning_rate(optimizer, step_idx)
 
             images = image.type(torch.FloatTensor)
-            print(images.shape)
             region_score_GT = region_score_GT.type(torch.FloatTensor)
             affinity_score_GT = affinity_score_GT.type(torch.FloatTensor)
             images = Variable(images).cuda()
@@ -84,13 +85,14 @@ def train():
             loss.backward()
             optimizer.step()
             loss_value += loss.item()
-            print(idx)
             if idx % 2 == 0 and idx > 0:
                 et = time.time()
-                print('epoch {}:({}/{}) batch || training time for 2 batch {} || training loss {} ||'.format(i, idx,len(train_data_loader),et - st,loss_value / 2))
+                #print('epoch {}:({}/{}) batch || training time for 2 batch {} || training loss {} ||'.format(i, idx,len(train_data_loader),et - st,loss_value / 2))
                 loss_time = 0
                 loss_value = 0
                 st = time.time()
 
             if idx % 5000 == 0 and idx != 0:
                 torch.save(myNet.module.state_dict(), config.saving_model + 'wtd' + repr(idx) + '.pth')
+
+        print('epoch: {} || training loss {} ||'.format(i, loss_value / 2))

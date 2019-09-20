@@ -26,7 +26,7 @@ class root_dataset(Dataset):
         self.gaussian_generator = GenerateGaussian(config.gaussian_sigma, config.gaussian_spread)
         print('success gaussian_generator')
     def __len__(self):
-        print('root dataset len : {}'.format(len(self.image_list)))
+        #print('root dataset len : {}'.format(len(self.image_list)))
         return len(self.image_list)
 
     def load_image_and_gt(self, idx):
@@ -65,7 +65,7 @@ class webtoon_dataset(root_dataset):
         return image, region_score_GT, affinity_score_GT
 
     def __len__(self):
-        print('wtd dataset len: {}'.format(super(webtoon_dataset, self).__len__()))
+        #print('wtd dataset len: {}'.format(super(webtoon_dataset, self).__len__()))
         return super(webtoon_dataset, self).__len__()
 
 

@@ -73,7 +73,7 @@ gaussian_sigma = 10
 lr = 1e-4
 weight_decay = 5e-4
 lr_multiply =0.8 #10K iterations
-batch = 4 #8 batch per 1 GPU
+batch = 1 #8 batch per 1 GPU
 epoch = 100000 #50K about synthText 70K
 iterations = 20
 
