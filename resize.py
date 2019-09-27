@@ -41,9 +41,9 @@ def resize_gt(img, gt, gt_len):
 
     return resized_img, resized_gt_list
 
-def resize_psd(img, gt, gt_len, idx):
+def resize_psd(img, gt, gt_len, idx, name):
     resized_img = cv2.resize(img, (512, 512), interpolation=cv2.INTER_LINEAR)
-    cv2.imwrite('./psd/resized_jpg_images/tmp_'+ str(idx+1) + '.jpg', resized_img)
+    cv2.imwrite('./psd/resized_jpg_images/' + name + '.jpg', resized_img)
     gt_list = list()
     H, W, C = img.shape
     nH, nW = 512, 512

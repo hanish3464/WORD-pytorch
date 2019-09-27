@@ -34,6 +34,9 @@ jpg_images_folder_path = './psd/jpg_images/'
 jpg_cropped_images_folder_path = './psd/cropped_images/'
 jpg_text_ground_truth= './psd/text_ground_truth/'
 
+#dataset
+data_options = 'webtoon'
+
 #threshold
 iou_threshold = 0.4
 text_threshold = 0.6
@@ -49,7 +52,7 @@ char_box_height_threshold = 3
 
 cuda = True
 mag_ratio = 1.5
-char_annotation_cropped_img_ratio = 2.5
+char_annotation_cropped_img_ratio = 3.5
 image_size = 4000
 train_image_size = 512
 poly = False
@@ -66,8 +69,8 @@ neg_link_threshold = -5
 
 data_augmentation_flip = True
 
-gaussian_spread = 1.2
-gaussian_sigma = 10
+gaussian_region = 0.3
+gaussian_affinity = 0.25
 
 #parameter
 lr = 1e-4

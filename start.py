@@ -26,11 +26,15 @@ parser.add_argument('--evaluation', default=False, type=bool, help='evaluation f
 parser.add_argument('--orig', default=False, type=bool, help = 'original image test')
 parser.add_argument('--char_gen', default= False, type = bool, help = 'both char and word text annotation is divided from psd file')
 parser.add_argument('--word_gen', default= False, type = bool, help = 'both word text annotation is divided from psd file')
+
+parser.add_argument('--webtoon', default=False, type= bool, help ='webtoon Dataset')
+parser.add_argument('--synth', default=False, type= bool, help ='synthText Dataset')
 args = parser.parse_args()
 
 
 if args.train:
     '''This is training part'''
+    if args.synth: config.data_options = 'synthText'
     train.train()
 
 if args.test:

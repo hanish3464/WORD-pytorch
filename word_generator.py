@@ -189,9 +189,10 @@ def word_gt_generator():
     datasets = {'images': image, 'gt': ground_truth}
     char_boxes_list = list()
     for idx in range(len(datasets['images'])):
+        name = preprocess.loadName(datasets['images'][idx])
         img = preprocess.loadImage(datasets['images'][idx])
         gt, length = preprocess.loadText(datasets['gt'][idx])
-        resized_img, resized_gt = resize.resize_psd(img, gt, length, idx)
+        resized_img, resized_gt = resize.resize_psd(img, gt, length, idx, name)
         resized_gt = np.array(resized_gt).reshape(-1, 4, 2)
         gt_list = resize.coord_min_and_max(resized_gt, length)
         cropped_img_list = word_patches_cropper(resized_img, gt_list, length, datasets['images'][idx])
@@ -203,7 +204,7 @@ def word_gt_generator():
         #print(char_boxes)
         char_boxes_list = char_boxes_list.reshape(-1, 4, 2)
         # print(char_boxes_list.shape)
-        file.charSaveResult(datasets['images'][idx], char_boxes_list, dir = './psd/word_ground_truth/')
+        file.charSaveResult(name, char_boxes_list, dir = './psd/word_ground_truth/')
         # char_boxes = np.array(char_boxes).reshape(-1,4,2).tolist()
         # print("-----------image num : {}------------".format(idx))
         char_boxes_list = []

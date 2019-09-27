@@ -21,25 +21,27 @@ def adjust_learning_rate(optimizer, step):
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
+def select_dataset(opt = None):
+    if opt == 'synthText': pass
+    if opt == 'webtoon':
+        datasets = webtoon_dataset(config.train_images_path, config.train_char_gt_path, config.train_word_gt_path,
+                                   config.train_image_size)
+        train_data_loader = DataLoader(datasets, batch_size=config.batch, shuffle=False, num_workers=0, drop_last=False,
+                                       pin_memory=False)
+    return train_data_loader
 
 def train():
     """there is under developing"""
 
-    datasets = webtoon_dataset(config.train_images_path, config.train_char_gt_path, config.train_word_gt_path,
-                               config.train_image_size)
-    print('datasets len : {}'.format(len(datasets)))
-    train_data_loader = DataLoader(datasets, batch_size=config.batch, shuffle=False, num_workers=4,drop_last =False, pin_memory =False)
-    print('dataloader len : {}'.format(len(train_data_loader)))
+    train_data_loader = select_dataset(opt = config.data_options)
+
     myNet = WTD()
 
     if config.cuda:  # GPU
         myNet = myNet.cuda()
         #myNet = torch.nn.DataParallel(myNet).cuda()
-    else:  # CPU
-        device = torch.device("cpu")
 
     optimizer = optim.Adam(myNet.parameters(), lr=config.lr, weight_decay=config.weight_decay)
-    #cudnn.benchmark = True
     criterion = WTD_LOSS()
 
     if not os.path.isdir(config.train_prediction_path):  os.mkdir(config.train_prediction_path)
@@ -49,32 +51,32 @@ def train():
     step_idx = 0
     loss_value = 0
     for i in range(config.epoch):
-        st = time.time()
+        #st = time.time()
         loss_value = 0
-        for idx, (image, region_score_GT, affinity_score_GT) in enumerate(train_data_loader):
+        for idx, (image, region_score_GT, affinity_score_GT, confidence) in enumerate(train_data_loader):
 
             if idx % 20000 == 0 and idx != 0:
                 step_idx += 1
                 adjust_learning_rate(optimizer, step_idx)
 
-            images = image.type(torch.FloatTensor)
-            region_score_GT = region_score_GT.type(torch.FloatTensor)
-            affinity_score_GT = affinity_score_GT.type(torch.FloatTensor)
-            images = Variable(images).cuda()
-            region_score_GT = Variable(region_score_GT).cuda()
-            affinity_score_GT = Variable(affinity_score_GT).cuda()
-            confidence = np.ones((region_score_GT.shape[0], region_score_GT.shape[1],region_score_GT.shape[2]), np.float32)
-            confidence = torch.from_numpy(confidence).float()
+            images = Variable(image.type(torch.FloatTensor)).cuda()
+            region_score_GT = Variable(region_score_GT.type(torch.FloatTensor)).cuda()
+            affinity_score_GT = Variable(affinity_score_GT.type(torch.FloatTensor)).cuda()
             confidence = Variable(confidence.type(torch.FloatTensor)).cuda()
+
             y, _ = myNet(images)
 
-            score_region = y[:, :, :, 0].cuda() # what is y dimension
+            score_region = y[:, :, :, 0].cuda()
             score_affinity = y[:, :, :, 1].cuda()
-            for idx2 in range(config.batch):
-                render_img1 = score_region[idx2].cpu().detach().numpy().copy() * 255.0
-                render_img2 = score_affinity[idx2].cpu().detach().numpy().copy() * 255.0
-                render_img = np.hstack((render_img1, render_img2))
-                cv2.imwrite('./train/mask/mask_' + str(idx) + '_' + str(idx2) + '.jpg', render_img)
+
+            if i % 200 == 0 and i != 0:
+                for idx2 in range(config.batch):
+                    render_img1 = score_region[idx2].cpu().detach().numpy().copy() * 255.0
+                    render_img2 = score_affinity[idx2].cpu().detach().numpy().copy() * 255.0
+                    render_img = np.hstack((render_img1, render_img2))
+                    if not os.path.isdir('./train/mask/epoch' + str(i) + '/'):
+                        os.mkdir('./train/mask/epoch' + str(i) + '/')
+                    cv2.imwrite('./train/mask/epoch' +str(i)+'/mask_' + str(i) + '_' + str(idx) + '.jpg', render_img)
 
 
             '''loss function'''
@@ -85,14 +87,14 @@ def train():
             loss.backward()
             optimizer.step()
             loss_value += loss.item()
-            if idx % 2 == 0 and idx > 0:
-                et = time.time()
-                #print('epoch {}:({}/{}) batch || training time for 2 batch {} || training loss {} ||'.format(i, idx,len(train_data_loader),et - st,loss_value / 2))
-                loss_time = 0
-                loss_value = 0
-                st = time.time()
+            # if idx % 2 == 0 and idx > 0:
+            #     et = time.time()
+            #     #print('epoch {}:({}/{}) batch || training time for 2 batch {} || training loss {} ||'.format(i, idx,len(train_data_loader),et - st,loss_value / 2))
+            #     loss_time = 0
+            #     loss_value = 0
+            #     st = time.time()
 
-            if idx % 5000 == 0 and idx != 0:
+            if idx % 500 == 0 and idx != 0:
                 torch.save(myNet.module.state_dict(), config.saving_model + 'wtd' + repr(idx) + '.pth')
 
         print('epoch: {} || training loss {} ||'.format(i, loss_value / 2))
