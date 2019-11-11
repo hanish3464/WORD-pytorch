@@ -24,7 +24,7 @@ pip install -r requirements.txt
 
 - Run **`python kick_off.py --test 1`**
 
-`SAMPLE` 
+`SAMPLE (image source: Welcome to Convenience Store, naver webtoon)` 
 
 
 <img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/sample/sample1.png" width="384" height="256" /><img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/sample/sample2.png" width="384" height="256" />
