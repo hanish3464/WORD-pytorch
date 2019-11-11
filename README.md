@@ -1,6 +1,6 @@
 # Webtoon Text Detection based on CRAFT(Character-Region Awareness For Text detection)
 
-#NOTE : This is Webtoon Text(character) Detector with OpenCV and CRAFT. It's not the final version code. I will the refine and update the code over and over again.
+#Note : This is Webtoon Text(character) Detector with OpenCV and CRAFT. It's not the final version code. I will the refine and update the code over and over again.
 
 ## Character Region Awareness for Text Detection
 Youngmin Baek, Bado Lee, Dongyoon Han, Sangdoo Yun, Hwalsuk Lee
