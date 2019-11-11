@@ -27,7 +27,7 @@ pip install -r requirements.txt
 `SAMPLE` 
 
 
-<img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/sample/sample1.png" width="384" height="256" /<img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/sample/sample1_res.png" width="384" height="256" />
+<img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/sample/sample1.png" width="384" height="256" /><img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/sample/sample1_res.png" width="384" height="256" />
 
 ## Evaluation
 `Note: Evalution is under the developing. so, It can not run the code now. I will use IOU Method and update as soon as possible.`
