@@ -11,10 +11,12 @@ The full paper is available at: https://arxiv.org/pdf/1904.01941.pdf
 ## Install Requirements:                                                                                                        
 1、PyTroch>=0.4.1                                                                                                                             
 2、torchvision>=0.2.1 			                                                    																			                             
-3、opencv-python>=3.4.2                                                                                                       
-4、check requirement.txt                                                                                                                                                                                 
+3、opencv-python>=3.4.2    
+```
+pip install -r requirements.txt
+```                                                                                                                                                                                
 ## Training 
-`Note: When you train own your datasets, You must have character Anotations like SynthText. In other words, this code doesn't          contain weakly supervision part. we don't need this part because webtoon image is synthetic(possible to get character datasets by generating characters like synthText. But, character dataset can't release because of company policy.`                                         
+`Note: When you train own your datasets, You must have character Anotations like SynthText. In other words, this code doesn't          contain weakly supervision part. We don't need this part because webtoon image is synthetic(possible to get character datasets by generating characters like synthText. But, character dataset can't release because of company policy.`                                         
 - Run **`python kick_off.py --train 1`**
 
 ## Test
