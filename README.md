@@ -30,6 +30,7 @@ pip install -r requirements.txt
 <img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/sample/sample1.png" width="384" height="256" /><img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/sample/sample2.png" width="384" height="256" />
 
 `final result` 
+
 <img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/sample/sample1_res.jpg" width="384" height="128" />
 
 ## Evaluation
