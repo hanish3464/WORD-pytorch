@@ -23,6 +23,11 @@ The full paper is available at: https://arxiv.org/pdf/1904.01941.pdf
 `Note: When you test own your test images, You can get the characters on images for recognition
 
 - Run **`python start.py --test 1`**
+
+## Evaluation
+`Note: Evalution is under the developing. so, It can not run the code now. I will use IOU Method and update as soon as possible.
+
+- Run **`python evaluation.py --test 1`**
                                                     
 
 # Acknowledgement
