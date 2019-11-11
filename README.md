@@ -25,9 +25,10 @@ pip install -r requirements.txt
 - Run **`python kick_off.py --test 1`**
 
 `SAMPLE` 
-![sample1 jpg](https://user-images.githubusercontent.com/51018265/68570266-98ebec00-04a3-11ea-911d-9c962d97d2cd.png)
-![sample1_res](https://user-images.githubusercontent.com/51018265/68570308-b3be6080-04a3-11ea-8453-81b2c0aa1d52.jpg)
 
+
+<img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/sample/sample1.png" width="384" height="512" />
+<img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/sample/sample1.png" width="384" height="256" />
 
 ## Evaluation
 `Note: Evalution is under the developing. so, It can not run the code now. I will use IOU Method and update as soon as possible.`
