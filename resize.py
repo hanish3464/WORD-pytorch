@@ -4,12 +4,9 @@ import cv2
 
 def adjust_resized_coordinate(gt, gt_len, Rx, Ry):
     gt = np.array(gt).reshape(-1,4,2).astype(np.float32)
-    #print(gt)
-    #print(Rx,Ry)
     for i in range(gt_len):
         gt[i][:, 0] *= Rx
         gt[i][:, 1] *= Ry
-    #print(gt)
     return gt.astype(int).tolist()
 
 def coord_min_and_max(gt, gt_len):

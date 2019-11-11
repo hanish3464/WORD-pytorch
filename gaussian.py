@@ -1,13 +1,12 @@
 import cv2
 import numpy as np
 import math
-import preprocess
+import imgproc
 import config
 
 class GenerateGaussian(object):
 
     def __init__(self, sigma, spread):
-        print("Generate Gaussian")
         self.sigma = sigma
         self.spread = spread
         self.extent = int(spread * sigma)
@@ -30,7 +29,7 @@ class GenerateGaussian(object):
         adjust_gaussian_heat_map[:h, w + 1] = isotropicGaussian2dMap[:, 0]
         adjust_gaussian_heat_map[h + 1] = adjust_gaussian_heat_map[0]
         adjust_gaussian_heat_map[h] = adjust_gaussian_heat_map[1]
-        print('_gaussian')
+
         return adjust_gaussian_heat_map
 
     @staticmethod
@@ -54,14 +53,14 @@ class GenerateGaussian(object):
         gauss_region = np.array([[0, 0], [w - 1, 0], [h - 1, w - 1], [0, h - 1]], dtype="float32")
         M = cv2.getPerspectiveTransform(src= gauss_region, dst = box)
         warped = cv2.warpPerspective(gauss,  M, (max_x, max_y), borderValue = 0, borderMode=cv2.BORDER_CONSTANT)
-        cv2.imwrite('./train/temp.jpg', warped)
+
         return warped
 
     @staticmethod
     def box_cover_check(char_box, word_box, word_box_len, flags=None):
         apex_lists = [[True, True], [False, True], [False, False], [True, False]]
         word_box, char_box, idx = np.array(word_box), np.array(char_box), 0
-        check_bound_list = list()
+        check_bound_list = []
         neg = config.neg_link_threshold
         pos = config.pos_link_threshold
         thresholds = [neg, pos]
@@ -109,7 +108,7 @@ class GenerateGaussian(object):
             box_in_word.append(self.box_cover_check(charBBox[i], wordBBox, wordBBox_len, flags = 'region')) #charbox : 1 , wordbox : all
             region_score_GT = self.add_gaussian_box(canvas, charBBox[i], flags='region').astype(float)
         preprocess.sort_charBBox_order(box_in_word, len(box_in_word), item['name'])
-        cv2.imwrite('./gauss/region.jpg', region_score_GT)
+
         return region_score_GT
 
 
@@ -132,8 +131,8 @@ class GenerateGaussian(object):
         h, w, _ = item['image'].shape
         target = np.zeros([h, w], dtype=np.float32)
 
-        # generate affinity_region_GT
+
         for i in range(charBBox_len-1):
             affinity_score_GT = self.calculate_affinity_box(target, charBBox[i], charBBox[i+1], wordBBox, wordBBox_len).astype(float)
-        cv2.imwrite('./gauss/affinity.jpg', affinity_score_GT)
+
         return affinity_score_GT

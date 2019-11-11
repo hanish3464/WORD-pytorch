@@ -14,11 +14,9 @@ class double_conv(nn.Module):
         super(double_conv, self).__init__()
         self.conv = nn.Sequential(
             nn.Conv2d(in_ch + mid_ch, mid_ch, kernel_size=1),
-            #nn.sync_batch_norm(mid_ch),
             nn.BatchNorm2d(mid_ch),
             nn.ReLU(inplace=True),
             nn.Conv2d(mid_ch, out_ch, kernel_size=3, padding=1),
-            #nn.sync_batch_norm(out_ch),
             nn.BatchNorm2d(out_ch),
             nn.ReLU(inplace=True)
         )

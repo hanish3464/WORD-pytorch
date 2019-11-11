@@ -26,13 +26,9 @@ if not os.path.isdir(xml_gt_folder):
     os.mkdir(xml_gt_folder)
 
 xml_path = './conversion/xml_gt/'
+
 if not os.path.isdir(xml_path):
     os.mkdir(xml_path)
-
-if args.xml:
-    #tree = elemTree.parse('')
-    pass
-
 
 elif args.json:
     json_path_list = file.get_files(json_path)
@@ -50,5 +46,4 @@ elif args.json:
                     str_result = ','.join([str(p) for p in poly]) + '\r\n'
                     txt_file.write(str_result)
 elif args.copy:
- #   for i in  range(1, confing.gt_json_num + 1):
      shutil.copy(config.json_gt_folder + str(1) + '.txt', config.test_ground_truth)

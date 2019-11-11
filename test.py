@@ -5,7 +5,6 @@
 
 from collections import OrderedDict
 import os
-import sys
 import torch
 import torch.nn as nn
 import torch.backends.cudnn as cudnn
@@ -13,13 +12,11 @@ from torch.autograd import Variable
 import time
 import cv2
 import numpy as np
-
 import config
 from wtd import WTD
-import postprocess
-import preprocess
-import debug
-import file
+import wtd_utils
+import file_utils
+import imgproc
 
 def copyStateDict(state_dict):
     if list(state_dict.keys())[0].startswith("module"):
@@ -32,90 +29,140 @@ def copyStateDict(state_dict):
         new_state_dict[name] = v
     return new_state_dict
 
-def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly):
-    t0 = time.time()
 
-    # RESIZE IMAGE (If image ratio is not safe, model prediction is also bad.)
-    img_resized, target_ratio, size_heatmap = preprocess.resize_aspect_ratio(image, config.image_size, interpolation=cv2.INTER_LINEAR, mag_ratio=config.mag_ratio)
+def test_net(net, image, text_threshold, link_threshold, low_text, cuda):
+    img_resized, target_ratio, size_heatmap = imgproc.resize_aspect_ratio(image, config.MAXIMUM_IMAGE_SIZE, interpolation=cv2.INTER_LINEAR,
+                                                                          mag_ratio=config.MAG_RATIO)
     ratio_h = ratio_w = 1 / target_ratio
 
-    """PREPROCESSING"""
-    x = preprocess.normalizeMeanVariance(img_resized)
-    x = torch.from_numpy(x).permute(2, 0, 1)    # HWC to CHW
-    x = Variable(x.unsqueeze(0))                # CHW to BCHW
+    x = imgproc.normalizeMeanVariance(img_resized)
+    x = torch.from_numpy(x).permute(2, 0, 1)
+    x = Variable(x.unsqueeze(0))
 
-    """GPU"""
-    if cuda:
-        x = x.cuda()
+    if cuda: x = x.cuda()
 
-    """PRETRAINED MODEL PREDICTION with FORWARD"""
     y, _ = net(x)
 
-    score_text = y[0,:,:,0].cpu().data.numpy()
-    score_link = y[0,:,:,1].cpu().data.numpy()
+    score_text = y[0, :, :, 0].cpu().data.numpy()
+    score_link = y[0, :, :, 1].cpu().data.numpy()
 
-    #debug.printing(score_text)
-    #debug.printing(score_link)
+    boxes, polys, word_boxes, word_polys, line_boxes, line_polys = wtd_utils.getDetBoxes(score_text, score_link,
+                                                                                         text_threshold, link_threshold,
+                                                                                         low_text)
 
-    t0 = time.time() - t0
-    t1 = time.time()
+    boxes = wtd_utils.adjustResultCoordinates(boxes, ratio_w, ratio_h)
+    polys = wtd_utils.adjustResultCoordinates(polys, ratio_w, ratio_h)
 
+    word_boxes = wtd_utils.adjustResultCoordinates(word_boxes, ratio_w, ratio_h)
+    word_polys = wtd_utils.adjustResultCoordinates(word_polys, ratio_w, ratio_h)
 
-    #POSTPROCESSING
-    boxes, polys = postprocess.getDetBoxes(score_text, score_link, text_threshold, link_threshold, low_text, poly)
+    line_boxes = wtd_utils.adjustResultCoordinates(line_boxes, ratio_w, ratio_h)
+    line_polys = wtd_utils.adjustResultCoordinates(line_polys, ratio_w, ratio_h)
 
-    #COORDINATE ADJUSTMENT1
-    boxes = postprocess.adjustResultCoordinates(boxes, ratio_w, ratio_h)
-    polys = postprocess.adjustResultCoordinates(polys, ratio_w, ratio_h)
     for k in range(len(polys)):
         if polys[k] is None: polys[k] = boxes[k]
+    for a in range(len(word_polys)):
+        if word_polys[a] is None: word_polys[a] = word_boxes[a]
+    for l in range(len(line_polys)):
+        if line_polys[l] is None: line_polys[l] = line_boxes[l]
 
-    t1 = time.time() - t1
+    return polys, word_polys, line_polys, score_text
 
-    #RENDER RESULTS(optional)
-    render_img = score_text.copy()
-    render_img = np.hstack((render_img, score_link))
-    ret_score_text = preprocess.cvt2HeatmapImg(render_img)
-    #debug.printing(ret_score_text)
-    if config.show_time : print("\nPOST PRECESSING TIME : {:.3f}/{:.3f}".format(t0, t1))
-    return boxes, polys, ret_score_text
 
 def test ():
-    #MODEL INITIALIZE
-    myNet = WTD()
-    print('Loading model from defined path :'  + config.pretrained_model_path)
-    if config.cuda:#GPU
-        myNet.load_state_dict(copyStateDict(torch.load(config.pretrained_model_path)))
+    ''''''
 
-    else:#ONLY CPU
-        myNet.load_state_dict(copyStateDict(torch.load(config.pretrained_model_path, map_location='cpu')))
+    '''INITIALIZE MODEL AND LOAD PRETRAINED MODEL'''
+    myNet = WTD()
+    print('Loading model from defined path :'  + config.PRETRAINED_MODEL_PATH)
+    if config.cuda:
+        myNet.load_state_dict(copyStateDict(torch.load(config.PRETRAINED_MODEL_PATH)))
+    else:
+        myNet.load_state_dict(copyStateDict(torch.load(config.PRETRAINED_MODEL_PATH, map_location='cpu')))
 
     if config.cuda:
         myNet = myNet.cuda()
         myNet = torch.nn.DataParallel(myNet)
         cudnn.benchmark = False
 
+    spacing_word = []
     myNet.eval()
     t = time.time()
 
-    image_list, _,_ = file.get_files(config.test_images_folder_path)
+    ''' SET PATH '''
+    DEFAULT_PATH_LIST = [config.TEST_IMAGE_PATH, config.TEST_PREDICTION_PATH, config.CANVAS_PATH, config.MASK_PATH,
+                         config.BBOX_PATH, config.RESULT_CHAR_PATH, config.SPACING_WORD_PATH]
+    for PATH in DEFAULT_PATH_LIST:
+        if not os.path.isdir(PATH): os.mkdir(PATH)
 
-    if not os.path.isdir(config.test_prediction_image):
-        os.mkdir(config.test_prediction_image)
-    if not os.path.isdir(config.test_mask):
-        os.mkdir(config.test_mask)
-    if not os.path.isdir(config.test_ground_truth):
-        os.mkdir(config.test_ground_truth)
+    ''' LIST IMAGE FILE '''
+    img_list, _,_ = file_utils.get_files(config.TEST_IMAGE_PATH)
 
-    for k, image_path in enumerate(image_list):
-        print("TEST IMAGE: {:d}/{:d}: {:s}".format(k+1, len(image_list), image_path))
-        image = preprocess.loadImage(image_path)
 
-        bboxes, polys, score_text = test_net(myNet, image, config.text_threshold, config.link_threshold, config.low_text, config.cuda, config.poly)
+    ''' KICK OFF TEST PROCESS '''
+    for i, img in enumerate(img_list):
 
-        filename, file_ext = os.path.splitext(os.path.basename(image_path))
-        mask_file = config.test_mask + "/res_" + filename + '_mask.jpg'
-        cv2.imwrite(mask_file, score_text)
+        print("TEST IMAGE: {:d}/{:d}: {:s}".format(i + 1, len(img_list), img))
 
-        file.saveResult(image_path, image[:,:,::-1], polys, dir1=config.test_prediction_image, dir2=config.test_ground_truth)
+        ''' LOAD IMAGE '''
+        img = imgproc.loadImage(img)
+
+        ''' ADJUST IMAGE SIZE AND MAKE BORDER LINE FOR BETTER TESTING ACCURACY '''
+        img = imgproc.adjustImageRatio(img)
+        constant = imgproc.createImageBorder(img, img_size=config.target_size, color=config.white)
+
+        index1 = file_utils.adjustImageNum(i, len(img_list))
+
+        copy_img = constant.copy()
+        copy_img2 = constant.copy()
+        copy_img3 = constant.copy()
+        copy_img4 = constant.copy()
+
+
+        ''' PASS THE TEST MODEL AND PREDICT BELOW 4 RESULTS '''
+        charBBoxes, wordBBoxes, lineBBoxes, heatmap = test_net(myNet, constant, config.text_threshold,
+                                                               config.link_threshold, config.low_text, config.cuda)
+
+        file_utils.saveImage(dir=config.canvas_path, img=constant, index1=index1)
+        file_utils.saveMask(dir=config.mask_path, heatmap=heatmap, index1=index1)
+
+        chars_inside_line = [];
+        words_inside_line = [];
+        chars_inside_word = []
+
+        ''' CHECK THERE IS INER BBOX IN OUTER BBOX '''
+        for a in range(len(charBBoxes)):
+            chars_inside_line.append(wtd_utils.checkAreaInsideContour(area=charBBoxes[a], contour=lineBBoxes))
+        for b in range(len(wordBBoxes)):
+            words_inside_line.append(wtd_utils.checkAreaInsideContour(area=wordBBoxes[b], contour=lineBBoxes))
+        for c in range(len(charBBoxes)):
+            chars_inside_word.append(wtd_utils.checkAreaInsideContour(area=charBBoxes[c], contour=wordBBoxes))
+
+        '''INNER BBOX SORTING'''
+        charBBoxes, lineBBoxes = wtd_utils.sortAreaInsideContour(target=chars_inside_line, spacing_word=None)
+        wordBBoxes, lineBBoxes = wtd_utils.sortAreaInsideContour(target=words_inside_line, spacing_word=None)
+        count = wtd_utils.sortAreaInsideContour(target=chars_inside_word, spacing_word=wordBBoxes)
+        spacing_word.append(count)
+
+        tmp_charBBoxes = np.array(charBBoxes, dtype=np.float32).reshape(-1, 4, 2).copy()
+
+
+        '''DRAW BBOX ON IMAGE'''
+        file_utils.drawBBoxOnImage(dir=config.BBOX_PATH, img=copy_img2, index1=index1, boxes=charBBoxes, flags='char')
+        file_utils.drawBBoxOnImage(dir=config.BBOX_PATH, img=copy_img3, index1=index1, boxes=wordBBoxes, flags='word')
+        file_utils.drawBBoxOnImage(dir=config.BBOX_PATH, img=copy_img4, index1=index1, boxes=lineBBoxes, flags='line')
+
+
+        '''MAKE FINAL CHARACTER IMAGE FOR RECOGNITION PROCESS'''
+        for j, charBBox in enumerate(tmp_charBBoxes):
+            index2 = file_utils.adjustImageNum(j, len(tmp_charBBoxes))
+            char = imgproc.cropBBoxOnImage(copy_img, charBBox)
+            orig_char = imgproc.adjustImageBorder(char, img_size=config.recognition_input_size, color=config.white)
+            thresh_char = wtd_utils.thresholding(orig_char, img_size=config.recognition_input_size)
+            file_utils.saveImage(dir=config.orig_char_path, img=orig_char, index1=index1, index2=index2)
+            file_utils.saveImage(dir=config.thresh_char_path, img=thresh_char, index1=index1, index2=index2)
+
+    ''' GENERATE TEXT FILE FOR SPACEING WORD '''
+    file_utils.saveText(dir=config.blank_path, text=spacing_word, index1='spacing_word')
+
     print("TOTAL TIME : {}s".format(time.time() - t))
