@@ -26,13 +26,13 @@ python setup.py build develop
 `SAMPLE (image source: cells of Yumi, welcome to convinience store, love revolution, naver webtoon, and header of gangs)` 
 
 <img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/images/sample1.jpg" width="192" height="128" />
-src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/images/sample2.jpg" width="192" height="128" />
-src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/images/sample3.jpg" width="192" height="128" />
-src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/images/sample4.jpg" width="192" height="128" />
-src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/predictions/0.png" width="192" height="128" />
-src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/predictions/1.png" width="192" height="128" />
-src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/predictions/2.png" width="192" height="128" />
-src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/predictions/3.png" width="192" height="128" />
+<img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/images/sample2.jpg" width="192" height="128" />
+<img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/images/sample3.jpg" width="192" height="128" />
+<img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/images/sample4.jpg" width="192" height="128" />
+<img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/predictions/0.png" width="192" height="128" />
+<img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/predictions/1.png" width="192" height="128" />
+<img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/predictions/2.png" width="192" height="128" />
+<img src="https://github.com/hanish3464/webtoon_text_detection_with_CRAFT/blob/master/SPEECH_BUBBLE_DETECTION/test/predictions/3.png" width="192" height="128" />
 
 - Run **`python kick_off.py --test 1`**
 # Acknowledgement
