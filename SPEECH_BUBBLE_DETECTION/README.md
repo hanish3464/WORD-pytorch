@@ -1,6 +1,6 @@
 # Webtoon Cut & Speech Bubble Detection based on Faster R-CNN and OpenCV
 
-`Note : This is Webtoon Speech Bubble Detector with Faster RCNN and OpenCV. It's not the final version code. I will the refine and update the code over and over again.`
+`Note : This is Webtoon Cut & Speech Bubble Detector with Faster RCNN and OpenCV. It's not the final version code. I will the refine and update the code over and over again.`
 
 ## Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks
 Shaoqing Ren, Kaiming He, Ross Girshick, Jian Sun
