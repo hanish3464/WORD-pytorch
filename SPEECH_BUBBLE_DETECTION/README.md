@@ -9,7 +9,7 @@ Shaoqing Ren, Kaiming He, Ross Girshick, Jian Sun
 The full paper is available at: https://arxiv.org/pdf/1506.01497.pdf
 
 ## Install Requirements:
-1、PyTroch=1.0.0(only)
+1、Pytorch==1.0.0(only)
 ```
 pip install -r requirements.txt
 ```        
