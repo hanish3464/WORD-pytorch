@@ -10,13 +10,9 @@ from model.utils.config import cfg
 from model.rpn.rpn import _RPN
 
 from model.roi_layers import ROIAlign, ROIPool
-
-# from model.roi_pooling.modules.roi_pool import _RoIPooling
-# from model.roi_align.modules.roi_align import RoIAlignAvg
+import config
 
 from model.rpn.proposal_target_layer_cascade import _ProposalTargetLayer
-import time
-import pdb
 from model.utils.net_utils import _smooth_l1_loss, _crop_pool_layer, _affine_grid_gen, _affine_theta
 
 class _fasterRCNN(nn.Module):
@@ -73,9 +69,9 @@ class _fasterRCNN(nn.Module):
         rois = Variable(rois)
         # do roi pooling based on predicted rois
 
-        if cfg.POOLING_MODE == 'align':
+        if config.POOLING_MODE == 'align':
             pooled_feat = self.RCNN_roi_align(base_feat, rois.view(-1, 5))
-        elif cfg.POOLING_MODE == 'pool':
+        elif config.POOLING_MODE == 'pool':
             pooled_feat = self.RCNN_roi_pool(base_feat, rois.view(-1,5))
 
         # feed pooled features to top model

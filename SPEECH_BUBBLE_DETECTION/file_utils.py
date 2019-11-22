@@ -69,16 +69,19 @@ def saveText(dir=None, text=None, index1=None):
             strResult = ','.join([str(p) for p in poly]) + '\r\n'
             f.write(strResult)
 
-def adjustImageNum(idx, length):
-    total_digits = len(str(length)) - 1
-    cur_digits = len(str(idx)) - 1
+def resultNameNumbering(origin=None, digit=None):
+    total_digits = len(str(digit)) - 1
+    cur_digits = len(str(origin)) - 1
     zeros = '0' * (total_digits - cur_digits)
-    fixed_idx = zeros + str(idx)
+    fixed_idx = zeros + str(origin)
     return fixed_idx
 
-def saveImage(dir=None, img=None, index1=None, index2=None):
-    if index2 is not None: cv2.imwrite(dir + index1 + '_' + index2 + '.png', img)
-    else: cv2.imwrite(dir + index1 + '.png', img)
+def saveImage(dir=None, img=None, index1=None, index2=None, ext=None):
+    if type(index1) == int: index1 = str(index1)
+    if type(index2) == int: index2 = str(index2)
+
+    if index2 is not None: cv2.imwrite(dir + index1 + '_' + index2 + ext, img)
+    else: cv2.imwrite(dir + index1 + ext, img)
 
 def saveMask(dir=None, heatmap=None, index1=None):
     heatmap = (np.clip(heatmap, 0, 1) * 255).astype(np.uint8)
@@ -99,9 +102,10 @@ def drawClassBBoxOnImage(img, class_name, dets, thresh=0.8):
     for i in range(np.minimum(10, dets.shape[0])):
         bbox = tuple(int(np.round(x)) for x in dets[i, :4])
         score = dets[i, -1]
-        #if score > thresh:
-	    #pass
-            #cv2.rectangle(img, bbox[0:2], bbox[2:4], (0, 0, 255), 3)
-            #cv2.putText(img, '%s: %.3f' % (class_name, score), (bbox[0], bbox[1] + 15), cv2.FONT_HERSHEY_PLAIN,
-                        #1.0, (0, 0, 255), thickness=2)
+        if score > thresh:
+            if class_name == 'speech':
+                cv2.rectangle(img, bbox[0:2], bbox[2:4], (0, 0, 255), 3)
+                cv2.putText(img, '%s: %.3f' % (class_name, score), (bbox[0], bbox[1] + 15), cv2.FONT_HERSHEY_PLAIN,
+                        1.0, (0, 0, 255), thickness=2)
     return img
+

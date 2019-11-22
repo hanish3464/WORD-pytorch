@@ -1,10 +1,10 @@
 setup.py
-/home/hanish/desktop/workspace/speech-bubble-detector-faster-rcnn/lib/model/csrc/vision.cpp
-/home/hanish/desktop/workspace/speech-bubble-detector-faster-rcnn/lib/model/csrc/cpu/ROIAlign_cpu.cpp
-/home/hanish/desktop/workspace/speech-bubble-detector-faster-rcnn/lib/model/csrc/cpu/nms_cpu.cpp
-/home/hanish/desktop/workspace/speech-bubble-detector-faster-rcnn/lib/model/csrc/cuda/ROIAlign_cuda.cu
-/home/hanish/desktop/workspace/speech-bubble-detector-faster-rcnn/lib/model/csrc/cuda/ROIPool_cuda.cu
-/home/hanish/desktop/workspace/speech-bubble-detector-faster-rcnn/lib/model/csrc/cuda/nms.cu
+/home/hanish/desktop/spc-bub-detect/lib/model/csrc/vision.cpp
+/home/hanish/desktop/spc-bub-detect/lib/model/csrc/cpu/ROIAlign_cpu.cpp
+/home/hanish/desktop/spc-bub-detect/lib/model/csrc/cpu/nms_cpu.cpp
+/home/hanish/desktop/spc-bub-detect/lib/model/csrc/cuda/ROIAlign_cuda.cu
+/home/hanish/desktop/spc-bub-detect/lib/model/csrc/cuda/ROIPool_cuda.cu
+/home/hanish/desktop/spc-bub-detect/lib/model/csrc/cuda/nms.cu
 datasets/__init__.py
 datasets/coco.py
 datasets/ds_utils.py
