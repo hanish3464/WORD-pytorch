@@ -9,7 +9,7 @@ Youngmin Baek, Bado Lee, Dongyoon Han, Sangdoo Yun, Hwalsuk Lee
 The full paper is available at: https://arxiv.org/pdf/1904.01941.pdf                                                         
 
 ## Install Requirements:                                                                                                        
-1、PyTroch>=0.4.1                                                                                                                             
+1、Pytorch>=0.4.1                                                                                                                             
 2、torchvision>=0.2.1 			                                                    																			                             
 3、opencv-python>=3.4.2    
 ```
