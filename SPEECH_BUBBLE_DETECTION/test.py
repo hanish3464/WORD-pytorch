@@ -18,10 +18,9 @@ import file_utils
 import imgproc
 import config
 import sbd_utils
-import text
 
 
-def test_net(fasterRCNN, image, img_blob, img_scales, items, labels, i):
+def test_net(fasterRCNN, image, img_blob, img_scales, items, labels):
     im_data, im_info, num_boxes, gt_boxes = items
     im_info_np = np.array([[img_blob.shape[1], img_blob.shape[2], img_scales[0]]], dtype=np.float32)
     im_data_pt = torch.from_numpy(img_blob)
@@ -63,7 +62,7 @@ def test_net(fasterRCNN, image, img_blob, img_scales, items, labels, i):
     pred_boxes = pred_boxes.squeeze()
 
     copy_img = np.copy(image[:, :, ::-1])
-    bubbles = []
+
     for j in range(1, len(labels)):
         inds = torch.nonzero(scores[:, j] > config.THRESH).view(-1)
         if inds.numel() > 0:
@@ -76,14 +75,15 @@ def test_net(fasterRCNN, image, img_blob, img_scales, items, labels, i):
             keep = nms(cls_boxes[order, :], cls_scores[order], config.TEST_NMS)
             cls_dets = cls_dets[keep.view(-1).long()]
 
-            copy_img, vis_img, bubbles, boxes = sbd_utils.divideBubbleFromImage(copy_img, image[:, :, ::-1], labels[j],
+            copy_img, vis_img, bubble_list = sbd_utils.divideBubbleFromImage(copy_img, image[:, :, ::-1], labels[j],
                                                                              cls_dets.cpu().numpy(),
                                                                              config.CLASS_THRESH, bg=config.BACKGROUND)
 
-    copy_img, vis_img, cuts = sbd_utils.divideCutFromImage(copy_img, image[:, :, ::-1], i, bg=config.BACKGROUND)
+
+    copy_img, vis_img, cut_list = sbd_utils.divideCutFromImage(copy_img, image[:, :, ::-1],
+                                                               bg=config.BACKGROUND)
     alpha_image = sbd_utils.addImageToAlphaChannel(copy_img, copy_img, FLAG='conversion')
-    vis_img, texts = text.detection(vis_img, bubbles, boxes)
-    return alpha_image, vis_img, cuts, bubbles, texts
+    return alpha_image, vis_img, cut_list, bubble_list
 
 
 def test():
@@ -136,15 +136,13 @@ def test():
         img_blob, img_scales = imgproc.getImageBlob(img)
 
         ''' PASS THE TEST MODEL AND PREDICT BELOW IM RESULTS '''
-        alpha_img, vis_img, cuts, bubbles, texts = test_net(fasterRCNN, img, img_blob, img_scales, items, labels, i)
+        alpha_img, vis_img, cuts, bubbles = test_net(fasterRCNN, img, img_blob, img_scales, items, labels)
         fixed_i = file_utils.resultNameNumbering(origin=i, digit=len(img_list))
 
         for cut_idx, cut in enumerate(cuts):
             file_utils.saveImage(dir=config.CUT_PATH, img=cut, index1=fixed_i, index2=cut_idx, ext='.png')
         for bub_idx, bubble in enumerate(bubbles):
             file_utils.saveImage(dir=config.BUBBLE_PATH, img=bubble, index1=fixed_i, index2=bub_idx, ext='.png')
-        for txt_idx, txt in enumerate(texts):
-            file_utils.saveImage(dir=config.TEXT_PATH, img=txt, index1=fixed_i, index2=txt_idx, ext='.png')
 
         file_utils.saveImage(dir=config.FINAL_IMAGE_PATH, img=vis_img, index1=fixed_i, ext='.jpg')
 

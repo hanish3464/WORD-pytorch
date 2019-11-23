@@ -20,15 +20,15 @@ def bubbleAlphaBlending(img, contours, index):
     return alpha_img
 
 def drawBubbleContours(img, class_name, score, new_contours, maxIdx, idx):
-    if config.DRAWBUB is True:
-        cv2.drawContours(img, [new_contours[maxIdx]], 0, (255, 0, 0), 3)
-        cv2.putText(img, "{:s}_{:d}: {:.3f}".format(class_name, idx, score), (0, 10), cv2.FONT_HERSHEY_PLAIN,
+
+    cv2.drawContours(img, [new_contours[maxIdx]], 0, (255, 0, 0), 3)
+    cv2.putText(img, "{:s}_{:d}: {:.3f}".format(class_name, idx, score), (0, 10), cv2.FONT_HERSHEY_PLAIN,
                 1.0, (255, 0, 0), thickness=2)
     return img
 
 def divideBubbleFromImage(img, vis_img, class_name, dets, class_thresh=0.8, bg='white'):
 
-    bubble_list = []; boxes = []
+    bubble_list = []
     count = 0
 
     for i in range(np.minimum(10, dets.shape[0])):
@@ -54,7 +54,7 @@ def divideBubbleFromImage(img, vis_img, class_name, dets, class_thresh=0.8, bg='
                 count += 1
                 crop_tmp = drawBubbleContours(crop_tmp, class_name, score, contours, maxIdx, count)
                 vis_img[ymin:ymax, xmin:xmax, :] = crop_tmp[:, :, :]
-                boxes.append([xmin, ymin, xmax, ymax])
+
                 h, w, _ = crop.shape
                 bubble = bubbleAlphaBlending(crop, contours, maxIdx)
                 bubble_list.append(bubble)
@@ -65,7 +65,7 @@ def divideBubbleFromImage(img, vis_img, class_name, dets, class_thresh=0.8, bg='
                     cv2.drawContours(crop, [contours[maxIdx]], 0, (0, 0, 0), -1)
                     cv2.drawContours(crop, [contours[maxIdx]], 0, (0, 0, 0), 10)
 
-    return img, vis_img, bubble_list, boxes
+    return img, vis_img, bubble_list
 
 def removeNoiseConvexHull(canvas, hull_lists):
     for hull in hull_lists: cv2.drawContours(canvas, [hull], 0, (255, 255, 255), -1)
@@ -76,10 +76,9 @@ def drawCutConvexHull(img, new_contours):
     img = np.array(img)
     for idx, new_cnt in enumerate(reversed(new_contours)):
         new_hull = cv2.convexHull(new_cnt, clockwise=True)
+        cv2.drawContours(img, [new_hull], 0, (0, 0, 255), 3)
         x, y, w, h = cv2.boundingRect(new_cnt)
-        if config.DRAWCUT is True:
-            cv2.drawContours(img, [new_hull], 0, (0, 0, 255), 3)
-            cv2.putText(img, 'Cut_' + str(idx), (x + w - 80, y - 5), cv2.FONT_HERSHEY_PLAIN,
+        cv2.putText(img, 'Cut_' + str(idx), (x + w - 80, y - 5), cv2.FONT_HERSHEY_PLAIN,
                     1.5, (0, 0, 255), thickness=2)
     return img
 
@@ -98,23 +97,21 @@ def cutAlphaBlending(img, new_contours):
         det.append([x,y,x+w,y+h])
     return cut_list, det
 
-def divideCutFromImage(img, vis_img, idx, bg='white'):
+def divideCutFromImage(img, vis_img, bg='white'):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     if bg == 'black':
-        _, thresh = cv2.threshold(gray, 0.1, 255, 0)
+        _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     elif bg == 'white':
         _, thresh = cv2.threshold(gray, config.THRESH_EXTENT, 255, cv2.THRESH_BINARY)
         thresh = cv2.bitwise_not(thresh)
     else:
-        _, thresh = cv2.threshold(gray, config.THRESH_EXTENT, 255, cv2.THRESH_BINARY)
-        thresh = cv2.bitwise_not(thresh)
+        _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
     kernel = np.ones((3, 3), np.uint8)
     if bg == 'black':
         thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=config.OPENING_ITER_NUM)
-
-    if bg == 'white' or bg == 'black': thresh = cv2.dilate(thresh, kernel, iterations=config.DILATE_ITER_NUM)
-    contours, _ = cv2.findContours(thresh, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+    sure_fg = cv2.dilate(thresh, kernel, iterations=config.DILATE_ITER_NUM)
+    contours, _ = cv2.findContours(sure_fg, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
 
     hull_lists = []
     img_h, img_w, _ = np.array(img).shape
