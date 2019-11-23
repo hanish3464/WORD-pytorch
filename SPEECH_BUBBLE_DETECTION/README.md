@@ -4,9 +4,9 @@
 ### Sample Results
 
 ### Overview
-`This is TOON Object Detection with Faster RCNN and Image Processing Technology. Now, my project CAN detect speech bubble, lines text, and cut. I also planning to seperate character and special text(sound effects in toon). 
+`This is TOON Object Detection with Faster RCNN and Image Processing Technology. Now, my project CAN detect speech bubble, lines text, and cut. I also planning to seperate character and special text(sound effects in toon). `
 
-[Image Source]:cells of Yumi, welcome to convinience store, love revolution, naver webtoon, and header of gangs, One Piece`
+`[Image Source]:cells of Yumi, welcome to convinience store, love revolution, naver webtoon, and header of gangs, One Piece. `
 
 <img width="172" height="512" src="./samples/sample1.gif"><img width="172" height="512" src="./samples/sample2.gif"><img width="172" height="512" src="./samples/sample3.gif"><img width="172" height="512" src="./samples/sample4.gif"><img width="172" height="512" src="./samples/sample5.gif">
 
