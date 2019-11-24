@@ -1,6 +1,6 @@
 # TOON Text Detection based on CRAFT(Character-Region Awareness For Text detection)
 
-`Note : This is TOON Text(character) Detection, ESPECIALLY texts difficult to detect like text of EFFECT SOUNDS in toon. I implemented training code for CRAFT. And I am planning to train my own datasets with CRAFT to find difficult TEXT. It's not the final version code. I will the refine and update the code over and over again.`
+`Note : This is TOON Text(character) Detection, ESPECIALLY texts difficult to detect like text of EFFECT SOUNDS in toon. I implemented training code for CRAFT. And I am planning to train CRAFT with my own datasets to find difficult TEXT. It's not the final version code. I will the refine and update the code over and over again.`
 
 ## Character Region Awareness for Text Detection
 Youngmin Baek, Bado Lee, Dongyoon Han, Sangdoo Yun, Hwalsuk Lee
