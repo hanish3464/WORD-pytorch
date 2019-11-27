@@ -1,13 +1,15 @@
 import codecs
 import os
+import numpy as np
 
 def saveCSV(dir=None, dst=None, index=None, label=None, num=None):
     distorted_image_file = dir + str(index) + '.jpeg'
     dst.write(u'{},{},{}\n'.format(distorted_image_file, label, num))
 
-def saveImage(dir=None, img=None, index=None):
-    distorted_image_file = dir + str(index) + '.jpeg'
-    img.save(distorted_image_file, 'JPEG')
+def createCustomCSVFile(src=None, files=None, gt=None, nums=None):
+    labels_csv = codecs.open(os.path.join(src), 'w', encoding='utf-8')
+    for k, file in enumerate(files):
+        labels_csv.write(u'{},{},{}\n'.format(file, gt[k-1], nums[k-1]))
 
 def loadText(txt_file):
     arr = []
@@ -15,6 +17,16 @@ def loadText(txt_file):
         lines= file.readlines()
         for line in lines: arr.append(line.strip('\r\n'))
     return arr
+
+def makeLabelMapper(in_path):
+    label_map = loadText(in_path)
+    label_num = np.arange(len(label_map))
+    label_mapper = np.vstack((np.array(label_map), label_num))
+    return label_mapper
+
+def saveImage(dir=None, img=None, index=None):
+    distorted_image_file = dir + str(index) + '.jpeg'
+    img.save(distorted_image_file, 'JPEG')
 
 def get_files(img_dir):
     imgs, masks, xmls = list_files(img_dir)

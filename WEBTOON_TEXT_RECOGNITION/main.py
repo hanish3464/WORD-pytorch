@@ -64,7 +64,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Train the model
 total_step = len(train_loader)
-for epoch in range(num_epochs):
+for epoch in range(1):
     for i, (images, labels) in enumerate(train_loader):
         images = images.to(device)
         labels = labels.to(device)
@@ -79,6 +79,7 @@ for epoch in range(num_epochs):
         optimizer.step()
 
         if (i + 1) % 100 == 0:
+
             print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
                   .format(epoch + 1, num_epochs, i + 1, total_step, loss.item()))
 
@@ -90,7 +91,10 @@ with torch.no_grad():
     for images, labels in test_loader:
         images = images.to(device)
         labels = labels.to(device)
+        print('images : {}, labels : {}'.format(images.shape, labels.shape))
         outputs = model(images)
+        print('output: {}'.format(outputs.shape))
+
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
