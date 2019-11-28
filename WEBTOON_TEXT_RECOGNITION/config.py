@@ -14,12 +14,12 @@ TEST_CUSTOM_CSV_PATH = 'test/custom/label.csv'
 CUSTOM_TEST_GT_PATH = './test/custom/gt.txt'
 
 SAVED_MODEL_PATH = './saved_models/'
-PRETRAINED_MODEL_PATH = './pretrained_models/wtr.pth'
+PRETRAINED_MODEL_PATH = './pretrained_models/wtr-1.pth'
 LABEL_PATH = './train/labels.txt'
 
 # IMAGE GENERATION PARAMETER VALUE
 IMAGE_WIDTH = IMAGE_HEIGHT = 64
-FONT_SIZES = [35, 40, 45, 50, 55, 60, 65, 70]
+FONT_SIZE = 48
 BACKGROUND = 0
 FONT_COLOR = (255, 255, 255)
 DISTORTION_TIMES = 4

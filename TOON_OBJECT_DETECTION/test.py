@@ -19,7 +19,7 @@ import imgproc
 import config
 import sbd_utils
 import text
-
+import cv2
 
 def test_net(fasterRCNN, image, img_blob, img_scales, items, labels, i):
     im_data, im_info, num_boxes, gt_boxes = items
@@ -75,6 +75,7 @@ def test_net(fasterRCNN, image, img_blob, img_scales, items, labels, i):
             cls_dets = cls_dets[order]
             keep = nms(cls_boxes[order, :], cls_scores[order], config.TEST_NMS)
             cls_dets = cls_dets[keep.view(-1).long()]
+            #img = file_utils.drawClassBBoxOnImage(copy_img, labels[j], cls_dets.cpu().numpy(), thresh=0.5) #fasterRCNN
 
             copy_img, vis_img, bubbles, boxes = sbd_utils.divideBubbleFromImage(copy_img, image[:, :, ::-1], labels[j],
                                                                              cls_dets.cpu().numpy(),
@@ -83,6 +84,7 @@ def test_net(fasterRCNN, image, img_blob, img_scales, items, labels, i):
     copy_img, vis_img, cuts = sbd_utils.divideCutFromImage(copy_img, image[:, :, ::-1], i, bg=config.BACKGROUND)
     alpha_image = sbd_utils.addImageToAlphaChannel(copy_img, copy_img, FLAG='conversion')
     vis_img, texts = text.detection(vis_img, bubbles, boxes)
+
     return alpha_image, vis_img, cuts, bubbles, texts
 
 

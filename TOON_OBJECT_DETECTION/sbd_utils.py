@@ -42,7 +42,8 @@ def divideBubbleFromImage(img, vis_img, class_name, dets, class_thresh=0.8, bg='
                 crop_tmp = crop.copy()
                 gray_crop = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
                 ret, thresh = cv2.threshold(gray_crop, 127, 255, cv2.THRESH_BINARY)
-                contours, _ = cv2.findContours(thresh, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+                _, contours, _ = cv2.findContours(thresh, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+
                 maxIdx = 0
                 maxArea = 0
                 for x, cnt in enumerate(contours):
@@ -57,19 +58,20 @@ def divideBubbleFromImage(img, vis_img, class_name, dets, class_thresh=0.8, bg='
                 boxes.append([xmin, ymin, xmax, ymax])
                 h, w, _ = crop.shape
                 bubble = bubbleAlphaBlending(crop, contours, maxIdx)
+
                 bubble_list.append(bubble)
                 if bg == 'white':
                     cv2.drawContours(crop, [contours[maxIdx]], 0, (255, 255, 255), -1)
                     cv2.drawContours(crop, [contours[maxIdx]], 0, (255, 255, 255), 10)
+
                 if bg == 'black':
                     cv2.drawContours(crop, [contours[maxIdx]], 0, (0, 0, 0), -1)
                     cv2.drawContours(crop, [contours[maxIdx]], 0, (0, 0, 0), 10)
-
     return img, vis_img, bubble_list, boxes
 
 def removeNoiseConvexHull(canvas, hull_lists):
     for hull in hull_lists: cv2.drawContours(canvas, [hull], 0, (255, 255, 255), -1)
-    contours, _ = cv2.findContours(canvas, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+    _, contours, _ = cv2.findContours(canvas, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
     return contours
 
 def drawCutConvexHull(img, new_contours):
@@ -113,8 +115,10 @@ def divideCutFromImage(img, vis_img, idx, bg='white'):
     if bg == 'black':
         thresh = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=config.OPENING_ITER_NUM)
 
-    if bg == 'white' or bg == 'black': thresh = cv2.dilate(thresh, kernel, iterations=config.DILATE_ITER_NUM)
-    contours, _ = cv2.findContours(thresh, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+    if bg == 'white' or bg == 'black':
+        thresh = cv2.dilate(thresh, kernel, iterations=config.DILATE_ITER_NUM)
+    _, contours, _ = cv2.findContours(thresh, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+
 
     hull_lists = []
     img_h, img_w, _ = np.array(img).shape

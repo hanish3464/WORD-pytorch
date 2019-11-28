@@ -6,7 +6,6 @@ from torch.utils.data import DataLoader
 from wtr import WTR
 import time
 import file_utils
-import numpy as np
 import argparse
 
 

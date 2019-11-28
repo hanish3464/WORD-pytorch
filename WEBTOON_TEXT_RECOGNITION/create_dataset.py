@@ -67,15 +67,22 @@ def createDataset(args):
 
         if cnt - prev_cnt > 5000:
             prev_cnt = cnt
-            sys.stdout.write('TRAINING IMAGE GENERATION: ({}/{}) \r'.format(cnt, 2421 * len(fonts) * len(config.FONT_SIZES)))
+            sys.stdout.write('TRAINING IMAGE GENERATION: ({}/{}) \r'.format(cnt, 2421 * len(fonts) * 8))
             sys.stdout.flush()
 
         for f in fonts:
 
-            for size in config.FONT_SIZES:
+            for _ in range(8):
+
                 cnt += 1
+
+                w_rand = random.randint(0, 8)
+                h_rand = random.randint(0, 8)
+                config.IMAGE_WIDTH = 48 + (8 * w_rand)
+                config.IMAGE_HEIGHT = 48 + (8 * h_rand)
+
                 image, drawing = makeCanvas(width=config.IMAGE_WIDTH, height=config.IMAGE_HEIGHT, color=config.BACKGROUND)
-                font = determineFontSize(font=f, size=size)
+                font = determineFontSize(font=f, size=config.FONT_SIZE)
                 w, h = determineCanvasSize(canvas=drawing, label=character, font=font)
                 makeLetter(canvas=drawing, label=character, width=w, height=h, color=config.FONT_COLOR, font=font)
 

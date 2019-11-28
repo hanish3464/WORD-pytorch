@@ -84,7 +84,7 @@ def detection(vis_img, bubbles, boxes):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         edge = cv2.Canny(gray, 800, 1000)
         _, thr = cv2.threshold(edge, 127, 255, cv2.THRESH_BINARY)
-        contours, _ = cv2.findContours(thr, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+        _, contours, _ = cv2.findContours(thr, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
         linking_kernel = np.ones((1, config.KERNEL_SIZE), np.uint8)
         thr = cv2.dilate(thr, linking_kernel, iterations=DILATE_ITER_NUM)
         dets = findTextRegions(thr, BOX_SIZE_THRESHOLD)
