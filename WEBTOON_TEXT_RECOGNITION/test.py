@@ -3,6 +3,8 @@ import torch
 import config
 from dataset import Hangul_Dataset
 from torch.utils.data import DataLoader
+import torch.nn.functional as F
+import torch.backends.cudnn as cudnn
 from wtr import WTR
 import time
 import file_utils
@@ -22,15 +24,16 @@ def copyStateDict(state_dict):
 
 
 def test(args):
-    myNet = WTR()
+    model = WTR()
     print('Loading model from defined path :' + config.PRETRAINED_MODEL_PATH)
 
     if config.CUDA:
-        myNet.load_state_dict(copyStateDict(torch.load(config.PRETRAINED_MODEL_PATH)))
-        myNet = myNet.cuda()
+        model.load_state_dict(copyStateDict(torch.load(config.PRETRAINED_MODEL_PATH)))
+        model = model.cuda()
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    myNet.eval()
+    model.eval()
+    cudnn.benchmark = False
 
     label_mapper = file_utils.makeLabelMapper(config.LABEL_PATH)
 
@@ -58,15 +61,23 @@ def test(args):
         for k, (image, label) in enumerate(test_loader):
             image = image.to(device)
             label = label.to(device)
-            y = myNet(image)
+            y = model(image)
             _, predicted = torch.max(y.data, 1)
+
+            prob = F.softmax(y.data, dim=1)
+            probability, index = torch.max(prob, 1)
+            #print(probability)
+            #print(probability.shape)
 
             total += label.size(0)
             correct += (predicted == label).sum().item()
 
+
             for pred, lab in zip(predicted, label):
+                x+=1
                 if label_mapper[0][pred] != label_mapper[0][lab]:
-                    print("[PRED:{}/ANS:{}], ".format(label_mapper[0][pred], label_mapper[0][lab]))
+                    print("index:{} [PRED:{}/ANS:{}], ".format(x, label_mapper[0][pred], label_mapper[0][lab]))
+            x = 0
     print('')
     print('---------------------------------------------------------')
     print('TOTAL LETTERS: {}'.format(x))

@@ -12,37 +12,41 @@ def train():
 
     train_loader = DataLoader(dataset=datasets, batch_size=config.BATCH, shuffle=True, drop_last=True)
 
-    myNet = WTR().cuda()
+    model = WTR().cuda()
+
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(myNet.parameters(), lr=config.LEARING_RATE)
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARING_RATE)
 
     total_step = len(train_loader)
 
     print('[WEBTOON-TEXT-RECOGNITION TRAINING KICK-OFF]')
+
+    model.train()
+
     for epoch in range(config.EPOCH):
-        st = time.time()
+
+        start = time.time()
         for k, (image, label) in enumerate(train_loader):
 
             image = image.to(device)
             label = label.to(device)
 
-            y = myNet(image)
+            y = model(image)
             loss = criterion(y, label)
 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
-            if (k + 1) % 5 == 0:
-                st = time.time()
-                print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f} Time Cost: {:.4f}'
-                      .format(epoch + 1, config.EPOCH, k + 1, total_step, loss.item(), ed - st))
-                ed = time.time()
+            if (k + 1) % config.DIPLAY_INTERVAL == 0:
+                end = time.time()
+                print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f} TIME COST: {:.4f}'
+                      .format(epoch + 1, config.EPOCH, k + 1, total_step, loss.item(), end - start))
 
         print('save model ... -> {}'.format(config.SAVED_MODEL_PATH + 'wtr-' + str(epoch+1) + '.pth'))
-        torch.save(myNet.state_dict(), config.SAVED_MODEL_PATH + 'wtr-' + repr(epoch+1) + '.pth')
+        torch.save(model.state_dict(), config.SAVED_MODEL_PATH + 'wtr-' + repr(epoch+1) + '.pth')
 
 
 if __name__ == '__main__':
