@@ -12,13 +12,13 @@ import train
 import test
 import evaluation
 
-                    '''PROJECT KICK OFF'''
+'''PROJECT KICK OFF'''
 
 parser = argparse.ArgumentParser(description='Webtoon Text Localization(Detection)')
 
-parser.add_argument('--train', default=False, type=bool, help='train flag')
-parser.add_argument('--test', default=False, type=bool, help='test flag')
-parser.add_argument('--evaluation', default=False, type=bool, help='evaluation flag')
+parser.add_argument('--train', default=False, action='store_true', help='train flag')
+parser.add_argument('--test', default=False, action='store_true', help='test flag')
+parser.add_argument('--evaluation', default=False, action='store_true', help='evaluation flag')
 
 args = parser.parse_args()
 

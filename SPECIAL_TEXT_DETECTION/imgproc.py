@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from skimage import io
 # -*- coding: utf-8 -*-
 
 def loadImage(img_file):
@@ -22,8 +23,11 @@ def adjustImageRatio(img):
 
 def createImageBorder(img, img_size=1024, color=[255,255,255]):
     h, w, _ = img.shape
-    l = r = (img_size // 2 - w) // 2
-    t = b = (img_size // 2 - h) // 2
+    if img_size // 2 > w and img_size // 2 > h:
+        l = r = (img_size // 2 - w) // 2
+        t = b = (img_size // 2 - h) // 2
+    else:
+        t = b = l = r = 1
     constant = cv2.copyMakeBorder(img, t, b, l, r, cv2.BORDER_CONSTANT, value=color)
     return constant
 

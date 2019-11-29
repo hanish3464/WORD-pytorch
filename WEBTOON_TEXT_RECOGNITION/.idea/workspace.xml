@@ -2,11 +2,53 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ad3928c4-241f-4d81-935a-15c286ff224f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/imgproc.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/imgproc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/kick_off.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/kick_off.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/wtd_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SPECIAL_TEXT_DETECTION/wtd_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TOON_OBJECT_DETECTION/kick_off.py" beforeDir="false" afterPath="$PROJECT_DIR$/../TOON_OBJECT_DETECTION/kick_off.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TOON_OBJECT_DETECTION/test/images/sample1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TOON_OBJECT_DETECTION/test/images/sample2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TOON_OBJECT_DETECTION/test/images/sample3.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TOON_OBJECT_DETECTION/test/images/sample4.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pretrained_models/res18_wtr.pth" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/create_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/create_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/file_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/file_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0012.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0021.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0030.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0050.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0066.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0076.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0097.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0116.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0246.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0347.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0373.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0428.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0458.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0459.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0460.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0461.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0462.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0463.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0464.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0465.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0466.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0467.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0592.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0597.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0619.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/0627.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/custom/label.csv" beforeDir="false" afterPath="$PROJECT_DIR$/test/custom/label.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train/label.csv" beforeDir="false" afterPath="$PROJECT_DIR$/train/label.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/train/labels.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/vis_train.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/vis_train.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wtr.py" beforeDir="false" afterPath="$PROJECT_DIR$/wtr.py" afterDir="false" />
     </list>
@@ -30,7 +72,7 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$/사진" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">

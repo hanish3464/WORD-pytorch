@@ -67,7 +67,7 @@ def createDataset(args):
 
         if cnt - prev_cnt > 5000:
             prev_cnt = cnt
-            sys.stdout.write('TRAINING IMAGE GENERATION: ({}/{}) \r'.format(cnt, 2421 * len(fonts) * 8))
+            sys.stdout.write('TRAINING IMAGE GENERATION: ({}/{}) \r'.format(cnt, config.NUM_CLASSES * len(fonts) * 8))
             sys.stdout.flush()
 
         for f in fonts:

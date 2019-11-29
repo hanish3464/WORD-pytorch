@@ -8,7 +8,6 @@ import config
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.filters import gaussian_filter
 from PIL import Image, ImageFilter
-import cv2
 
 class Hangul_Dataset(object):
 
@@ -45,11 +44,11 @@ class Hangul_Dataset(object):
 
         #Data Augmentation Method - elastic distotion, image blur
 
-        if random.randint(0, 1):
-            image = self.distortImage(image)
-        if random.randint(0, 1):
-            blur_extent = random.randint(1, 3)
-            image = self.blurImage(image, blur_extent)
+        # if random.randint(0, 1):
+        #     image = self.distortImage(image)
+        # if random.randint(0, 1):
+        #     blur_extent = random.randint(1, 3)
+        #     image = self.blurImage(image, blur_extent)
 
         image = imgproc.tranformToTensor(img=image, size=self.size)
 

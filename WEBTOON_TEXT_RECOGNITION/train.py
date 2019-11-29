@@ -45,6 +45,8 @@ def train():
                 print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f} TIME COST: {:.4f}'
                       .format(epoch + 1, config.EPOCH, k + 1, total_step, loss.item(), end - start))
 
+        end = time.time()
+
         print('save model ... -> {}'.format(config.SAVED_MODEL_PATH + 'wtr-' + str(epoch+1) + '.pth'))
         torch.save(model.state_dict(), config.SAVED_MODEL_PATH + 'wtr-' + repr(epoch+1) + '.pth')
 

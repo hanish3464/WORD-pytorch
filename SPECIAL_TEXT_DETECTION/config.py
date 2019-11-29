@@ -8,8 +8,8 @@ json_gt_folder = './conversion/json_to_txt_gt/'
 json_path = './conversion/json_gt/'
 
 #MODEL PATH
-PRETRAINED_MODEL_PATH = './model/pretrained/clova_ai_CRAFT.pth'
-SAVED_MODEL_PATH = './model/saved/'
+PRETRAINED_MODEL_PATH = './pretrained_models/clova_ai_CRAFT.pth'
+SAVED_MODEL_PATH = './saved_models/'
 
 #original path
 orig_ground_truth = "./original/ground_truth/"
@@ -18,7 +18,7 @@ orig_pdt_img = './original/prediction/'
 orig_mask = './original/mask/'
 
 #TEST PATH
-TEST_IMAGE_PATH = './test/images/'
+TEST_IMAGE_PATH = '../TOON_OBJECT_DETECTION/test/predictions/bubble/'
 TEST_PREDICTION_PATH = './test/preditions/'
 CANVAS_PATH = TEST_PREDICTION_PATH + 'canvas/'
 MASK_PATH = TEST_PREDICTION_PATH + 'mask/'
@@ -50,6 +50,12 @@ divide_link_threshold = 0.4
 
 char_box_width_threshold = -5
 char_box_height_threshold = 3
+
+#test
+target_size = 1024
+white = [255, 255, 255]
+recognition_input_size = 243
+LNK_KERNEL_SIZE = 50
 
 cuda = True
 MAG_RATIO = 2.5

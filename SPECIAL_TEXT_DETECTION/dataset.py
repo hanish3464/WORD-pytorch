@@ -4,8 +4,8 @@ import torch
 from torch.utils.data import Dataset
 import cv2
 import numpy as np
-import file
-import preprocess
+import file_utils
+import imgproc
 import config
 from augmentation import Data_augmentation
 from gaussian import GenerateGaussian

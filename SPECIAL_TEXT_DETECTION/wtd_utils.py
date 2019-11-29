@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 import math
+import config
+
 # -*- coding: utf-8 -*-
 
 def checkAreaInsideContour(area=None, contour=None):
@@ -169,7 +171,7 @@ def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text,
 
     if FLAGS == 'line':
         ret, link_score = cv2.threshold(linkmap, link_threshold, 1, 0)
-        line_kernel = np.ones((2, 25), np.uint8)
+        line_kernel = np.ones((2, config.LNK_KERNEL_SIZE), np.uint8)
         link_score = cv2.dilate(link_score, line_kernel, iterations=3)
         score = np.clip(text_score + link_score, 0, 1)
         conectivity = 8

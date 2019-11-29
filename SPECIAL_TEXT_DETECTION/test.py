@@ -17,6 +17,7 @@ from wtd import WTD
 import wtd_utils
 import file_utils
 import imgproc
+import sys
 
 def copyStateDict(state_dict):
     if list(state_dict.keys())[0].startswith("module"):
@@ -102,7 +103,8 @@ def test ():
     ''' KICK OFF TEST PROCESS '''
     for i, img in enumerate(img_list):
 
-        print("TEST IMAGE: {:d}/{:d}: {:s}".format(i + 1, len(img_list), img))
+        sys.stdout.write('TEST IMAGES: {:d}/{:d}: {:s} \r'.format(i + 1, len(img_list), img))
+        sys.stdout.flush()
 
         ''' LOAD IMAGE '''
         img = imgproc.loadImage(img)
@@ -123,8 +125,8 @@ def test ():
         charBBoxes, wordBBoxes, lineBBoxes, heatmap = test_net(myNet, constant, config.text_threshold,
                                                                config.link_threshold, config.low_text, config.cuda)
 
-        file_utils.saveImage(dir=config.canvas_path, img=constant, index1=index1)
-        file_utils.saveMask(dir=config.mask_path, heatmap=heatmap, index1=index1)
+        file_utils.saveImage(dir=config.CANVAS_PATH, img=constant, index1=index1)
+        file_utils.saveMask(dir=config.MASK_PATH, heatmap=heatmap, index1=index1)
 
         chars_inside_line = [];
         words_inside_line = [];
@@ -159,10 +161,10 @@ def test ():
             char = imgproc.cropBBoxOnImage(copy_img, charBBox)
             orig_char = imgproc.adjustImageBorder(char, img_size=config.recognition_input_size, color=config.white)
             thresh_char = wtd_utils.thresholding(orig_char, img_size=config.recognition_input_size)
-            file_utils.saveImage(dir=config.orig_char_path, img=orig_char, index1=index1, index2=index2)
-            file_utils.saveImage(dir=config.thresh_char_path, img=thresh_char, index1=index1, index2=index2)
+            #file_utils.saveImage(dir=config.RESULT_CHAR_PATH, img=orig_char, index1=index1, index2=index2)
+            file_utils.saveImage(dir=config.RESULT_CHAR_PATH, img=thresh_char, index1=index1, index2=index2)
 
     ''' GENERATE TEXT FILE FOR SPACEING WORD '''
-    file_utils.saveText(dir=config.blank_path, text=spacing_word, index1='spacing_word')
+    file_utils.saveText(dir=config.SPACING_WORD_PATH, text=spacing_word, index1='spacing_word')
 
     print("TOTAL TIME : {}s".format(time.time() - t))
