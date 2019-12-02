@@ -44,11 +44,11 @@ class Hangul_Dataset(object):
 
         #Data Augmentation Method - elastic distotion, image blur
 
-        # if random.randint(0, 1):
-        #     image = self.distortImage(image)
-        # if random.randint(0, 1):
-        #     blur_extent = random.randint(1, 3)
-        #     image = self.blurImage(image, blur_extent)
+        #if random.randint(0, 1):
+        #    image = self.distortImage(image)
+        #if random.randint(0, 1):
+        #     blur_extent = 1
+        #    image = self.blurImage(image, blur_extent)
 
         image = imgproc.tranformToTensor(img=image, size=self.size)
 
@@ -77,7 +77,7 @@ class Hangul_Dataset(object):
         x, y = np.meshgrid(np.arange(shape[0]), np.arange(shape[1]))
         indices = np.reshape(y + dy, (-1, 1)), np.reshape(x + dx, (-1, 1))
         distorted_arr = map_coordinates(img, indices, order=1).reshape(shape)
-
+        #image = Image.fromarray(distorted_arr)
         return distorted_arr
 
     def blurImage(self, img, extent):

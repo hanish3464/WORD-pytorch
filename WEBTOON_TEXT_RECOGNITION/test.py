@@ -38,7 +38,7 @@ def test(args):
     label_mapper = file_utils.makeLabelMapper(config.LABEL_PATH)
 
     if args.custom:
-        img_lists, _, _ = file_utils.get_files(config.TEST_CUSTOM_IMAGE_PATH)
+        img_lists, _, _, _ = file_utils.get_files(config.TEST_CUSTOM_IMAGE_PATH)
         test_txt = []; test_num = []
         for txt in config.TEST_CASE:
             test_num.append(label_mapper[0].tolist().index(txt))

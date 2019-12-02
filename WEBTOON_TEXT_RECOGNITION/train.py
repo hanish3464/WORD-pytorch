@@ -6,6 +6,10 @@ import config
 from wtr import WTR
 import time
 
+def adjust_lr(optimizer, decay=0.1):
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = decay * param_group['lr']
+
 def train():
     datasets = Hangul_Dataset(csv_path=config.TRAIN_CSV_PATH, label_path=config.LABEL_PATH,
                               image_size=config.TARGET_IMAGE_SIZE, train=True)
@@ -13,11 +17,12 @@ def train():
     train_loader = DataLoader(dataset=datasets, batch_size=config.BATCH, shuffle=True, drop_last=True)
 
     model = WTR().cuda()
+    model = nn.DataParallel(model)
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARING_RATE)
+    optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
 
     total_step = len(train_loader)
 
@@ -25,9 +30,13 @@ def train():
 
     model.train()
 
-    for epoch in range(config.EPOCH):
-
+    for epoch in range(1, config.EPOCH + 1):
+      
         start = time.time()
+        if epoch % config.LR_DECAY_STEP == 0:
+            adjust_lr(optimizer, config.LR_DECAY_GAMMA)
+            config.LEARNING_RATE *= config.LR_DECAY_GAMMA
+
         for k, (image, label) in enumerate(train_loader):
 
             image = image.to(device)
@@ -40,15 +49,15 @@ def train():
             loss.backward()
             optimizer.step()
 
-            if (k + 1) % config.DIPLAY_INTERVAL == 0:
+            if (k + 1) % config.DISPLAY_INTERVAL == 0:
                 end = time.time()
-                print('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f} TIME COST: {:.4f}'
-                      .format(epoch + 1, config.EPOCH, k + 1, total_step, loss.item(), end - start))
+                print('Epoch [{}/{}], Step [{}/{}], lr: {}, Loss: {:.4f}, TIME COST: {:.4f}'
+                      .format(epoch, config.EPOCH, k + 1, total_step,config.LEARNING_RATE, loss.item(), end - start))
+                start = time.time()
+        start = time.time()
 
-        end = time.time()
-
-        print('save model ... -> {}'.format(config.SAVED_MODEL_PATH + 'wtr-' + str(epoch+1) + '.pth'))
-        torch.save(model.state_dict(), config.SAVED_MODEL_PATH + 'wtr-' + repr(epoch+1) + '.pth')
+        print('save model ... -> {}'.format(config.SAVED_MODEL_PATH + 'wtr-res18-' + str(epoch) + '.pth'))
+        torch.save(model.state_dict(), config.SAVED_MODEL_PATH + 'wtr-res18-' + repr(epoch) + '.pth')
 
 
 if __name__ == '__main__':

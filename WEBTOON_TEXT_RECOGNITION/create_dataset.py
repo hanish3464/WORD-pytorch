@@ -26,7 +26,7 @@ def removeNoise(img=None, arr = None):
     return arr
 
 def makeCanvas(width=None, height=None, color=None):
-    image = Image.new('RGB', (width, height), color=color)
+    image = Image.new('L', (width, height), color=color)
     drawing = ImageDraw.Draw(image)
     return image, drawing
 
@@ -67,27 +67,27 @@ def createDataset(args):
 
         if cnt - prev_cnt > 5000:
             prev_cnt = cnt
-            sys.stdout.write('TRAINING IMAGE GENERATION: ({}/{}) \r'.format(cnt, config.NUM_CLASSES * len(fonts) * 8))
+            sys.stdout.write('TRAINING IMAGE GENERATION: ({}/{}) \r'.format(cnt, config.NUM_CLASSES * len(fonts)))
             sys.stdout.flush()
 
         for f in fonts:
 
-            for _ in range(8):
+            #for _ in range(8):
 
-                cnt += 1
+            cnt += 1
 
-                w_rand = random.randint(0, 8)
-                h_rand = random.randint(0, 8)
-                config.IMAGE_WIDTH = 48 + (8 * w_rand)
-                config.IMAGE_HEIGHT = 48 + (8 * h_rand)
+                #w_rand = random.randint(0, 8)
+                #h_rand = random.randint(0, 8)
+                #config.IMAGE_WIDTH = 48 + (8 * w_rand)
+                #config.IMAGE_HEIGHT = 48 + (8 * h_rand)
 
-                image, drawing = makeCanvas(width=config.IMAGE_WIDTH, height=config.IMAGE_HEIGHT, color=config.BACKGROUND)
-                font = determineFontSize(font=f, size=config.FONT_SIZE)
-                w, h = determineCanvasSize(canvas=drawing, label=character, font=font)
-                makeLetter(canvas=drawing, label=character, width=w, height=h, color=config.FONT_COLOR, font=font)
+            image, drawing = makeCanvas(width=config.IMAGE_WIDTH, height=config.IMAGE_HEIGHT, color=config.BACKGROUND)
+            font_type = determineFontSize(font=f, size=config.FONT_SIZE)
+            w, h = determineCanvasSize(canvas=drawing, label=character, font=font_type)
+            makeLetter(canvas=drawing, label=character, width=w, height=h, color=config.FONT_COLOR, font=font_type)
 
-                file_utils.saveImage(dir=IMAGE_PATH, img=image, index=cnt)
-                file_utils.saveCSV(dir=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k)
+            file_utils.saveImage(dir=IMAGE_PATH, img=image, index=cnt)
+            file_utils.saveCSV(dir=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k)
 
     labels_csv.close()
 

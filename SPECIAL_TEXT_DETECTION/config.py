@@ -54,7 +54,7 @@ char_box_height_threshold = 3
 #test
 target_size = 1024
 white = [255, 255, 255]
-recognition_input_size = 243
+recognition_input_size = 64
 LNK_KERNEL_SIZE = 50
 
 cuda = True

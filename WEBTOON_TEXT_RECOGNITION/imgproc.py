@@ -25,7 +25,6 @@ def cvtColorGray(img=None):
 def tranformToTensor(img=None, size=None):
 
     img = cv2.resize(img, (size, size), interpolation=cv2.INTER_LINEAR)
-    cv2.imwrite('./vis_train.jpg', img)
     img = torch.from_numpy(img).float().unsqueeze(0)
 
     return img

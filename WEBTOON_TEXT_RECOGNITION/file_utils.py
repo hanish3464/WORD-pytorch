@@ -3,7 +3,7 @@ import os
 import numpy as np
 
 def saveCSV(dir=None, dst=None, index=None, label=None, num=None):
-    distorted_image_file = dir + str(index) + '.jpeg'
+    distorted_image_file = dir + str(index) + '.png'
     dst.write(u'{},{},{}\n'.format(distorted_image_file, label, num))
 
 def createCustomCSVFile(src=None, files=None, gt=None, nums=None):
@@ -40,8 +40,8 @@ def makeLabelMapper(in_path):
     return label_mapper
 
 def saveImage(dir=None, img=None, index=None):
-    distorted_image_file = dir + str(index) + '.jpeg'
-    img.save(distorted_image_file, 'JPEG')
+    distorted_image_file = dir + str(index) + '.png'
+    img.save(distorted_image_file, 'PNG')
 
 def get_files(img_dir):
     imgs, masks, xmls, names = list_files(img_dir)

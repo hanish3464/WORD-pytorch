@@ -113,7 +113,7 @@ def test():
 
     if config.cuda:
         fasterRCNN.cuda()
-        fasterRCNN = torch.nn.DataParallel(fasterRCNN)
+        #fasterRCNN = torch.nn.DataParallel(fasterRCNN)
 
     fasterRCNN.eval()
     t = time.time()

@@ -86,13 +86,13 @@ def sortAreaInsideContour(target=None, spacing_word=None):
 def thresholding(img, img_size=None):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     #print(gray_crop)
-    img = cv2.bitwise_not(img)
-    # _, thresh = cv2.threshold(gray_crop, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    #img = cv2.bitwise_not(img)
+    _, thresh = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
     # kernel = np.ones((2, 2), np.uint8)
     # char = cv2.erode(thresh, kernel, iterations=2)
     # kernel = np.ones((1, 2), np.uint8)
     # char = cv2.dilate(char, kernel, iterations=2)
-    return img
+    return thresh
 
 def warpCoord(Minv, pt):
     out = np.matmul(Minv, (pt[0], pt[1], 1))

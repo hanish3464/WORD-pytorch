@@ -8,6 +8,7 @@ import file_utils
 import argparse
 import imgproc
 import wtr_utils
+import cv2
 
 def copyStateDict(state_dict):
     if list(state_dict.keys())[0].startswith("module"):
@@ -47,6 +48,7 @@ def test():
 
             image = imgproc.loadImage(in_path)
             image = imgproc.cvtColorGray(image)
+            image = cv2.bitwise_not(image)
             image = imgproc.tranformToTensor(image, config.TARGET_IMAGE_SIZE).unsqueeze(0)
             image = image.to(device)
             y = model(image)
