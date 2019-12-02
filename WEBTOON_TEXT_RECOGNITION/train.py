@@ -52,7 +52,7 @@ def train():
             if (k + 1) % config.DISPLAY_INTERVAL == 0:
                 end = time.time()
                 print('Epoch [{}/{}], Step [{}/{}], lr: {}, Loss: {:.4f}, TIME COST: {:.4f}'
-                      .format(epoch, config.EPOCH, k + 1, total_step,config.LEARNING_RATE, loss.item(), end - start))
+                      .format(epoch, config.EPOCH, k + 1, total_step, config.LEARNING_RATE, loss.item(), end - start))
                 start = time.time()
         start = time.time()
 

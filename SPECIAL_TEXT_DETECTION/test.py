@@ -97,7 +97,7 @@ def test ():
         if not os.path.isdir(PATH): os.mkdir(PATH)
 
     ''' LIST IMAGE FILE '''
-    img_list, _,_ = file_utils.get_files(config.TEST_IMAGE_PATH)
+    img_list, _,_, name_list = file_utils.get_files(config.TEST_IMAGE_PATH)
 
 
     ''' KICK OFF TEST PROCESS '''
@@ -113,8 +113,8 @@ def test ():
         img = imgproc.adjustImageRatio(img)
         constant = imgproc.createImageBorder(img, img_size=config.target_size, color=config.white)
 
-        index1 = file_utils.adjustImageNum(i, len(img_list))
-
+#        index1 = file_utils.adjustImageNum(i, len(img_list))
+        index1 = name_list[i]
         copy_img = constant.copy()
         copy_img2 = constant.copy()
         copy_img3 = constant.copy()

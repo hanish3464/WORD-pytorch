@@ -6,16 +6,18 @@ import numpy as np
 import cv2
 
 def get_files(img_dir):
-    imgs, masks, xmls = list_files(img_dir)
-    return imgs, masks, xmls
+    imgs, masks, xmls, names = list_files(img_dir)
+    return imgs, masks, xmls, names
 
 def list_files(in_path): 
     img_files = []
     mask_files = []
     gt_files = []
+    name_files = []
     for (dirpath, dirnames, filenames) in os.walk(in_path):
         for file in filenames:
             filename, ext = os.path.splitext(file)
+            name_files.append(filename)
             ext = str.lower(ext)
             if ext == '.jpg' or ext == '.jpeg' or ext == '.gif' or ext == '.png' or ext == '.pgm':
                 img_files.append(os.path.join(dirpath, file))
@@ -25,10 +27,11 @@ def list_files(in_path):
                 gt_files.append(os.path.join(dirpath, file))
             elif ext == '.zip':
                 continue
+    name_files.sort()
     img_files.sort()
     mask_files.sort()
     gt_files.sort()
-    return img_files, mask_files, gt_files
+    return img_files, mask_files, gt_files, name_files
 
 def saveResult(img_file, img, boxes, dir1='./prediction/', dir2='./gt/', verticals=None, texts=None):
 

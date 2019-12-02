@@ -4,6 +4,7 @@ TEST_CASE = '너미디어타다보장전선멋다올글자관심무기남대문�
 TRAIN_IMAGE_PATH = './train/images/'
 TEST_IMAGE_PATH = './test/images/'
 TEST_CUSTOM_IMAGE_PATH = './test/custom/'
+TEST_PREDICTION_PATH = './test/predictions/result.txt'
 
 TRAIN_FONTS_PATH = './train/fonts/'
 TEST_FONTS_PATH = './test/fonts/'
@@ -29,6 +30,8 @@ SIGMA_MIN = 6
 SIGMA_MAX = 7
 BLUR_EXTENT = 2
 ROTATION_ANGLE = 20
+MORPH_NUM = 2
+
 
 # HYPERPAMETER AND CONFIGURATION
 CUDA = True

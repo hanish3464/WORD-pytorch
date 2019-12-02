@@ -22,7 +22,7 @@ def copyStateDict(state_dict):
     return new_state_dict
 
 
-def test():
+def pipeline_test(args):
     model = WTR()
     print('Loading model from defined path :' + config.PRETRAINED_MODEL_PATH)
 
@@ -40,10 +40,12 @@ def test():
     t = time.time()
 
     with torch.no_grad():
-
-        img_lists, _, _, name_list = file_utils.get_files(config.TEST_RECOG_PATH)
+        image_name_nums = []
         res = []
-        print('--------------------------------OCR RESULT-------------------------------------')
+        img_lists, _, _, name_list = file_utils.get_files(config.TEST_RECOG_PATH)
+        for name in name_list: image_name_nums.append(name.split('_')[0])
+
+        print('------------------------------OCR RESULT----------------------------------')
         for k, in_path in enumerate(img_lists):
 
             image = imgproc.loadImage(in_path)
@@ -55,13 +57,13 @@ def test():
             _, pred = torch.max(y.data, 1)
             res.append(label_mapper[0][pred])
 
-        wtr_utils.DISLPLAY_STDOUT(chars=res, space=spacing_words)
+        wtr_utils.DISLPLAY_STDOUT(chars=res, space=spacing_words, img_name=image_name_nums, MODE=args.mode)
 
     print("TOTAL TIME : {}s".format(time.time() - t))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Text Recognition Test')
-    parser.add_argument('--custom', default=False, action='store_true', help='select custom test dataset')
+    parser.add_argument('--mode', default='all', type=str, help='opt: stdout, file, all')
     args = parser.parse_args()
-    test()
+    pipeline_test(args)
