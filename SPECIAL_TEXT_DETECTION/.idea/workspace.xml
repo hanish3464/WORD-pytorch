@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a107f163-d788-4695-8313-02ea0a1db797" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imgproc.py" beforeDir="false" afterPath="$PROJECT_DIR$/imgproc.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kick_off.py" beforeDir="false" afterPath="$PROJECT_DIR$/kick_off.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wtd_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/wtd_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TOON_OBJECT_DETECTION/kick_off.py" beforeDir="false" afterPath="$PROJECT_DIR$/../TOON_OBJECT_DETECTION/kick_off.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TOON_OBJECT_DETECTION/test/images/sample1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TOON_OBJECT_DETECTION/test/images/sample2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TOON_OBJECT_DETECTION/test/images/sample3.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../TOON_OBJECT_DETECTION/test/images/sample4.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/create_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/create_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0012.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0021.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0030.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0050.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0066.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0076.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0097.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0116.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0246.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0347.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0373.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0428.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0458.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0459.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0460.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0461.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0462.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0463.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0464.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0465.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0466.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0467.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0592.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0597.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0619.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/0627.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/label.csv" beforeDir="false" afterPath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/test/custom/label.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/train.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/train/label.csv" beforeDir="false" afterPath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/train/label.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/train/labels.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/vis_train.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/vis_train.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/wtr.py" beforeDir="false" afterPath="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION/wtr.py" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="1TRrHNn5Pn9puE7A3LAR2w4Rrmb" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../WEBTOON_TEXT_RECOGNITION" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a107f163-d788-4695-8313-02ea0a1db797" name="Default Changelist" comment="" />
+      <created>1573433661619</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1573433661619</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/test.py</url>
+          <line>72</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
