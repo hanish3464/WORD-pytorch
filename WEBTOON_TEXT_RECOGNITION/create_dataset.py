@@ -51,32 +51,45 @@ def determineCanvasSize(canvas=None, label=None, font=None):
 
 def saltNoiseGeneration(image):
     row, col = image.shape
-    s_vs_p = 0.5
+    s_vs_p = 0.1
     amount = 0.004
     out = np.copy(image)
     # Salt mode
     num_salt = np.ceil(amount * image.size * s_vs_p)
     coords = [np.random.randint(0, i - 1, int(num_salt))
-              for i in image.shape]
+              for i in (row-3, col-3)]
 
     out[coords] = 255
-    dx = [1, -1, 0, 0]
-    dy = [0, 0, 1, -1]
+    dx = [1, -1, 0, 0, -1, -1, 1, 2, -2, 0, -2, 2, 3, -3, 0, -3, 3]
+    dy = [0, 0, 1, -1, -1, 1, -1, 0, 0, 2, 2, -2, 0, 0, 3, -3, -3]
+    coord_copy = coords.copy()
+
     for x, y in zip(dx, dy):
-        coord_copy = coords.copy()
         coord_copy[0] += x
         coord_copy[1] += y
         out[coord_copy] = 255
 
-
+   
 
     # Pepper mode
     num_pepper = np.ceil(amount * image.size * (1. - s_vs_p))
     coords = [np.random.randint(0, i - 1, int(num_pepper))
-              for i in image.shape]
+              for i in (row-3, col-3)]
     out[coords] = 0
+    coord_copy = coords.copy()
+    for j, k in zip(dx,dy):
+        coord_copy[0] += j
+        coord_copy[1] += k
+        out[coord_copy] = 0
 
     return out
+
+def chunkNoiseGeneration(copy):
+    chunk = np.array([[0., 0., 0., 0., 0., 0., 0.],[0., 0., 1., 1., 1., 0., 0.],[0., 1., 1., 1., 1., 1., 0.],[0., 1., 1., 1., 1., 1., 0.],  [0., 1., 1., 1., 1., 1., 0.],[0., 0., 1., 1., 1., 0., 0.],[0., 0., 0., 0., 0., 0., 0.]]) * 255
+    coord_x = random.randint(0, copy.shape[0] - 7)
+    coord_y = random.randint(0, copy.shape[1] - 7)
+    copy[coord_x:coord_x + 7, coord_y:coord_y + 7] = chunk[:]
+    return copy
 
 def createDataset(args):
     with codecs.open(config.LABEL_PATH, 'r', encoding='utf-8') as f:
@@ -104,14 +117,12 @@ def createDataset(args):
         if cnt - prev_cnt > 5000:
             prev_cnt = cnt
             sys.stdout.write(
-                'TRAINING IMAGE GENERATION: ({}/{}) \r'.format(cnt, config.NUM_CLASSES * len(fonts) * config.MORPH_NUM))
+                'TRAINING IMAGE GENERATION: ({}/{}) \r'.format(cnt, config.NUM_CLASSES * len(fonts) * config.MORPH_NUM * 3))
             sys.stdout.flush()
 
         for f in fonts:
 
             for v in range(config.MORPH_NUM):
-
-                cnt += 1
 
                 image, drawing = makeCanvas(width=config.IMAGE_WIDTH, height=config.IMAGE_HEIGHT,
                                             color=config.BACKGROUND)
@@ -126,10 +137,14 @@ def createDataset(args):
                     copy = cv2.erode(copy, kernel, iterations=1)
                 else:
                     copy = cv2.dilate(copy, kernel, iterations=1)
+                for x in range(3):
+                    cnt += 1
 
-                if random.randint(0, 1):
-                    copy = saltNoiseGeneration(copy)
-
+                    if x == 0:
+                        copy = saltNoiseGeneration(copy)
+                    if x == 1:
+                        copy = chunkNoiseGeneration(copy)
+                    else: pass
 
 
                 copy = Image.fromarray(copy)

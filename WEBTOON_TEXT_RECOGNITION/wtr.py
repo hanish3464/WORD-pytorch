@@ -1,7 +1,7 @@
 import torch
 from backbone.ResNet import ResNet
 from backbone.ResNet import BasicBlock, Bottleneck
-from backbone.vgg16_bn import vgg16_bn
+#from backbone.vgg16_bn import vgg16_bn
 import config
 import torch.nn as nn
 import torch.nn.functional as F

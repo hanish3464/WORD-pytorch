@@ -3,6 +3,7 @@ import torch
 import config
 import torch.backends.cudnn as cudnn
 from wtr import WTR
+from backbone import PreActResNet, dpn, VGG
 import time
 import file_utils
 import argparse
@@ -23,7 +24,9 @@ def copyStateDict(state_dict):
 
 
 def pipeline_test(args):
-    model = WTR()
+    #model = WTR()
+    #model = PreActResNet.PreActResNet18()
+    model = VGG.VGG('VGG16')
     print('Loading model from defined path :' + config.PRETRAINED_MODEL_PATH)
 
     if config.CUDA:
@@ -50,7 +53,7 @@ def pipeline_test(args):
 
             image = imgproc.loadImage(in_path)
             image = imgproc.cvtColorGray(image)
-            image = cv2.bitwise_not(image)
+            #image = cv2.bitwise_not(image)
             image = imgproc.tranformToTensor(image, config.TARGET_IMAGE_SIZE).unsqueeze(0)
             image = image.to(device)
             y = model(image)
@@ -67,3 +70,5 @@ if __name__ == '__main__':
     parser.add_argument('--mode', default='all', type=str, help='opt: stdout, file, all')
     args = parser.parse_args()
     pipeline_test(args)
+    
+

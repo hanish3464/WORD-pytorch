@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader
 from dataset import Hangul_Dataset
 import config
 from wtr import WTR
+from backbone import dpn, PreActResNet, VGG
 import time
 
 def adjust_lr(optimizer, decay=0.1):
@@ -16,7 +17,10 @@ def train():
 
     train_loader = DataLoader(dataset=datasets, batch_size=config.BATCH, shuffle=True, drop_last=True)
 
-    model = WTR().cuda()
+    #model = WTR().cuda()
+    model = dpn.DPN26().cuda()
+    #model = PreActResNet.PreActResNet18().cuda()
+    #model = VGG.VGG('VGG16').cuda()
     model = nn.DataParallel(model)
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -41,7 +45,7 @@ def train():
 
             image = image.to(device)
             label = label.to(device)
-
+            
             y = model(image)
             loss = criterion(y, label)
 
@@ -56,8 +60,8 @@ def train():
                 start = time.time()
         start = time.time()
 
-        print('save model ... -> {}'.format(config.SAVED_MODEL_PATH + 'wtr-res18-' + str(epoch) + '.pth'))
-        torch.save(model.state_dict(), config.SAVED_MODEL_PATH + 'wtr-res18-' + repr(epoch) + '.pth')
+        print('save model ... -> {}'.format(config.SAVED_MODEL_PATH + 'wtr-DPN26-' + str(epoch) + '.pth'))
+        torch.save(model.state_dict(), config.SAVED_MODEL_PATH + 'wtr-DPN26-' + repr(epoch) + '.pth')
 
 
 if __name__ == '__main__':

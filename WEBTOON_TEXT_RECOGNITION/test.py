@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
 from wtr import WTR
+from backbone import PreActResNet
 import time
 import file_utils
 import argparse
@@ -24,7 +25,8 @@ def copyStateDict(state_dict):
 
 
 def test(args):
-    model = WTR()
+#    model = WTR()
+    model = PreActResNet.PreActResNet18()
     print('Loading model from defined path :' + config.PRETRAINED_MODEL_PATH)
 
     if config.CUDA:
