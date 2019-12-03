@@ -4,7 +4,7 @@ TEST_CASE = '너미디어타다보장전선멋다올글자관심무기남대문�
 TRAIN_IMAGE_PATH = './train/images/'
 TEST_IMAGE_PATH = './test/images/'
 TEST_CUSTOM_IMAGE_PATH = './test/custom/'
-TEST_PREDICTION_PATH = './test/predictions/result.txt'
+TEST_PREDICTION_PATH = './test/predictions/result-'
 
 TRAIN_FONTS_PATH = './train/fonts/'
 TEST_FONTS_PATH = './test/fonts/'
@@ -15,14 +15,15 @@ TEST_CUSTOM_CSV_PATH = 'test/custom/label.csv'
 CUSTOM_TEST_GT_PATH = './test/custom/gt.txt'
 
 SAVED_MODEL_PATH = './saved_models/'
-PRETRAINED_MODEL_PATH = './saved_models/wtr-res18-20.pth'
-LABEL_PATH = './train/labels-2184.txt' #'./train/labels-561.txt'
+#PRETRAINED_MODEL_PATH = './pretrained_models/WTR_RES/wtr-res18-20.pth'
+PRETRAINED_MODEL_PATH = './pretrained_models/VGG/wtr-VGG16-11.pth'
+LABEL_PATH = './train/labels-2194.txt'
 
 # IMAGE GENERATION PARAMETER VALUE
 IMAGE_WIDTH = IMAGE_HEIGHT = 64
 FONT_SIZE = 48
 BACKGROUND = 0
-FONT_COLOR = (255)
+FONT_COLOR = 255
 DISTORTION_TIMES = 4
 ALPHA_MIN = 40
 ALPHA_MAX = 45
@@ -31,7 +32,8 @@ SIGMA_MAX = 7
 BLUR_EXTENT = 2
 ROTATION_ANGLE = 20
 MORPH_NUM = 2
-
+NOISE_GEN_NUM = 3
+MODEL_CHANNEL = 1
 
 # HYPERPAMETER AND CONFIGURATION
 CUDA = True
@@ -43,7 +45,7 @@ BATCH = 64
 TEST_BATCH = 100
 EPOCH = 20
 TARGET_IMAGE_SIZE = 224 #224
-NUM_CLASSES = 2184 #561 #2421
+NUM_CLASSES = 2194 #561 #2421
 DISPLAY_INTERVAL = 100
 
 #PIPELINEING WITH TEXT DETECTION RESULT

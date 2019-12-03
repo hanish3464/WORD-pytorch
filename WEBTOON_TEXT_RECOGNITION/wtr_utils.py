@@ -7,14 +7,14 @@ def flush(buffer, cnt):
     cnt = 0
     return buffer, cnt
 
-def DISLPLAY_STDOUT(chars=None, space=None, img_name=None, MODE=None):
+def DISLPLAY_STDOUT(chars=None, space=None, img_name=None, MODE=None, Net=None):
 
     str_buffer = ''
     word = 0
     cnt = 0
     img_idx = 0
     bubble = 0
-    with codecs.open(config.TEST_PREDICTION_PATH, 'w') as res:
+    with codecs.open(config.TEST_PREDICTION_PATH + Net + '.txt', 'w') as res:
         for k, char in enumerate(chars):
             cnt += 1
             str_buffer += char

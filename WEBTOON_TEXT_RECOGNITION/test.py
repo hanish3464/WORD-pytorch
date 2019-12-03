@@ -25,8 +25,8 @@ def copyStateDict(state_dict):
 
 
 def test(args):
-#    model = WTR()
-    model = PreActResNet.PreActResNet18()
+    model = WTR()
+    #model = PreActResNet.PreActResNet18()
     print('Loading model from defined path :' + config.PRETRAINED_MODEL_PATH)
 
     if config.CUDA:
@@ -65,18 +65,11 @@ def test(args):
             label = label.to(device)
             y = model(image)
             _, predicted = torch.max(y.data, 1)
-
-            prob = F.softmax(y.data, dim=1)
-            probability, index = torch.max(prob, 1)
-            #print(probability)
-            #print(probability.shape)
-
             total += label.size(0)
             correct += (predicted == label).sum().item()
 
-
             for pred, lab in zip(predicted, label):
-                x+=1
+                x += 1
                 if label_mapper[0][pred] != label_mapper[0][lab]:
                     print("index:{} [PRED:{}/ANS:{}], ".format(x, label_mapper[0][pred], label_mapper[0][lab]))
             x = 0

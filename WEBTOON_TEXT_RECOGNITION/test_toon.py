@@ -2,14 +2,14 @@ from collections import OrderedDict
 import torch
 import config
 import torch.backends.cudnn as cudnn
-from wtr import WTR
-from backbone import PreActResNet, dpn, VGG
 import time
 import file_utils
 import argparse
 import imgproc
 import wtr_utils
-import cv2
+from backbone import *
+from wtr import WTR
+
 
 def copyStateDict(state_dict):
     if list(state_dict.keys())[0].startswith("module"):
@@ -24,9 +24,12 @@ def copyStateDict(state_dict):
 
 
 def pipeline_test(args):
-    #model = WTR()
-    #model = PreActResNet.PreActResNet18()
-    model = VGG.VGG('VGG16')
+    network = {'res18': ResNet18(), 'res34': ResNet34(), 'res50': ResNet50(), 'res101': ResNet101(),
+               'res152': ResNet152(), 'dpn26': DPN26(), 'dpn92': DPN92(), 'vgg11': VGG('VGG11'), 'vgg13': VGG('VGG13'),
+               'vgg16': VGG('VGG16'), 'vgg19': VGG('VGG19'), 'wtr': WTR()}
+
+    model = network[args.net]
+    if args.net == 'wtr': config.TARGET_IMAGE_SIZE = 224
     print('Loading model from defined path :' + config.PRETRAINED_MODEL_PATH)
 
     if config.CUDA:
@@ -50,17 +53,16 @@ def pipeline_test(args):
 
         print('------------------------------OCR RESULT----------------------------------')
         for k, in_path in enumerate(img_lists):
-
             image = imgproc.loadImage(in_path)
             image = imgproc.cvtColorGray(image)
-            #image = cv2.bitwise_not(image)
             image = imgproc.tranformToTensor(image, config.TARGET_IMAGE_SIZE).unsqueeze(0)
             image = image.to(device)
             y = model(image)
             _, pred = torch.max(y.data, 1)
             res.append(label_mapper[0][pred])
 
-        wtr_utils.DISLPLAY_STDOUT(chars=res, space=spacing_words, img_name=image_name_nums, MODE=args.mode)
+        wtr_utils.DISLPLAY_STDOUT(chars=res, space=spacing_words, img_name=image_name_nums, MODE=args.mode,
+                                  Net=args.net)
 
     print("TOTAL TIME : {}s".format(time.time() - t))
 
@@ -68,7 +70,6 @@ def pipeline_test(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Text Recognition Test')
     parser.add_argument('--mode', default='all', type=str, help='opt: stdout, file, all')
+    parser.add_argument('--net', default='wtr', type=str, help='select model architecture')
     args = parser.parse_args()
     pipeline_test(args)
-    
-
