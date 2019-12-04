@@ -6,12 +6,12 @@ from torch import optim
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
 import os
-
 from wtd import WTD
 import config
 from loss import WTD_LOSS
 from dataset import webtoon_dataset
 import numpy as np
+import time
 
 def adjust_learning_rate(optimizer, step):
     lr = config.lr * (0.8 ** step)
@@ -25,14 +25,13 @@ def train():
     datasets = webtoon_dataset(config.TRAIN_IMAGE_PATH, config.TRAIN_LABEL_PATH, config.TRAIN_IMAGE_SIZE)
     train_data_loader = DataLoader(datasets, batch_size=config.BATCH, shuffle=True)
 
-
     ''' INITIALIZE MODEL, GPU, OPTIMIZER, and, LOSS '''
 
-    myNet = WTD()
+    model = WTD()
     if config.cuda:
-        myNet = myNet.cuda()
-        myNet = torch.nn.DataParallel(myNet).cuda()
-    optimizer = optim.Adam(myNet.parameters(), lr=config.LEARNING_RATE, weight_decay=config.WEIGHT_DECAY)
+        model = model.cuda()
+        model = torch.nn.DataParallel(model).cuda()
+    optimizer = optim.Adam(model.parameters(), lr=config.LEARNING_RATE, weight_decay=config.WEIGHT_DECAY)
     criterion = WTD_LOSS()
 
     ''' SET PATH '''
@@ -41,10 +40,9 @@ def train():
     step_idx = 0
 
     ''' KICK OFF TRAINING PROCESS '''
-    for i in range(config.EPOCH):
+    for e in range(config.EPOCH):
 
-        loss_value = 0
-
+        start = time.time()
         ''' LOAD MATERIAL FOR TRAINING FROM DATALOADER '''
         for idx, (image, region_score_GT, affinity_score_GT, confidence) in enumerate(train_data_loader):
 
@@ -60,20 +58,19 @@ def train():
             confidence = Variable(confidence.type(torch.FloatTensor)).cuda()
 
             ''' PASS THE MODEL AND PREDICT SCORES '''
-            y, _ = myNet(images)
+            y, _ = model(images)
             score_region = y[:, :, :, 0].cuda()
             score_affinity = y[:, :, :, 1].cuda()
 
-
-            if config.vis:
-                if i % 200 == 0 and i != 0:
+            if config.VIS:
+                if idx % 20 == 0 and idx != 0:
                     for idx2 in range(config.BATCH):
                         render_img1 = score_region[idx2].cpu().detach().numpy().copy() * 255.0
                         render_img2 = score_affinity[idx2].cpu().detach().numpy().copy() * 255.0
                         render_img = np.hstack((render_img1, render_img2))
-                        if not os.path.isdir('./vis/mask/epoch' + str(i) + '/'):
-                            os.mkdir('./vis/mask/epoch' + str(i) + '/')
-                        cv2.imwrite('./vis/mask/epoch' +str(i)+'/mask_' + str(i) + '_' + str(idx) + '.jpg', render_img)
+                        if not os.path.isdir('./vis/mask/epoch' + str(e) + '/'):
+                            os.mkdir('./vis/mask/epoch' + str(e) + '/')
+                        cv2.imwrite('./vis/mask/epoch' + str(e) + '/mask_' + str(idx) + '_' + str(idx2) + '.jpg', render_img)
 
 
             ''' CALCULATE LOSS VALUE AND UPDATE WEIGHTS '''
@@ -81,12 +78,14 @@ def train():
             loss = criterion(region_score_GT, affinity_score_GT, score_region, score_affinity, confidence)
             loss.backward()
             optimizer.step()
-            loss_value += loss.item()
 
-            if idx % 2 == 0 and idx > 0:
-                 print('epoch {}:({}/{}) batch || training loss {} ||'.format(i, idx, len(train_data_loader),loss_value / 2))
-                 loss_value = 0
+            if idx % config.DISPLAY_INTERVAL == 0:
+                end = time.time()
+                print('epoch: {}, iter:[{}/{}], loss: {}, Time Cost: {}s'.format(i, idx, len(train_data_loader), loss.item(), end-start))
+                start = time.time()
 
-            ''' SAVE MODEL PER 5000 ITERATIONS '''
-            if idx % 5000 == 0 and idx != 0:
-                torch.save(myNet.module.state_dict(), config.SAVED_MODEL_PATH + 'wtd' + repr(idx) + '.pth')
+        ''' SAVE MODEL PER 2 EPOCH '''
+        start = time.time()
+        if e % config.SAVE_INTERVAL == 0:
+            print('save model ... :' + config.SAVED_MODEL_PATH)
+            torch.save(myNet.module.state_dict(), config.SAVED_MODEL_PATH + 'wtd' + repr(e) + '.pth')

@@ -1,12 +1,3 @@
-train_img_num = 7
-img_num = 16
-gt_json_num = 21
-gt_xml_num = 500
-
-#convertor path
-json_gt_folder = './conversion/json_to_txt_gt/'
-json_path = './conversion/json_gt/'
-
 #MODEL PATH
 PRETRAINED_MODEL_PATH = './pretrained_models/clova_ai_CRAFT.pth'
 SAVED_MODEL_PATH = './saved_models/'
@@ -27,10 +18,9 @@ RESULT_CHAR_PATH = TEST_PREDICTION_PATH + 'res/'
 SPACING_WORD_PATH = TEST_PREDICTION_PATH + 'spacing_word/'
 
 #TRAIN PATH
-TRAIN_LABEL_PATH = './train/ground_truth/'
+TRAIN_LABEL_PATH = './train/labels/'
 TRAIN_IMAGE_PATH = './train/images/'
 TRAIN_PREDICTION_PATH = './train/predictions/'
-TRAIN_WORD_GT_PATH = './train/word_gt/'
 
 #PSD path
 jpg_images_folder_path = './psd/jpg_images/'
@@ -83,8 +73,9 @@ LEARNING_RATE = 1e-4
 LR_DECAY_STEP = 5
 WEIGHT_DECAY = 5e-4
 lr_multiply =0.8 #10K iterations
-BATCH = 8
-EPOCH = 100
-iterations = 20
+BATCH = 1
+EPOCH = 50
 
-VIS = False
+VIS = True
+DISPLAY_INTERVAL = 5
+SAVE_INTERVAL = 2

@@ -4,6 +4,8 @@
 import os
 import numpy as np
 import cv2
+import config
+import json
 
 def get_files(img_dir):
     imgs, masks, xmls, names = list_files(img_dir)
@@ -97,4 +99,16 @@ def drawBBoxOnImage(dir=None, img=None, index1=None, boxes=None, flags=None):
         if flags == 'word': cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(0, 0, 255), thickness=1)
         if flags == 'line': cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(0, 255, 0), thickness=1)
     cv2.imwrite(BBox_img, img)
+
+def loadJson(json_file):
+    items = []
+    with open(json_file) as data_file:
+        data = json.load(data_file)
+        for idx, info in enumerate(data['shapes']):
+            labels = info['label']; bboxes = info['points']
+            items.append([labels, bboxes])
+    return items
+
+
+if __name__ == '__main__': loadJson(config.TRAIN_LABEL_PATH + '05_3.json')
 
