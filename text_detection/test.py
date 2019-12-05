@@ -112,15 +112,8 @@ def test ():
         img = imgproc.delNoiseBorderLine(img)
         ''' ADJUST IMAGE SIZE AND MAKE BORDER LINE FOR BETTER TESTING ACCURACY '''
         constant = imgproc.adjustImageRatio(img)
-        #constant = imgproc.createImageBorder(img, img_size=config.target_size, color=config.white)
-
-        #index1 = file_utils.adjustImageNum(i, len(img_list))
         index1 = name_list[i]
         copy_img = constant.copy()
-        # copy_img2 = constant.copy()
-        # copy_img3 = constant.copy()
-        # copy_img4 = constant.copy()
-
 
         ''' PASS THE TEST MODEL AND PREDICT BELOW 4 RESULTS '''
         charBBoxes, wordBBoxes, lineBBoxes, heatmap = test_net(myNet, constant, config.text_threshold,

@@ -1,5 +1,7 @@
 #MODEL PATH
-PRETRAINED_MODEL_PATH = './pretrained_models/clova_ai_CRAFT.pth'
+#PRETRAINED_MODEL_PATH = './saved_models/clova_ai_CRAFT.pth'
+PRETRAINED_MODEL_PATH = './saved_models/wtd400.pth'
+REFINER_MODEL_PATH = './pretrained_models/craft_refiner_CTW1500.pth'
 SAVED_MODEL_PATH = './saved_models/'
 
 #original path
@@ -48,7 +50,7 @@ recognition_input_size = 224
 LNK_KERNEL_SIZE = 50
 
 cuda = True
-MAG_RATIO = 2.5
+MAG_RATIO = 1.5
 MAXIMUM_IMAGE_SIZE = 4000
 TRAIN_IMAGE_SIZE = 512
 poly = False
@@ -74,8 +76,8 @@ LR_DECAY_STEP = 5
 WEIGHT_DECAY = 5e-4
 lr_multiply =0.8 #10K iterations
 BATCH = 1
-EPOCH = 50
+EPOCH = 500
 
 VIS = True
-DISPLAY_INTERVAL = 5
-SAVE_INTERVAL = 2
+DISPLAY_INTERVAL = 20
+SAVE_INTERVAL = 100

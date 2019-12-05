@@ -15,8 +15,8 @@ class root_dataset(Dataset):
 
     def __init__(self, images_path, labels_path, image_size):
         self.image_size = image_size
-        self.image_list, _, _ = file_utils.get_files(images_path)
-        _, _, self.label_list = file_utils.get_files(labels_path)
+        self.image_list, _, _, _ = file_utils.get_files(images_path)
+        _, _, self.label_list, _ = file_utils.get_files(labels_path)
 
         self.gaussian_generator = GenerateGaussian(1024, config.gaussian_region, config.gaussian_affinity)
 
@@ -42,7 +42,7 @@ class root_dataset(Dataset):
         region_score_GT = self.gaussian_generator.region(image, char_bboxes)
         affinity_score_GT = self.gaussian_generator.affinity(image, char_bboxes)
         region_score_GT, affinity_score_GT = self.train_data_resize(region_score_GT, affinity_score_GT)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = imgproc.normalizeMeanVariance(image)
         confidence = np.ones((region_score_GT.shape[0], region_score_GT.shape[1]), np.float32)
 
         ''' Augment the data for training '''

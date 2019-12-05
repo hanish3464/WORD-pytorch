@@ -9,7 +9,9 @@ def loadImage(img_file):
     if img.shape[0] == 2:
         img = img[0]
     if len(img.shape) == 2: img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = np.array(img)
+    
     return img
 
 def adjustImageRatio(img):

@@ -88,7 +88,7 @@ def divideBubbleFromImage(img, vis_img, class_name, dets, class_thresh=0.8, bg='
 
 def removeNoiseConvexHull(canvas, hull_lists):
     for hull in hull_lists: cv2.drawContours(canvas, [hull], 0, (255, 255, 255), -1)
-    kernel=np.ones((7, 7), dtype=np.uint8)
+    kernel = np.ones((7, 7), dtype=np.uint8)
     canvas = cv2.erode(canvas, kernel, iterations=1)
     canvas = cv2.morphologyEx(canvas, cv2.MORPH_OPEN, kernel, iterations=5)
     _, contours, _ = cv2.findContours(canvas, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
