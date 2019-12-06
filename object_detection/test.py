@@ -19,8 +19,19 @@ import imgproc
 import config
 import sbd_utils
 import text
-import cv2
 import os
+from collections import OrderedDict
+
+def copyStateDict(state_dict):
+    if list(state_dict.keys())[0].startswith("module"):
+        start_idx = 1
+    else:
+        start_idx = 0
+    new_state_dict = OrderedDict()
+    for k, v in state_dict.items():
+        name = ".".join(k.split(".")[start_idx:])
+        new_state_dict[name] = v
+    return new_state_dict
 
 
 def test_net(fasterRCNN, image, img_blob, img_scales, items, labels, i):
@@ -65,7 +76,7 @@ def test_net(fasterRCNN, image, img_blob, img_scales, items, labels, i):
     pred_boxes = pred_boxes.squeeze()
 
     copy_img = np.copy(image[:, :, ::-1])
-    bubbles = []
+    bubbles = []; dets_bub = []
     for j in range(1, len(labels)):
         inds = torch.nonzero(scores[:, j] > config.THRESH).view(-1)
         if inds.numel() > 0:
@@ -77,30 +88,28 @@ def test_net(fasterRCNN, image, img_blob, img_scales, items, labels, i):
             cls_dets = cls_dets[order]
             keep = nms(cls_boxes[order, :], cls_scores[order], config.TEST_NMS)
             cls_dets = cls_dets[keep.view(-1).long()]
-            copy_img, vis_img, bubbles = sbd_utils.divideBubbleFromImage(copy_img, image[:, :, ::-1], labels[j],
-                                                                         cls_dets.cpu().numpy(),
+            copy_img, vis_img, bubbles, dets_bub = sbd_utils.divideBubbleFromImage(copy_img, image[:, :, ::-1], labels[j],
+                                                                         cls_dets.cpu().numpy(), i,
                                                                          config.CLASS_THRESH, bg=config.BACKGROUND)
 
-    copy_img, vis_img, cuts, rect_cuts = sbd_utils.divideCutFromImage(copy_img, image[:, :, ::-1], i,
+    copy_img, vis_img, cuts, rect_cuts, dets_cut = sbd_utils.divideCutFromImage(copy_img, image[:, :, ::-1], i,
                                                                       bg=config.BACKGROUND)
-    # alpha_image = sbd_utils.addImageToAlphaChannel(copy_img, copy_img, FLAG='conversion')
-    # vis_img, texts = text.detection(vis_img, bubbles, boxes)
-    return cuts, bubbles, vis_img, rect_cuts
-    # return alpha_image, vis_img, cuts, bubbles, texts
+    return cuts, bubbles, vis_img, rect_cuts, dets_bub
 
 
-def test():
+def test(args):
     ''' '''
 
     DEFAULT_PATH_LIST = [config.TEST_PREDICTION_PATH, config.CUT_PATH, config.BUBBLE_PATH, config.FINAL_IMAGE_PATH,
-                         config.RECT_CUT_PATH]
+                         config.RECT_CUT_PATH, config.TEXT_PATH]
+
     for PATH in DEFAULT_PATH_LIST:
         if not os.path.isdir(PATH): os.mkdir(PATH)
 
     np.random.seed(config.RNG_SEED)
     labels = np.asarray(['__background__', 'speech'])
 
-    '''INITIALIZE MODEL AND LOAD PRETRAINED MODEL'''
+    '''INITIALIZE OBJECT DETECTION NETWORK AND LOAD PRETRAINED MODEL'''
     layerNum = 101
     if config.BACKBONE == 'res152': layerNum = 152
 
@@ -108,6 +117,15 @@ def test():
     fasterRCNN.create_architecture()
 
     print('Loading model from defined path :' + config.PRETRAINED_MODEL_PATH)
+
+    '''INITIALIZE TEXT DETECTION NETWORK AND LOAD PRETRAINED MODEL'''
+    if args.txt:
+        from text_detection.wtd import WTD
+        text_detector = WTD()
+        print('Loading model from defined path :' + config.TEXT_DETECTOR_MODEL_PATH)
+        text_detector.load_state_dict(copyStateDict(torch.load(config.TEXT_DETECTOR_MODEL_PATH)))
+        text_detector = text_detector.cuda()
+        text_detector.eval()
 
     if config.cuda:
         model = torch.load(config.PRETRAINED_MODEL_PATH)
@@ -144,8 +162,7 @@ def test():
         img_blob, img_scales = imgproc.getImageBlob(img)
 
         ''' PASS THE TEST MODEL AND PREDICT BELOW IM RESULTS '''
-        # alpha_img, vis_img, cuts, bubbles, texts = test_net(fasterRCNN, img, img_blob, img_scales, items, labels, i)
-        cuts, bubbles, vis_img, rect_cuts = test_net(fasterRCNN, img, img_blob, img_scales, items, labels, i)
+        cuts, bubbles, vis_img, rect_cuts, dets_bub = test_net(fasterRCNN, img, img_blob, img_scales, items, labels, i)
         fixed_i = file_utils.resultNameNumbering(origin=i, digit=len(img_list))
 
         for cut_idx, cut in enumerate(cuts):
@@ -156,9 +173,8 @@ def test():
             file_utils.saveImage(dir=config.RECT_CUT_PATH, img=rect_cut, index1=fixed_i, index2=rect_cut_idx,
                                  ext='.png')
 
-        # for txt_idx, txt in enumerate(texts):
-        #     file_utils.saveImage(dir=config.TEXT_PATH, img=txt, index1=fixed_i, index2=txt_idx, ext='.png')
-
+        '''Text Detection'''
+        if args.txt: vis_img = text.text(text_detector, vis_img, dets_bub, bubbles)
         file_utils.saveImage(dir=config.FINAL_IMAGE_PATH, img=vis_img, index1=fixed_i, ext='.jpg')
 
     print("TOTAL TIME : {}s".format(time.time() - t))

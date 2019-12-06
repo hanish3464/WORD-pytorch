@@ -27,12 +27,12 @@ PIXEL_MEANS = np.array([[[102.9801, 115.9465, 122.7717]]])
 TEST_BBOX_REG = True
 TEST_NMS = 0.3
 POOLING_MODE = 'crop'
-CLASS_THRESH = 0.5
+CLASS_THRESH = 0.995
 BACKGROUND = 'white'
 OPENING_ITER_NUM = 1
 DILATE_ITER_NUM = 1
 THRESH_EXTENT = 127
-AREA_THRESH = 3000
+AREA_THRESH = 2000
 KERNEL_SIZE = 25
 TEXT_MIN_MARGIN = 20
 TEXT_MAX_MARGIN = 18
@@ -49,6 +49,7 @@ NUM_WORKERS = 0
 
 #BBOX THRESHOLD
 THRESH = 0.05
+BBOX_BORDER_THRESH = 7
 
 #BACKBONE NETWORK
 BACKBONE = 'res101'
@@ -59,5 +60,7 @@ cuda = True
 
 #MODEL PATH
 PRETRAINED_MODEL_PATH = './pretrained_models/Speech-Bubble-Detector.pth'
+TEXT_DETECTOR_MODEL_PATH  = '../text_detection/pretrained_models/Webtoon-Text-Detector.pth'
+
 SAVED_MODEL_PATH = './saving_models/'
 BACKBONE_MODEL_PATH = './pretrained_models/resnet101_caffe.pth'

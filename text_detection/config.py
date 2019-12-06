@@ -1,6 +1,8 @@
 #MODEL PATH
 #PRETRAINED_MODEL_PATH = './saved_models/clova_ai_CRAFT.pth'
-PRETRAINED_MODEL_PATH = './saved_models/wtd400.pth'
+PRETRAINED_SPECIAL_MODEL_PATH = './saved_models/wtd300.pth'
+SPECIAL_CHAR_TEST_PATH = '../object_detection/test/predictions/rect_cut/'
+#PRETRAINED_MODEL_PATH = './saved_models/wtd400.pth'
 REFINER_MODEL_PATH = './pretrained_models/craft_refiner_CTW1500.pth'
 SAVED_MODEL_PATH = './saved_models/'
 

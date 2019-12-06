@@ -175,7 +175,7 @@ def getdetReigion_core(image, textmap, linkmap, text_threshold, link_threshold, 
         hull = cv2.convexHull(i, clockwise=True)
         if area < 50: continue
         cv2.drawContours(image, [hull], 0, (255, 255, 0), 2)
-    cv2.imwrite('./res/final-' + str(np_x) + '.jpg', image)
+    cv2.imwrite('./res/final/' + str(np_x) + '.jpg', image)
 
 
     # nLabels, labels, stats, centroids = cv2.connectedComponentsWithStats(text_score_comb.astype(np.uint8),

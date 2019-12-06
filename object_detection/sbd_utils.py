@@ -26,12 +26,31 @@ def drawBubbleContours(img, class_name, score, new_contours, maxIdx, idx):
     if config.DRAWBUB is True:
         cv2.drawContours(img, [new_contours[maxIdx]], 0, (255, 0, 0), 3)
         cv2.putText(img, "{:s}_{:d}: {:.3f}".format(class_name, idx, score), (0, 10), cv2.FONT_HERSHEY_PLAIN,
-                1.0, (255, 0, 0), thickness=2)
+                    1.0, (255, 0, 0), thickness=2)
     return img
 
 
-def divideBubbleFromImage(img, vis_img, class_name, dets, class_thresh=0.8, bg='white'):
+def adjustBBoxCoord(img, xmin, ymin, xmax, ymax):
+    crop = img[ymin:ymax, xmin:xmax, :]
+    gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+    sharpening_kernel = np.array(
+        [[-1, -1, -1, -1, -1], [-1, 2, 2, 2, -1], [-1, 2, 8, 2, -1], [-1, 2, 2, 2, -1], [-1, -1, -1, -1, -1]]) / 8.0
+    gray = cv2.filter2D(gray, -1, sharpening_kernel)
 
+    ret, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+    # print(thresh[:, 0], thresh.shape[0], len(thresh[:,0]))
+    # if np.sum(thresh[:, 0]) != thresh.shape[0] * 255 or np.sum(thresh[:, -1] != thresh.shape[0] * 255) or np.sum(
+    #         thresh[0, :] != thresh.shape[1] * 255 or thresh[1, :] != thresh.shape[1] * 255): return thresh, crop
+    # else:
+    thr = config.BBOX_BORDER_THRESH
+    thresh = cv2.copyMakeBorder(thresh[thr:-thr, thr:-thr], thr,
+                                thr, thr, thr, borderType=cv2.BORDER_CONSTANT,
+                                value=[0, 0, 0])
+
+    return thresh, crop
+
+
+def divideBubbleFromImage(img, vis_img, class_name, dets, np_x, class_thresh=0.8, bg='white'):
     count = 0
     bubble_list = []
     value = []
@@ -48,42 +67,39 @@ def divideBubbleFromImage(img, vis_img, class_name, dets, class_thresh=0.8, bg='
             bboxes.append(bbox)
 
     order_k = sorted(range(len(value)), key=lambda k: value[k])
-
+    dets_bub = []
     for bub_order in order_k:
+        bbox = bboxes[bub_order]
+        xmin, ymin, xmax, ymax = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
+        dets_bub.append([xmin, ymin, xmax, ymax])
+        thresh, crop = adjustBBoxCoord(img, xmin, ymin, xmax, ymax)
+        crop_tmp = crop.copy()
+        _, contours, _ = cv2.findContours(thresh, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
 
-            bbox = bboxes[bub_order]
-            xmin, ymin, xmax, ymax = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
+        maxIdx = 0
+        maxArea = 0
+        for x, cnt in enumerate(contours):
+            area = cv2.contourArea(cnt)
+            if maxArea < area:
+                maxArea = area
+                maxIdx = x
 
-            crop = img[ymin:ymax, xmin:xmax, :]
-            crop_tmp = crop.copy()
-            gray_crop = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
-            ret, thresh = cv2.threshold(gray_crop, 127, 255, cv2.THRESH_BINARY)
-            _, contours, _ = cv2.findContours(thresh, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+        count += 1
+        crop_tmp = drawBubbleContours(crop_tmp, class_name, scores[bub_order], contours, maxIdx, count)
+        vis_img[ymin:ymax, xmin:xmax, :] = crop_tmp[:, :, :]
+        h, w, _ = crop.shape
+        bubble = bubbleAlphaBlending(crop, contours, maxIdx)
 
-            maxIdx = 0
-            maxArea = 0
-            for x, cnt in enumerate(contours):
-                area = cv2.contourArea(cnt)
-                if maxArea < area:
-                    maxArea = area
-                    maxIdx = x
+        bubble_list.append(bubble)
+        if bg == 'white':
+            cv2.drawContours(crop, [contours[maxIdx]], 0, (255, 255, 255), -1)
+            cv2.drawContours(crop, [contours[maxIdx]], 0, (255, 255, 255), 10)
 
-            count += 1
-            crop_tmp = drawBubbleContours(crop_tmp, class_name, scores[bub_order], contours, maxIdx, count)
-            vis_img[ymin:ymax, xmin:xmax, :] = crop_tmp[:, :, :]
-            h, w, _ = crop.shape
-            bubble = bubbleAlphaBlending(crop, contours, maxIdx)
+        if bg == 'black':
+            cv2.drawContours(crop, [contours[maxIdx]], 0, (0, 0, 0), -1)
+            cv2.drawContours(crop, [contours[maxIdx]], 0, (0, 0, 0), 10)
 
-            bubble_list.append(bubble)
-            if bg == 'white':
-                cv2.drawContours(crop, [contours[maxIdx]], 0, (255, 255, 255), -1)
-                cv2.drawContours(crop, [contours[maxIdx]], 0, (255, 255, 255), 10)
-
-            if bg == 'black':
-                cv2.drawContours(crop, [contours[maxIdx]], 0, (0, 0, 0), -1)
-                cv2.drawContours(crop, [contours[maxIdx]], 0, (0, 0, 0), 10)
-
-    return img, vis_img, bubble_list
+    return img, vis_img, bubble_list, dets_bub
 
 
 def removeNoiseConvexHull(canvas, hull_lists):
@@ -105,29 +121,42 @@ def drawCutConvexHull(orig, img, new_contours):
     for idx, new_cnt in enumerate(reversed(new_contours)):
         new_hull = cv2.convexHull(new_cnt, clockwise=True)
         x, y, w, h = cv2.boundingRect(new_cnt)
-        cuts.append(orig[y:y+h, x:x+w, :])
+        cuts.append(orig[y:y + h, x:x + w, :])
         if config.DRAWCUT is True:
             cv2.drawContours(img, [new_hull], 0, (0, 0, 255), 3)
             cv2.putText(img, 'Cut_' + str(idx), (x + w - 80, y - 5), cv2.FONT_HERSHEY_PLAIN,
-                    1.5, (0, 0, 255), thickness=2)
+                        1.5, (0, 0, 255), thickness=2)
     return img, cuts
 
 
 def cutAlphaBlending(img, new_contours):
-    cut_list = []; det = []
+    cut_list = []
+    det = []
     for idx, new_cnt in enumerate(new_contours):
         x, y, w, h = cv2.boundingRect(new_cnt)
         img_h, img_w, _ = img.shape
         canvas = np.zeros((img_h, img_w), dtype=np.uint8)
         new_hull = cv2.convexHull(new_cnt, clockwise=True)
         cv2.drawContours(canvas, [new_hull], 0, (255, 255, 255), -1)
-        canvas_crop = canvas[y:y+h, x:x+w]
-        img_crop = img[y:y+h, x:x+w]
+        canvas_crop = canvas[y:y + h, x:x + w]
+        img_crop = img[y:y + h, x:x + w]
         alpha_img = addImageToAlphaChannel(canvas_crop, img_crop, FLAG='segmentation')
         cut_list.append(alpha_img)
-        det.append([x,y,x+w,y+h])
+        det.append([x, y, x + w, y + h])
     return cut_list, det
 
+def sortCut(dets):
+    tmp = []; value = []; dets_cut = []
+    for idx, det in enumerate(dets):
+        ymin = int(det[1])
+        value.append(ymin)
+        tmp.append(det)
+    order_k = sorted(range(len(value)), key=lambda k: value[k])
+    for cut_order in order_k:
+        bbox = tmp[cut_order]
+        xmin, ymin, xmax, ymax = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
+        dets_cut.append([xmin,ymin,xmax,ymax])
+    return dets_cut
 
 def divideCutFromImage(img, vis_img, idx, bg='white'):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -159,7 +188,7 @@ def divideCutFromImage(img, vis_img, idx, bg='white'):
         if bg == 'white' and area < config.AREA_THRESH: continue
         hull_lists.append(hull)
     new_contours = removeNoiseConvexHull(canvas, hull_lists)
-    cut_list, det = cutAlphaBlending(img, new_contours)
+    cut_list, dets_cut = cutAlphaBlending(img, new_contours)
     vis_img, rect_cuts = drawCutConvexHull(img, vis_img, new_contours)
-
-    return img, vis_img, cut_list, rect_cuts
+    dets_cut = sortCut(dets_cut)
+    return img, vis_img, cut_list, rect_cuts, dets_cut

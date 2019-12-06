@@ -32,10 +32,11 @@ def test_net(model, image, text_threshold, link_threshold, low_text, cuda, k):
     #ratio_h = ratio_w = 1 / target_ratio
     copy = image.copy()
     image = imgproc.normalizeMeanVariance(image)
+    image = cv2.resize(image, (512, 512), interpolation=cv2.INTER_LINEAR)
     x = torch.tensor(image).float().permute(2, 0, 1)
     x = Variable(x.type(torch.FloatTensor))
     x = Variable(x.unsqueeze(0))
-
+    print(x.shape)
     if cuda: x = x.cuda()
 
     y, _ = model(x)
@@ -45,18 +46,18 @@ def test_net(model, image, text_threshold, link_threshold, low_text, cuda, k):
 
     wtd_utils.getdetReigion_core(copy, score_text, score_link, text_threshold, link_threshold, low_text, k)
 
-    cv2.imwrite('./res/text_' + str(k) + '.jpg', imgproc.cvt2HeatmapImg(score_text))
-    cv2.imwrite('./res/link_' + str(k) + '.jpg', imgproc.cvt2HeatmapImg(score_link))
+    cv2.imwrite('./res/text/' + str(k) + '.jpg', imgproc.cvt2HeatmapImg(score_text))
+    cv2.imwrite('./res/link/' + str(k) + '.jpg', imgproc.cvt2HeatmapImg(score_link))
 
 
 def test_sounds_effect():
     sound_effect_detector = WTD()
-    print('Loading model from defined path :' + config.PRETRAINED_MODEL_PATH)
+    print('Loading model from defined path :' + config.PRETRAINED_SPECIAL_MODEL_PATH)
     if config.cuda:
-        sound_effect_detector.load_state_dict(copyStateDict(torch.load(config.PRETRAINED_MODEL_PATH)))
+        sound_effect_detector.load_state_dict(copyStateDict(torch.load(config.PRETRAINED_SPECIAL_MODEL_PATH)))
     else:
         sound_effect_detector.load_state_dict(
-            copyStateDict(torch.load(config.PRETRAINED_MODEL_PATH, map_location='cpu')))
+            copyStateDict(torch.load(config.PRETRAINED_SPECIAL_MODEL_PATH, map_location='cpu')))
 
     if config.cuda:
         sound_effect_detector.cuda()
@@ -65,13 +66,12 @@ def test_sounds_effect():
     #sound_effect_detector.eval()
     print('[SOUND EFFECT DETECTOR TEST KICK-OFF]')
 
-    img_list, _, _, name_list = file_utils.get_files(config.TRAIN_IMAGE_PATH)
+    img_list, _, _, name_list = file_utils.get_files(config.SPECIAL_CHAR_TEST_PATH)
 
     for k, in_path in enumerate(img_list):
         sys.stdout.write('TEST IMAGES: {:d}/{:d}: {:s} \r'.format(k + 1, len(img_list), in_path))
         sys.stdout.flush()
         img = imgproc.loadImage(in_path)
-        cv2.imwrite('./test.jpg', img)
         test_net(sound_effect_detector, img, config.text_threshold,
                  config.link_threshold, config.low_text, config.cuda, k)
 
