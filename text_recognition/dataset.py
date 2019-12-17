@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
-import imgproc
+from text_recognition import imgproc
 import torch
-import file_utils
+from text_recognition import file_utils
 import random
-import config
+from text_recognition import config
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.filters import gaussian_filter
 from PIL import Image, ImageFilter
@@ -12,7 +12,7 @@ from PIL import Image, ImageFilter
 class Hangul_Dataset(object):
 
     def __init__(self, csv_path=None, label_path=None, image_size=None, train=None):
-        self.data = pd.read_csv(csv_path)
+        self.data = pd.read_csv(csv_path, error_bad_lines=False)
         self.size = image_size
         self.images = self.data.iloc[:, 0]
         self.labels = np.asarray(self.data.iloc[:, 1])

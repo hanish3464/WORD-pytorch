@@ -100,7 +100,7 @@ def chunkNoiseGenerator(copy):
 
 
 def createDataset(args):
-    with codecs.open(config.LABEL_PATH, 'r', encoding='utf-8') as f:
+    with codecs.open('./train/labels-2213.txt', 'r', encoding='utf-8') as f:
         labels = f.read().strip('\ufeff').splitlines()
     if args.train:
         FONTS_PATH = config.TRAIN_FONTS_PATH
@@ -122,14 +122,14 @@ def createDataset(args):
 
     cnt = 0
     prev_cnt = 0
-
+    
     for k, character in enumerate(labels):
 
         if cnt - prev_cnt > 5000:
             prev_cnt = cnt
             sys.stdout.write(
                 'TRAINING IMAGE GENERATION: ({}/{}) \r'.format(cnt,
-                                                               config.NUM_CLASSES * len(fonts) * config.MORPH_NUM * config.NOISE_GEN_NUM))
+                                                               config.NUM_CLASSES * len(fonts) * config.MORPH_NUM))
             sys.stdout.flush()
 
         for f in fonts:
@@ -148,26 +148,27 @@ def createDataset(args):
                 if v == 1: morph_templete = cv2.erode(morph_templete, kernel, iterations=1)
                 else: morph_templete = cv2.dilate(morph_templete, kernel, iterations=1)
 
-                for x in range(config.NOISE_GEN_NUM):
-                    copy = morph_templete.copy()
-                    cnt += 1
+                #for x in range(config.NOISE_GEN_NUM):
+                copy = morph_templete.copy()
+                cnt += 1
 
-                    if x == 0: copy = saltPepperNoiseGenerator(copy)
-                    elif x == 1: copy = chunkNoiseGenerator(copy)
-                    else: pass #origin data
+                    #if x == 0: copy = saltPepperNoiseGenerator(copy)
+                    #elif x == 1: copy = chunkNoiseGenerator(copy)
+                    #else: pass #origin data
 
-                    copy = Image.fromarray(np.array(copy))
-                    file_utils.saveImage(dir=IMAGE_PATH, img=copy, index=cnt)
-                    file_utils.saveCSV(dir=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k)
-
+                copy = Image.fromarray(np.array(copy))
+                file_utils.saveImage(dir=IMAGE_PATH, img=copy, index=cnt)
+                file_utils.saveCSV(dir=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k)
+    
     #added custom training data difficult to classify
 
     tranfer_img_list, _, _, _ = file_utils.get_files(config.TRANFSER_TRAIN_IMAGE_PATH)
-    label_mapper = file_utils.makeLabelMapper(config.LABEL_PATH)
+    label_mapper = file_utils.makeLabelMapper('./train/labels-2213.txt')
     test_txt = []; test_num = []
-
-    print("[CUSTOM HANGUL DIFFICULT DATASET GENERATION : {}]".format(len(tranfer_img_list) * 3))
-
+    print("[CUSTOM HANGUL DIFFICULT DATASET GENERATION : {}]".format(len(tranfer_img_list)))
+    #print(config.TRANSFER_CASE)
+    text_labels = file_utils.loadText('/root/recognition_train/transfer_train_label.txt')
+    config.TRANSFER_CASE = text_labels[0]
     for txt in config.TRANSFER_CASE:
         test_num.append(label_mapper[0].tolist().index(txt))
         test_txt.append(txt)
@@ -176,13 +177,13 @@ def createDataset(args):
         k, character = test_num[idx], test_txt[idx]
         img = imgproc.loadImage(in_path)
         img = imgproc.cvtColorGray(img)
-        for x in range(config.NOISE_GEN_NUM):
+        for x in range(1):
             copy = img.copy()
             cnt += 1
 
-            if x == 0: copy = saltPepperNoiseGenerator(copy)
-            elif x == 1: copy = chunkNoiseGenerator(copy)
-            else: pass  # origin data
+            #if x == 0: copy = saltPepperNoiseGenerator(copy)
+            #elif x == 1: copy = chunkNoiseGenerator(copy)
+            #else: pass  # origin data
 
             copy = Image.fromarray(np.array(copy))
             file_utils.saveImage(dir=IMAGE_PATH, img=copy, index=cnt)

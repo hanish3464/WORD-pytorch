@@ -2,18 +2,18 @@ import torch
 from collections import OrderedDict
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from dataset import Hangul_Dataset
-import config
-from wtr import WTR
-from backbone import *
+from text_recognition.dataset import Hangul_Dataset
+import text_recognition.config as config
+from text_recognition.wtr import WTR
+from text_recognition.backbone import *
 import time
 import argparse
-import file_utils
+import text_recognition.file_utils as file_utils
 
-network = {'res18': ResNet18(), 'res34': ResNet34(), 'res50': ResNet50(),
-           'res101': ResNet101(), 'res152': ResNet152(), 'dpn26': DPN26(),
-           'dpn92': DPN92(), 'vgg11': VGG('VGG11'), 'vgg13': VGG('VGG13'),
-           'vgg16': VGG('VGG16'), 'vgg19': VGG('VGG19'), 'wtr': WTR()}
+#network = {'res18': ResNet18(), 'res34': ResNet34(), 'res50': ResNet50(),
+#           'res101': ResNet101(), 'res152': ResNet152(), 'dpn26': DPN26(),
+#           'dpn92': DPN92(), 'vgg11': VGG('VGG11'), 'vgg13': VGG('VGG13'),
+#           'vgg16': VGG('VGG16'), 'vgg19': VGG('VGG19'), 'wtr': WTR()}
 
 
 def copyStateDict(state_dict):
@@ -39,11 +39,10 @@ def train_net(model=None, data_loader=None, optimizer=None, epoch=50, lr=0.001, 
     criterion = nn.CrossEntropyLoss()
 
     total_step = len(data_loader)
-    model.train()
 
     print('[WEBTOON-TEXT-RECOGNITION TRAINING KICK-OFF]')
     for e in range(1, epoch + 1):
-
+        model.train()
         start = time.time()
         if e % lr_decay_step == 0:
             adjust_lr(optimizer, config.LR_DECAY_GAMMA)
@@ -69,8 +68,8 @@ def train_net(model=None, data_loader=None, optimizer=None, epoch=50, lr=0.001, 
         start = time.time()
         if e % SAVE_INTERVAL == 0:
             print(
-                'save model ... -> {}'.format(config.SAVED_MODEL_PATH + 'transfer-' + args.net + '-' + str(e) + '.pth'))
-            torch.save(model.state_dict(), config.SAVED_MODEL_PATH + 'transfer-' + args.net + '-' + repr(e) + '.pth')
+                'save model ... -> {}'.format(config.SAVED_MODEL_PATH + args.net + '-' + str(e) + '.pth'))
+            torch.save(model.state_dict(), config.SAVED_MODEL_PATH + args.net + '-' + repr(e) + '.pth')
 
 
 def train_linear_classifier(args):
@@ -116,7 +115,7 @@ def train(args):
 
     train_loader = DataLoader(dataset=datasets, batch_size=config.BATCH, shuffle=True, drop_last=True)
 
-    model = network[args.net].cuda()
+    model = WTR().cuda()
     model = nn.DataParallel(model)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
     train_net(model=model, data_loader=train_loader, optimizer=optimizer, epoch=config.EPOCH,

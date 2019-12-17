@@ -6,13 +6,13 @@ from torch.autograd import Variable
 import torchvision.models as models
 from torch.autograd import Variable
 import numpy as np
-from model.utils.config import cfg
-from model.rpn.rpn import _RPN
+from object_detection.lib.model.utils.config import cfg
+from object_detection.lib.model.rpn.rpn import _RPN
 
-from model.roi_layers import ROIAlign, ROIPool
+from object_detection.lib.model.roi_layers import ROIAlign, ROIPool
 
-from model.rpn.proposal_target_layer_cascade import _ProposalTargetLayer
-from model.utils.net_utils import _smooth_l1_loss, _crop_pool_layer, _affine_grid_gen, _affine_theta
+from object_detection.lib.model.rpn.proposal_target_layer_cascade import _ProposalTargetLayer
+from object_detection.lib.model.utils.net_utils import _smooth_l1_loss, _crop_pool_layer, _affine_grid_gen, _affine_theta
 
 class _fasterRCNN(nn.Module):
     """ faster RCNN """
