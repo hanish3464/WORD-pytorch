@@ -1,7 +1,7 @@
 import numpy as np
 #TRANSLATION
-PAPAGO_ID = "LOhtMS07Hz6EzW32I8ix"
-PAPAGO_PW = "xemXKboMSP"
+PAPAGO_ID = 'enter the id'
+PAPAGO_PW = "enter the password"
 
 #BUBBLE DETECTION
 LABEL = np.asarray(['__background__', 'speech'])
