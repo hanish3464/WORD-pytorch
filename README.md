@@ -7,7 +7,7 @@
 
 WORD detect objects(speech bubbles, cuts, and line texts) in webtoon or cartoon. You can also meet ocr(line text detection + recognition) results and English translation with papago API if you want. I have referenced and implemented [CRAFT-pytorch](https://github.com/clovaai/CRAFT-pytorch) to detect line text, used [Faster-RCNN-pytorch](https://github.com/jwyang/faster-rcnn.pytorch/tree/pytorch-1.0) to detect speech bubble. And I have implemented all the code to find elaborately contours of speech bubble, detect cut with image processing(OpenCV) and about korean text recognition model. You can check README.md for each project folder if you want more details.
 
-<img width="1000" height="400" src="./figures/figure.gif">
+<img width="1000" height="500" src="./figures/figure.gif">
 
 `[Image Source]:cells of Yumi, girl of random chat, mamamian, lookism, free throw, king of bok-hak, world of girl, naver webtoon, and header of gangs. `
 
@@ -44,7 +44,7 @@ Line Text Recognizer | [Click](https://drive.google.com/open?id=1hhAER4rz6Ucgs0J
 Download model and include to `weights/`
 
 ## Demo
-`Note: When you test own your test cartoon images including several objects, You can get the segmentation results of speech bubble, cut. Yon can also get OCR, English translation results.`
+`Note: When you test own your test toon images including several objects, You can get the segmentation results of speech bubble and cut. Yon can also get OCR, English translation results.`
 1. Download models above link
 2. Add image files to `data/`
 3. Run demo.py (add `--ocr --papago` options if you want)
