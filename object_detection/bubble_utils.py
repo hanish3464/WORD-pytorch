@@ -109,7 +109,7 @@ def get_cnt_bubble(demo, image, class_name, dets, class_thresh, bg='white'):
             crop_tmp = crop.copy()
             _, cnts, _ = cv2.findContours(thresh, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
             maxIdx, maxArea = find_max_contour(contours=cnts)
-            crop_tmp = draw_bubble_contour(crop_tmp, class_name, scores[bub_order], cnts, maxIdx, count)
+            #crop_tmp = draw_bubble_contour(crop_tmp, class_name, scores[bub_order], cnts, maxIdx, count)
             demo[ymin:ymax, xmin:xmax, :] = crop_tmp[:, :, :]
             bubble = alpha_blend_bubble(crop, cnts, maxIdx)
             bubbles.append(bubble)

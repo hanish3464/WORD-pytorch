@@ -36,6 +36,6 @@ def test_opencv(image=None, demo=None, bg=None, size=None):
     new_contours = cut_utils.removeNoiseConvexHull(canvas, hull_lists)
     cuts, dets_cut = cut_utils.cutAlphaBlending(image, new_contours)
     vis_img, rect_cuts = cut_utils.drawCutConvexHull(image, demo, new_contours)
-    dets_cut = cut_utils.sortCut(dets_cut)
+
     return vis_img, cuts
-    #return image, vis_img, cuts, rect_cuts, dets_cut
+

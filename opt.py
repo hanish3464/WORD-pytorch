@@ -6,8 +6,8 @@ PAPAGO_PW = "enter the password"
 #BUBBLE DETECTION
 LABEL = np.asarray(['__background__', 'speech'])
 RNG_SEED = 3
-DRAWTXT = True
-DRAWBUB = True
+DRAWTXT = False
+DRAWBUB = False
 DRAWCUT = True
 
 #TEXT DETECTION

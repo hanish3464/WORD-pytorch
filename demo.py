@@ -9,7 +9,7 @@ Ajou University.
 Writer: Han Kim
 
 
-reference :
+referenced paper :
             Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks
             CRAFT : Character Region Awareness for Text Detection
 """

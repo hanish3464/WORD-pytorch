@@ -3,6 +3,7 @@ import numpy as np
 import opt
 import imgproc
 
+
 def removeNoiseConvexHull(canvas, hull_lists):
     for hull in hull_lists: cv2.drawContours(canvas, [hull], 0, (255, 255, 255), -1)
     kernel = np.ones((7, 7), dtype=np.uint8)
