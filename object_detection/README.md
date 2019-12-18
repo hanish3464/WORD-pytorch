@@ -22,5 +22,5 @@ Shaoqing Ren, Kaiming He, Ross Girshick, Jian Sun
 (Last revised on 6 Jan 2016(v3)) [Faster RCNN](https://arxiv.org/pdf/1506.01497.pdf)
 
 ## Train
-When you train own your datasets, You only need to have Speech Bubble Bounding box labels. In other words, this model CAN segmentation Speech Bubble Object, but DON'T need segmetation data. training code will be released in the near future. But, speech bubble datasets can't release bacause of [company](http://www.ideaconcert.com/) policy. I got the data of speech bubbles from PSD file and suitable post processing method.
+Training code will be released in the near future. But, speech bubble datasets can't release bacause of [company](http://www.ideaconcert.com/) policy. I got all the data of speech bubbles from PSD file and suitable post processing method.
 
