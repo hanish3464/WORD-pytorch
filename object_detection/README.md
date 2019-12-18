@@ -1,52 +1,26 @@
-# TOON OBJECT[Cut, Speech Bubble, and, Lines Text] Detection based on Faster R-CNN and OpenCV
+# Object Detection in toon based on Faster R-CNN and OpenCV
 
-`Note : It's not the final version code. I will the refine and update the code over and over again.`
+```
+The remaining issues : 
+1. Result of bubble contour detection is not perfect. If bounding box of bubble is detected more elaborately with post processing, It is possible to improve performance.
+2. Cut detection is a limit about the case to seperate cuts which obstacles(sound effects, characters, etc.) go through. So, if obstacle is firstly detached from cuts, It's also possible to improve performance.
+```
 ### Sample Results
 
 ### Overview
-`This is TOON Object Detection with Faster RCNN and Image Processing Technology. Now, my project CAN detect speech bubble, lines text, and cut. I also planning to seperate character and special text(sound effects in toon). `
+`This is Object Detection with Faster RCNN and Image Processing Technology. Firstly, faster RCNN detects bounging boxes of speech bubbles and then, segmentation result of speech bubble is detected by using image processing tech(max area contours). Secondly, Cut is detected from input image detached from speech bubble. I have used numpy canvas, contours, and, convexHull methods to detect cut.`
 
-`[Image Source]:cells of Yumi, welcome to convinience store, love revolution, naver webtoon, and header of gangs, One Piece. `
+`cut results: [image source] : Dragon-Ball, Detective Conan, Naruto, One-Piece`
+<img width="1200" height="500" src="./figures/bubble_demo.gif">
 
-<img width="172" height="512" src="./samples/sample1.gif"><img width="172" height="512" src="./samples/sample2.gif"><img width="172" height="512" src="./samples/sample3.gif"><img width="172" height="512" src="./samples/sample4.gif"><img width="172" height="512" src="./samples/sample5.gif">
+`bubble results: [image source] : Header of gangs, Free-throw, Zombie-Daughter, Cells-of-Yumi`
+<img width="1200" height="500" src="./figures/cut_demo.gif">
+
 
 ## Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks
 Shaoqing Ren, Kaiming He, Ross Girshick, Jian Sun
 (Last revised on 6 Jan 2016(v3)) [Faster RCNN](https://arxiv.org/pdf/1506.01497.pdf)
 
-## Updates 
-**12 Nov, 2019** : Initially added Speech Bubble Detection Test Results.
+## Train
+When you train own your datasets, You only need to have Speech Bubble Bounding box labels. In other words, this model CAN segmentation Speech Bubble Object, but DON'T need segmetation data. training code will be released in the near future. But, speech bubble datasets can't release bacause of [company](http://www.ideaconcert.com/) policy. I got the data of speech bubbles from PSD file and suitable post processing method.
 
-**21 Nov, 2019** : Added Webtoon Cut Detection Test Results and Pretrained Model.
-
-**24 Nov, 2019** : Added Text within Speech bubble Detection code and Classic toon test Results.
-
-## Install Requirements:
-1、Pytorch==1.0.0(only)
-```
-pip install -r requirements.txt
-```        
-```
-cd lib
-python setup.py build develop
-```    
-
-## Pretrained Models
- *Model name* | *Model Link* |
- | :--- | :--- |
-Speech Bubble Detector | [Click](https://drive.google.com/open?id=1F10sRXWuICKuSQclaUnQVBo1rlxa6ogR)
-
-
-`Download model and include pretrained_models/`
-
-
-## Training
-`Note: When you train own your datasets, You ONLY need to have Speech Bubble Bounding box labels. In other words, this code CAN segmentation Speech Bubble Object, but DON'T need segmetation data. training code will be released in the near future. But, speech bubble datasets can't release bacause of company policy`
-
-## Test
-`Note: When you test own your test cartoon images including several objects, You can get the segmentation results of speech bubble, cut, line texts.`
-
-- Run **`python kick_off.py --test 1`**
-# Acknowledgement
-Thanks for jwyang excellent work and code
-https://github.com/jwyang/faster-rcnn.pytorch/tree/pytorch-1.0) for train and test. 
