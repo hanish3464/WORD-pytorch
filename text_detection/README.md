@@ -1,42 +1,20 @@
-# TOON Text Detection based on CRAFT(Character-Region Awareness For Text detection)
+# Line Text Detection based on CRAFT(Character-Region Awareness For Text detection)
+```
+The remaining issues : 
+1. Performance of text detection is excellent itself. But remarkable problem is that text detection should be to take overhead of recognition, which is to predict each character very exactly, because recognition model perporms recognition by one character unit.
+2. model of text detection is a trained CRAFT-model by naver clova ai because performance can't reach author's models although train code was implemented.
+```
+### Sample Results
 
-`Note : This is TOON Text(character) Detection, ESPECIALLY texts difficult to detect like text of EFFECT SOUNDS in toon. I implemented training code for CRAFT. And I am planning to train CRAFT with my own datasets to find difficult TEXT. It's not the final version code. I will the refine and update the code over and over again.`
+### Overview
+This is Line Text Detection with CRAFT. Firstly, CRAFT detects Line text character of Speech Bubble as shape of gaussian heatmap. Secondly, predicted result post-processed as character, words, line unit for sorting order of characters and adding spacing word to final ocr result. I also implemented [post-process of link-refine](./text_detection/ltd_utils.py) which is used as box coordinates for warpping translated results instead of [link-refiner-model](https://github.com/clovaai/CRAFT-pytorch/blob/master/refinenet.py)
+
+`line results: [image source] : header of gangs, cells of Yumi, king of bok-hak, free throw, girl of random chat`
+<img width="1000" height="400" src="./figures/text_demo.gif">
 
 ## Character Region Awareness for Text Detection
 Youngmin Baek, Bado Lee, Dongyoon Han, Sangdoo Yun, Hwalsuk Lee
-(Submitted on 3 Apr 2019)
-
-The full paper is available at: [CRAFT paper](https://arxiv.org/pdf/1904.01941.pdf)
-
-## Install Requirements:                                                                                                        
-1、Pytorch>=0.4.1                                                                                                                             
-2、torchvision>=0.2.1 			                                                    																			                             
-3、opencv-python>=3.4.2    
-```
-pip install -r requirements.txt
-```                                                                                                                                                                                
-## Training 
-`Note: When you train own your datasets, You must have character Anotations like SynthText. In other words, this code doesn't          contain weakly supervision part. We don't need this part because webtoon image is synthetic(possible to get character datasets by generating characters like synthText. But, character dataset can't release because of company policy.`                                         
-- Run **`python kick_off.py --train 1`**
-
-## Test
-`Note: When you test own your test images, You can get the characters on images for text recognition`
-
-- Run **`python kick_off.py --test 1`**
-
-`SAMPLE (image source: Welcome to Convenience Store, naver webtoon)` 
-
-<img src="https://github.com/hanish3464/ACTOON/blob/master/SPECIAL_TEXT_DETECTION/sample/sample1.png" width="384" height="256" /><img src="https://github.com/hanish3464/ACTOON/blob/master/SPECIAL_TEXT_DETECTION/sample/sample2.png" width="384" height="256" />
-
-`final result` 
-
-<img src="https://github.com/hanish3464/ACTOON/blob/master/SPECIAL_TEXT_DETECTION/sample/sample1_res.jpg" width="384" height="128" />
-
-## Evaluation
-`Note: Evalution is under the developing. so, It can not run the code now. I am planning to use IOU Method and update as soon as possible.`
-
-- Run **`python kick_off.py --evaluation 1`**
-                                                    
-
-# Acknowledgement
-Thanks for Youngmin Baek, Bado Lee, Dongyoon Han, Sangdoo Yun, Hwalsuk Lee excellent work and [code](https://github.com/clovaai/CRAFT-pytorch) for test. In this repo, we use the author repo's basenet(backbone)
+(Submitted on 3 Apr 2019) [CRAFT](https://arxiv.org/pdf/1904.01941.pdf)
+                                                                                                                                    
+## Train
+`Note: When you train own your datasets, You have to make labels as json ext. Train code is under refining. I will push code and the way to git in the near futures.`                                         
