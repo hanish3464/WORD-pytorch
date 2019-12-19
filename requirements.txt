@@ -1,6 +1,5 @@
 torch==1.0.0
 torchvision==0.2.1
-pycocotools
 cython
 cffi
 opencv-python==3.4.2.17
@@ -11,3 +10,4 @@ pyyaml
 tensorboardX
 scikit-image==0.14.2
 scipy==1.1.0
+pycocotools

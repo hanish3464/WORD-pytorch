@@ -68,7 +68,7 @@ def cropBBoxOnImage(img, charBBox):
     x_min, y_min = charBBox[0]
     x_max, y_max = charBBox[2]
     x_min, y_min, x_max, y_max = int(round(x_min)), int(round(y_min)), int(round(x_max)), int(round(y_max))
-    img = img[y_min:y_max, x_min:x_max, :]
+    img = img[y_min:y_max, x_min:x_max-2, :]
     return img
 
 def normalizeMeanVariance(in_img, mean=(0.485, 0.456, 0.406), variance=(0.229, 0.224, 0.225)):
