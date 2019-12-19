@@ -1,6 +1,8 @@
 # WORD: Webtoon Object Recognition and Detection
 
 `Note : It's not the final version code. I will the refine and update the code over and over again. Especially, I'm planning to add sound effect detector.`
+
+***WARNING***: Size of test image is important. Please ***keep the ratio width : height = 1 : 2 ~ 3***
 ### Sample Results
 
 ### Overview
