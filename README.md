@@ -70,7 +70,7 @@ Download model and include to `weights/`
 
 
 ## Train
-If you want to train own your model, you can check `train.py` of [object_detection](./object_detection/train.py), [text_detection](./text_detection/train.py), or [text_recognition](./text_recognition/train.py)
+If you want to train own your model, you can check `train.py` of [object_detection](./object_detection/README.md), [text_detection](./text_detection/README.md), or [text_recognition](./text_recognition/README.md)
 
 ## Reference
 Thanks for jwyang. [FasterRCNN-pytorch](https://github.com/jwyang/faster-rcnn.pytorch/tree/pytorch-1.0) for train and test.
