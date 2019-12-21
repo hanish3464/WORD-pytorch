@@ -3,7 +3,7 @@
 The remaining issues :
 1. This methodology which recognize one character unit is NOT state-of-the-art. So, you can reference [crnn-pytorch](https://github.com/meijieru/crnn.pytorch) and more detailed methodology, [deep-text-recognition-benchmark](https://github.com/clovaai/deep-text-recognition-benchmark)
 for better performance. (Strongly recommended)
-2. If you want to increase performance with this model, You can change [backbone network](./backbone/) or train real-webtoon data additionally.
+2. If you want to increase performance with this model, You can change [backbone network](./backbone/) or [train real-webtoon data](./TRAIN_WEBTOON.md) additionally.
 
 ### Sample Results
 
@@ -11,6 +11,8 @@ for better performance. (Strongly recommended)
 This is Line Text Recognition for Korean Language (Hangul). Firstly, one character unit, result of [Text Detection](../text_detection/) is used as input image.
 After Recognizer model predicts all the characters, text_file is generated which all the results is written to. Spacing word can be also recognized through
 [ltd_utils.py](../text_detection/ltd_utils.py), post-process step of text detection.
+
+<img width="400" height="800" src="./figures/demo_recog.jpg"><img width="400" height="800" src="./figures/demo_recog2.png">
 
 ### Create Dataset
 1. Add [fonts](https://software.naver.com/search.nhn?query=%ED%8F%B0%ED%8A%B8) to `train/fonts/`
