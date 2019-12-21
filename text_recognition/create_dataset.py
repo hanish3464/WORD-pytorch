@@ -1,19 +1,28 @@
 #! /usr/bin/env/ python
 # -*- coding: utf-8 -*-
-
+import sys
+import os
 import glob
 import codecs
-import os
 import random
 import numpy as np
 from PIL import Image, ImageFont, ImageDraw
-
-import config
-import file_utils
 import cv2
 import sys
 import argparse
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+import file_utils
 import imgproc
+import opt
+
+parser = argparse.ArgumentParser(description='training data generation for hanhul text recognition')
+
+parser.add_argument('--salt_pepper', action='store_true', default=False, help='data augmentation : salt & pepper noise')
+parser.add_argument('--chunk_noise', action='store_true', default=False, help='data augmentation : chunk noise')
+parser.add_argument('--webtoon_data', action='store_true', default=False, help='add real webtoon data to train dataset')
+
+args = parser.parse_args()
+
 
 
 def adjustImageSize(w, h, orig_w, orig_h):
@@ -47,11 +56,12 @@ def determineFontSize(font=None, size=None):
 
 def determineCanvasSize(canvas=None, label=None, font=None):
     w, h = canvas.textsize(label, font=font)
-    w, h = adjustImageSize(w, h, config.IMAGE_WIDTH, config.IMAGE_HEIGHT)
+    w, h = adjustImageSize(w, h, opt.RECOG_IMAGE_WIDTH, opt.RECOG_IMAGE_HEIGHT)
     return w, h
 
 
 def saltPepperNoiseGenerator(image):
+    image = np.array(image)
     row, col = image.shape
     s_vs_p = 0.01
     amount = 0.05
@@ -100,20 +110,16 @@ def chunkNoiseGenerator(copy):
 
 
 def createDataset(args):
-    with codecs.open('./train/labels-2213.txt', 'r', encoding='utf-8') as f:
+
+    file_utils.rm_all_dir(dir=opt.RECOGNITION_TRAIN_IMAGE_PATH)
+    file_utils.mkdir(dir=[opt.RECOGNITION_TRAIN_IMAGE_PATH])
+
+    with codecs.open('./labels-2213.txt', 'r', encoding='utf-8') as f:
         labels = f.read().strip('\ufeff').splitlines()
-    if args.train:
-        FONTS_PATH = config.TRAIN_FONTS_PATH
-        CSV_PATH = config.TRAIN_CSV_PATH
-        IMAGE_PATH = config.TRAIN_IMAGE_PATH
-    elif args.test:
-        FONTS_PATH = config.TEST_FONTS_PATH
-        CSV_PATH = config.TEST_CSV_PATH
-        IMAGE_PATH = config.TEST_IMAGE_PATH
-    else:
-        FONTS_PATH = config.TRAIN_FONTS_PATH
-        CSV_PATH = config.TRAIN_CSV_PATH
-        IMAGE_PATH = config.TRAIN_IMAGE_PATH
+
+    FONTS_PATH = opt.RECOGNITIOON_FONT_PATH
+    CSV_PATH = opt.RECOGNITION_CSV_PATH
+    IMAGE_PATH = opt.RECOGNITION_TRAIN_IMAGE_PATH
 
     fonts = glob.glob(os.path.join(FONTS_PATH, '*.ttf'))
     labels_csv = codecs.open(os.path.join(CSV_PATH), 'w', encoding='utf-8')
@@ -122,25 +128,27 @@ def createDataset(args):
 
     cnt = 0
     prev_cnt = 0
-    
+    total = opt.NUM_CLASSES * len(fonts) * opt.MORPH_NUM
+    if args.salt_pepper: total *= 2
+    if args.chunk_noise: total *= 2
+
     for k, character in enumerate(labels):
 
         if cnt - prev_cnt > 5000:
             prev_cnt = cnt
             sys.stdout.write(
-                'TRAINING IMAGE GENERATION: ({}/{}) \r'.format(cnt,
-                                                               config.NUM_CLASSES * len(fonts) * config.MORPH_NUM))
+                'TRAINING IMAGE GENERATION: ({}/{}) \r'.format(cnt, total))
             sys.stdout.flush()
 
         for f in fonts:
 
-            for v in range(config.MORPH_NUM):
+            for v in range(opt.MORPH_NUM):
 
-                image, drawing = makeCanvas(width=config.IMAGE_WIDTH, height=config.IMAGE_HEIGHT,
-                                            color=config.BACKGROUND)
-                font_type = determineFontSize(font=f, size=config.FONT_SIZE)
+                image, drawing = makeCanvas(width=opt.RECOG_IMAGE_WIDTH, height=opt.RECOG_IMAGE_HEIGHT,
+                                            color=opt.RECOG_BACKGROUND)
+                font_type = determineFontSize(font=f, size=opt.RECOG_FONT_SIZE)
                 w, h = determineCanvasSize(canvas=drawing, label=character, font=font_type)
-                makeLetter(canvas=drawing, label=character, width=w, height=h, color=config.FONT_COLOR, font=font_type)
+                makeLetter(canvas=drawing, label=character, width=w, height=h, color=opt.RECOG_FONT_COLOR, font=font_type)
 
                 morph_templete = np.array(image.copy())
                 kernel = np.ones((2, 2), np.uint8)
@@ -148,54 +156,52 @@ def createDataset(args):
                 if v == 1: morph_templete = cv2.erode(morph_templete, kernel, iterations=1)
                 else: morph_templete = cv2.dilate(morph_templete, kernel, iterations=1)
 
-                #for x in range(config.NOISE_GEN_NUM):
                 copy = morph_templete.copy()
                 cnt += 1
 
-                    #if x == 0: copy = saltPepperNoiseGenerator(copy)
-                    #elif x == 1: copy = chunkNoiseGenerator(copy)
-                    #else: pass #origin data
+                copy = Image.fromarray(np.array(copy))
+                file_utils.saveImage(save_to=IMAGE_PATH, img=np.array(copy), index1=cnt, ext='.png')
+                file_utils.saveCSV(save_to=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k, ext='.png')
+
+                if args.salt_pepper:
+                    cnt += 1
+                    copy = saltPepperNoiseGenerator(copy)
+                    file_utils.saveImage(save_to=IMAGE_PATH, img=copy, index1=cnt, ext='.png')
+                    file_utils.saveCSV(save_to=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k,
+                                       ext='.png')
+                if args.chunk_noise:
+                    copy = chunkNoiseGenerator(copy)
+                    file_utils.saveImage(save_to=IMAGE_PATH, img=copy, index1=cnt, ext='.png')
+                    file_utils.saveCSV(save_to=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k,
+                                       ext='.png')
+
+
+    #  added custom training data difficult to classify from webtoon
+
+    if args.webtoon_data:
+        tranfer_img_list, _, _, _ = file_utils.get_files(opt.RECOG_WEBTOON_TRAIN_DATA_PATH)
+        label_mapper = file_utils.makeLabelMapper('./labels-2213.txt')
+        test_txt = []; test_num = []
+        print("[CUSTOM HANGUL DIFFICULT DATASET GENERATION : {}]".format(len(tranfer_img_list)))
+        text_labels = file_utils.loadText(opt.RECOG_WEBTOON_TRAIN_LABEL_PATH)
+        for txt in text_labels[0]:
+            test_num.append(label_mapper[0].tolist().index(txt))
+            test_txt.append(txt)
+
+        for idx, in_path in enumerate(tranfer_img_list):
+            k, character = test_num[idx], test_txt[idx]
+            img = imgproc.loadImage(in_path)
+            img = imgproc.cvtColorGray(img)
+            for x in range(1):
+                copy = img.copy()
+                cnt += 1
 
                 copy = Image.fromarray(np.array(copy))
-                file_utils.saveImage(dir=IMAGE_PATH, img=copy, index=cnt)
-                file_utils.saveCSV(dir=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k)
-    
-    #added custom training data difficult to classify
-
-    tranfer_img_list, _, _, _ = file_utils.get_files(config.TRANFSER_TRAIN_IMAGE_PATH)
-    label_mapper = file_utils.makeLabelMapper('./train/labels-2213.txt')
-    test_txt = []; test_num = []
-    print("[CUSTOM HANGUL DIFFICULT DATASET GENERATION : {}]".format(len(tranfer_img_list)))
-    #print(config.TRANSFER_CASE)
-    text_labels = file_utils.loadText('/root/recognition_train/transfer_train_label.txt')
-    config.TRANSFER_CASE = text_labels[0]
-    for txt in config.TRANSFER_CASE:
-        test_num.append(label_mapper[0].tolist().index(txt))
-        test_txt.append(txt)
-
-    for idx, in_path in enumerate(tranfer_img_list):
-        k, character = test_num[idx], test_txt[idx]
-        img = imgproc.loadImage(in_path)
-        img = imgproc.cvtColorGray(img)
-        for x in range(1):
-            copy = img.copy()
-            cnt += 1
-
-            #if x == 0: copy = saltPepperNoiseGenerator(copy)
-            #elif x == 1: copy = chunkNoiseGenerator(copy)
-            #else: pass  # origin data
-
-            copy = Image.fromarray(np.array(copy))
-            file_utils.saveImage(dir=IMAGE_PATH, img=copy, index=cnt)
-            file_utils.saveCSV(dir=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k)
+                file_utils.saveImage(save_to=IMAGE_PATH, img=copy, index1=cnt, ext='.png')
+                file_utils.saveCSV(save_to=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k, ext='.png')
 
     labels_csv.close()
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='create datasets')
-    parser.add_argument('--train', action='store_true', help='train data generation')
-    parser.add_argument('--test', action='store_true', help='test data generation')
-    args = parser.parse_args()
-
+if __name__ == '__main__':
     createDataset(args)

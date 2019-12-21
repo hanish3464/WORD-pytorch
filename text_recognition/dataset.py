@@ -1,17 +1,17 @@
 import pandas as pd
 import numpy as np
-from text_recognition import imgproc
 import torch
-from text_recognition import file_utils
+import os, sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import random
-from text_recognition import config
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.filters import gaussian_filter
 from PIL import Image, ImageFilter
+import file_utils, imgproc
 
 class Hangul_Dataset(object):
 
-    def __init__(self, csv_path=None, label_path=None, image_size=None, train=None):
+    def __init__(self, csv_path=None, label_path=None, image_size=None, train=None, blur=None, distort=None):
         self.data = pd.read_csv(csv_path, error_bad_lines=False)
         self.size = image_size
         self.images = self.data.iloc[:, 0]
@@ -20,6 +20,8 @@ class Hangul_Dataset(object):
         self.allLabels = file_utils.loadText(label_path)
         self.labelOneHotVector = torch.zeros([len(self.allLabels)], dtype=torch.long)
         self.FLAG = train
+        self.blur = blur
+        self.distort = distort
 
     def __getitem__(self, index):
         if self.FLAG: return self.train_data_transform(index)
@@ -44,11 +46,14 @@ class Hangul_Dataset(object):
 
         #Data Augmentation Method - elastic distotion, image blur
 
-        #if random.randint(0, 1):
-        #    image = self.distortImage(image)
-        #if random.randint(0, 1):
-        #     blur_extent = 1
-        #    image = self.blurImage(image, blur_extent)
+        if self.distort:
+            if random.randint(0, 1):
+                image = self.distortImage(image)
+
+        if self.blur:
+            if random.randint(0, 1):
+                blur_extent = 1
+                image = self.blurImage(image, blur_extent)
 
         image = imgproc.tranformToTensor(img=image, size=self.size)
 

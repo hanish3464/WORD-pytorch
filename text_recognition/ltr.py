@@ -1,6 +1,6 @@
 import torch
-from text_recognition.backbone.ResNet import ResNet
-from text_recognition.backbone.ResNet import BasicBlock, Bottleneck
+from backbone.Res import ResNet
+from backbone.Res import BasicBlock, Bottleneck
 import torch.nn as nn
 import torch.nn.functional as F
 import opt
