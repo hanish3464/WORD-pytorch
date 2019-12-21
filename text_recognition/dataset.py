@@ -4,6 +4,7 @@ import torch
 import os, sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import random
+import opt
 from scipy.ndimage.interpolation import map_coordinates
 from scipy.ndimage.filters import gaussian_filter
 from PIL import Image, ImageFilter
@@ -64,8 +65,8 @@ class Hangul_Dataset(object):
 
     def distortImage(self, img):
 
-        alpha = random.randint(config.ALPHA_MIN, config.ALPHA_MAX)
-        sigma = random.randint(config.SIGMA_MIN, config.SIGMA_MAX)
+        alpha = random.randint(opt.ALPHA_MIN, opt.ALPHA_MAX)
+        sigma = random.randint(opt.SIGMA_MIN, opt.SIGMA_MAX)
 
         random_state = np.random.RandomState(None)
         shape = img.shape

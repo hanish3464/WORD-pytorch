@@ -23,6 +23,8 @@ parser.add_argument('--lr_decay_gamma', default=0.1, type=float, help='decay gam
 parser.add_argument('--train_size', default=224, type=int, help='train image size, resnet default 224')
 parser.add_argument('--display_interval', default=100, type=int, help='display train log per interval')
 parser.add_argument('--save_interval', default=1, type=int, help='save model interval')
+parser.add_argument('--blur', action='store_true', default=False, help='data augmentation: blurring')
+parser.add_argument('--distort', action='store_ture', default=False, help='data augmentation : distort')
 
 args = parser.parse_args()
 

@@ -1,14 +1,15 @@
 import numpy as np
 #TRANSLATION
-PAPAGO_ID = 'enter the id'
-PAPAGO_PW = "enter the password"
+PAPAGO_ID = "LOhtMS07Hz6EzW32I8ix"
+PAPAGO_PW = "xemXKboMSP"
 
 #BUBBLE DETECTION
 LABEL = np.asarray(['__background__', 'speech'])
 RNG_SEED = 3
-DRAWTXT = True
-DRAWBUB = True
-DRAWCUT = True
+DRAWTXT = False
+DRAWLINK = False
+DRAWBUB = False
+DRAWCUT = False
 
 #TEXT DETECTION
 text_threshold = 0.6
@@ -17,8 +18,21 @@ link_threshold = 0.4
 MARGIN = 3
 
 #TEXT RECOGNITION
+RECOG_TRAIN_SIZE = 224
 NUM_CLASSES = 2213
 WARP_SPACE_THRESHOLD = 10
+RECOGNITIOON_FONT_PATH ='./train/fonts/'
+RECOGNITION_CSV_PATH='./train/label.csv'
+RECOGNITION_TRAIN_IMAGE_PATH = './train/images/'
+RECOG_IMAGE_WIDTH = RECOG_IMAGE_HEIGHT = 64
+RECOG_BACKGROUND = 0 # black
+RECOG_FONT_COLOR = 255
+MORPH_NUM = 2 # the number of data augmentation morphologyEx : dilate, erode
+RECOG_FONT_SIZE = 48
+RECOG_WEBTOON_TRAIN_DATA_PATH = './train/webtoon/data/'
+RECOG_WEBTOON_TRAIN_LABEL_PATH = './train/webtoon/labels.txt'
+
+
 
 #MODEL PATH
 SPEECH_BUBBLE_DETECTOR_PATH = './weights/Speech-Bubble-Detector.pth'
@@ -66,7 +80,7 @@ NUM_WORKERS = 0
 
 #BBOX THRESHOLD
 THRESH = 0.05
-BBOX_BORDER_THRESH = 4
+BBOX_BORDER_THRESH = 6
 
 #BACKBONE NETWORK
 BACKBONE = 'res101'
