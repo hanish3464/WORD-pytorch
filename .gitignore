@@ -1,0 +1,11 @@
+*.pyc
+*.swp
+*.pkl
+*.pth
+result*
+weights*
+*/*.pyc
+build/
+.DS_Store
+*/**/__pycache__
+
