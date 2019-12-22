@@ -63,6 +63,9 @@ def adjustImageBorder(img, img_size=128, color=[255,255,255]):
     return img
 
 
+def uniformizeShape(image=None):
+     return np.expand_dims(image, axis=0)
+
 
 def cropBBoxOnImage(img, charBBox):
     x_min, y_min = charBBox[0]

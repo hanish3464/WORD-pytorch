@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
-from text_recognition import config as wtr_cfg
+import opt
 
 __all__ =['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
 'resnet152']
@@ -100,7 +100,7 @@ class ResNet(nn.Module):
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False):
         super(ResNet, self).__init__()
         self.inplanes = 64
-        self.conv1 = nn.Conv2d(wtr_cfg.MODEL_CHANNEL, 64, kernel_size=7, stride=2, padding=3,
+        self.conv1 = nn.Conv2d(opt.RECOG_NET_CHANNEL, 64, kernel_size=7, stride=2, padding=3,
                                bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)

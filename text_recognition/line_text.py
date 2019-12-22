@@ -15,7 +15,7 @@ def test_net(model=None, mapper=None, spaces=None, load_from=None, save_to=None)
         for k, in_path in enumerate(img_lists):
             image = imgproc.loadImage(in_path)
             image = imgproc.cvtColorGray(image)
-            image = imgproc.tranformToTensor(image, opt.RECOG_TARGET_IMAGE_SIZE).unsqueeze(0)
+            image = imgproc.tranformToTensor(image, opt.RECOG_TRAIN_SIZE).unsqueeze(0)
             image = image.to(device)
             y = model(image)
             _, pred = torch.max(y.data, 1)

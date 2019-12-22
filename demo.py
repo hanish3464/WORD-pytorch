@@ -15,6 +15,7 @@ referenced paper :
 """
 
 import argparse
+from cut_off import cut_off_image as cut_off
 from object_detection.bubble import test_net as bubble_detect
 from object_detection.cut import test_opencv as cut_detect
 from text_detection.line_text import test as line_text_detect
@@ -27,8 +28,6 @@ import imgproc
 import time
 import opt
 
-# to do list -> find_background_type / divide_image_aspect_ratio
-
 parser = argparse.ArgumentParser(description='WORD(Webtoon Object Recognition and Detection')
 
 parser.add_argument('--object_detector', default='./weights/Speech-Bubble-Detector.pth', type=str, help='pretrained')
@@ -40,6 +39,8 @@ parser.add_argument('--papago', action='store_true', default=False, help='enable
 parser.add_argument('--type', default='white', type=str, help='background type: white, black, classic')
 parser.add_argument('--cls', default=0.995, type=float, help='bubble prediction threshold')
 parser.add_argument('--box_size', default=7000, type=int, help='cut size filtering threshold')
+parser.add_argument('--large_scale', action='store_true', default=False, help='demo image is large scale')
+parser.add_argument('--ratio', default=2.0, type=float, help='height & width ratio of demo image')
 parser.add_argument('--demo_folder', default='./data/', type=str, help='folder path to demo images')
 parser.add_argument('--cuda', action='store_true', default=True, help='use cuda for inference')
 
@@ -59,29 +60,44 @@ text_warp_items = []  # text to warp bubble image
 demos = []  # all demo image storage
 t = time.time()
 
+cnt = 0
+
 # load data
 for k, image_path in enumerate(image_list):
     print("======TEST IMAGE ({:d}/{:d}): INPUT PATH:[{:s}]======".format(k + 1, len(image_list), image_path), end='\r')
 
     img = imgproc.loadImage(image_path)
-    img_blob, img_scale = imgproc.getImageBlob(img)
-    f_RCNN_param = [img_blob, img_scale, opt.LABEL]  # LABEL: speech bubble
 
-    demo, image, bubbles, dets_bubbles = bubble_detect(model=models['bubble_detector'], image=img, params=f_RCNN_param,
-                                                      cls=args.cls, bg=args.type)
+    if args.large_scale:  # cut off large scale images into several pieces (width : height = 1 : 2)
+        images = cut_off(image=img, name=name_list[k], ratio=args.ratio)
 
-    demo, cuts = cut_detect(image=image, demo=demo, bg=args.type, size=args.box_size)
+    else:  # general scale case
+        images = imgproc.uniformizeShape(image=img)
 
-    demo, space, warps = line_text_detect(model=models['text_detector'], demo=demo, bubbles=imgproc.cpImage(bubbles),
-                                          dets=dets_bubbles, img_name=name_list[k], save_to='./result/chars/')
+    for img in images:  # image fragments divided from cut_off.py
 
-    spaces += space  # add temporarily space in an image to total spaces storage
-    text_warp_items += warps  # add temporarily text & bubble image to text_warp_items, kind of storage.
-    demos.append(demo)  # demo image is stored demos storage
+        cnt += 1
+        str_cnt = file_utils.resultNameNumbering(origin=cnt, digit=1000)
 
-    # save segmented object(bubble & cut)
-    file_utils.saveAllImages(save_to='./result/bubbles/', imgs=bubbles, index1=k, ext='.png')
-    file_utils.saveAllImages(save_to='./result/cuts/', imgs=cuts, index1=k, ext='.png')
+        img_blob, img_scale = imgproc.getImageBlob(img)
+        f_RCNN_param = [img_blob, img_scale, opt.LABEL]  # LABEL: speech bubble
+
+        demo, image, bubbles, dets_bubbles = bubble_detect(model=models['bubble_detector'], image=img, params=f_RCNN_param,
+                                                          cls=args.cls, bg=args.type)
+
+        demo, cuts = cut_detect(image=image, demo=demo, bg=args.type, size=args.box_size)
+
+        demo, space, warps = line_text_detect(model=models['text_detector'], demo=demo, bubbles=imgproc.cpImage(bubbles),
+                                              dets=dets_bubbles, img_name=str_cnt, save_to='./result/chars/')
+
+        spaces += space  # add temporarily space in an image to total spaces storage
+        text_warp_items += warps  # add temporarily text & bubble image to text_warp_items, kind of storage.
+        demos.append(demo)  # demo image is stored demos storage
+
+        # save segmented object(bubble & cut)
+        file_utils.saveAllImages(save_to='./result/bubbles/', imgs=bubbles, index1=str_cnt, ext='.png')
+        file_utils.saveAllImages(save_to='./result/cuts/', imgs=cuts, index1=str_cnt, ext='.png')
+
 
 if args.ocr:  # ocr
 

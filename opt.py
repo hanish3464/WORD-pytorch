@@ -1,23 +1,25 @@
 import numpy as np
-#TRANSLATION
-PAPAGO_ID = "LOhtMS07Hz6EzW32I8ix"
-PAPAGO_PW = "xemXKboMSP"
 
-#BUBBLE DETECTION
+# TRANSLATION
+PAPAGO_ID = 'id'
+PAPAGO_PW = 'pw'
+
+# BUBBLE DETECTION
 LABEL = np.asarray(['__background__', 'speech'])
 RNG_SEED = 3
-DRAWTXT = False
+DRAWTXT = True
 DRAWLINK = False
-DRAWBUB = False
-DRAWCUT = False
+DRAWBUB = True
+DRAWCUT = True
 
-#TEXT DETECTION
+# TEXT DETECTION
 text_threshold = 0.6
 low_text = 0.4
 link_threshold = 0.4
 MARGIN = 3
 
-#TEXT RECOGNITION
+# TEXT RECOGNITION
+RECOG_NET_CHANNEL = 1
 RECOG_TRAIN_SIZE = 224
 NUM_CLASSES = 2213
 WARP_SPACE_THRESHOLD = 10
@@ -32,13 +34,14 @@ RECOG_FONT_SIZE = 48
 RECOG_WEBTOON_TRAIN_DATA_PATH = './train/webtoon/data/'
 RECOG_WEBTOON_TRAIN_LABEL_PATH = './train/webtoon/labels.txt'
 
-
+# CUT IMAGE AWAY
+PIXEL_THRESHOLD = 500
+MIN_SIZE = 100
 
 #MODEL PATH
 SPEECH_BUBBLE_DETECTOR_PATH = './weights/Speech-Bubble-Detector.pth'
 TEXT_DETECTOR_MODEL_PATH  = './weights/Line-Text-Detector.pth'
 TEXT_RECOGNIZER_MODEL_PATH = './weights/Line-Text-Recognizer.pth'
-SAVED_MODEL_PATH = './saving_models/'
 BACKBONE_MODEL_PATH = './pretrained_models/resnet101_caffe.pth'
 
 
@@ -125,16 +128,3 @@ data_augmentation_flip = True
 gaussian_region = 0.3
 gaussian_affinity = 0.25
 
-#parameter
-LEARNING_RATE = 1e-4
-LR_DECAY_STEP = 5
-WEIGHT_DECAY = 5e-4
-lr_multiply =0.8 #10K iterations
-BATCH = 1
-EPOCH = 500
-
-VIS = True
-DISPLAY_INTERVAL = 20
-SAVE_INTERVAL = 100
-
-RECOG_TARGET_IMAGE_SIZE = 224

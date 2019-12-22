@@ -1,6 +1,8 @@
 import torch
-from backbone.Res import ResNet
-from backbone.Res import BasicBlock, Bottleneck
+import os,sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from text_recognition.backbone.Res import ResNet
+from text_recognition.backbone.Res import BasicBlock, Bottleneck
 import torch.nn as nn
 import torch.nn.functional as F
 import opt

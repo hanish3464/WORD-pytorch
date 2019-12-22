@@ -2,10 +2,12 @@
 *.swp
 *.pkl
 *.pth
+data*
 result*
 weights*
 */*.pyc
 build/
 .DS_Store
 */**/__pycache__
-
+*/__pycache__
+__pycache__*

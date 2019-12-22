@@ -1,7 +1,7 @@
 '''VGG11/13/16/19 in Pytorch.'''
 import torch
 import torch.nn as nn
-import text_recognition.config as config
+import opt
 
 cfg = {
     'VGG11': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
@@ -15,7 +15,7 @@ class VGG(nn.Module):
     def __init__(self, vgg_name):
         super(VGG, self).__init__()
         self.features = self._make_layers(cfg[vgg_name])
-        self.classifier = nn.Linear((config.TARGET_IMAGE_SIZE * config.TARGET_IMAGE_SIZE) // 2, config.NUM_CLASSES)
+        self.classifier = nn.Linear((opt.RECOG_TRAIN_SIZE * opt.RECOG_TRAIN_SIZE) // 2, opt.NUM_CLASSES)
 
     def forward(self, x):
         out = self.features(x)
@@ -25,7 +25,7 @@ class VGG(nn.Module):
 
     def _make_layers(self, cfg):
         layers = []
-        in_channels = config.MODEL_CHANNEL
+        in_channels = opt.RECOG_NET_CHANNEL
         for x in cfg:
             if x == 'M':
                 layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
