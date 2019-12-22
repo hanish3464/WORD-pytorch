@@ -9,7 +9,7 @@
 
 WORD detect objects(speech bubbles, cuts, and line texts) in webtoon or cartoon. You can also meet ocr(line text detection + recognition) results and English translation with papago API if you want. I have referenced and implemented [CRAFT-pytorch](https://github.com/clovaai/CRAFT-pytorch) to detect line text, used [Faster-RCNN-pytorch](https://github.com/jwyang/faster-rcnn.pytorch/tree/pytorch-1.0) to detect speech bubble. And I have implemented all the code to find elaborately contours of speech bubble, detect cut with image processing(OpenCV) and about korean text recognition model. You can check README.md for each project folder([object_detection](./object_detection/),  [text_detection](./text_detection/), [text_recognition](./text_recognition/)) if you want more details.
 
-<img width="1000" height="500" src="./figures/demo.gif">
+<img width="1000" height="450" src="./figures/demo.gif">
 
 `[Image Source]:cells of Yumi, girl of random chat, mamamian, lookism, free throw, king of bok-hak, world of girl, naver webtoon, and header of gangs. `
 
@@ -24,6 +24,7 @@ WORD detect objects(speech bubbles, cuts, and line texts) in webtoon or cartoon.
 **17 Dec, 2019** : Merged all the code of prejects and added OCR and Translation Results.
 
 ## Install Requirements: 
+
 `Pytorch==1.0.0(only)`
 
 if you want to set anaconda env, `conda create -n WORD python=3.6` `conda activate WORD` and follow the next step.
@@ -64,13 +65,15 @@ Download model and include to `weights/`
 * `--type`: select background type of toon [white | black | classic]. `default : white`
 * `--cls`: probability of speech bubble detection for filtering 
 * `--box_size`: threshold of cut size for filtering
+* `--large_scale`: whether demo image is large scale.
+* `--ratio`: ratio of height to width of large scale image
 * `--demo_folder`: folder path to demo images
 * `--cuda`: use cuda for inference.
 
 
 
 ## Train
-If you want to train own your model, you can check `train.py` of [object_detection](./object_detection/README.md), [text_detection](./text_detection/README.md), or [text_recognition](./text_recognition/README.md)
+If you want to train own your model, you can check `train.py` of [object_detection](./object_detection/README.md#L17), [text_detection](./text_detection/README.md), or [text_recognition](./text_recognition/README.md)
 
 ## Reference
 Thanks for jwyang. [FasterRCNN-pytorch](https://github.com/jwyang/faster-rcnn.pytorch/tree/pytorch-1.0) for train and test.
