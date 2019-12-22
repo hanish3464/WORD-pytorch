@@ -1,3 +1,5 @@
+'''net_utils.py'''
+
 import torch
 import numpy as np
 from object_detection.lib.model.faster_rcnn.resnet import resnet

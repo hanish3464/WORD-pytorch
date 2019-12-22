@@ -7,9 +7,9 @@ PAPAGO_PW = 'pw'
 # BUBBLE DETECTION
 LABEL = np.asarray(['__background__', 'speech'])
 RNG_SEED = 3
-DRAWTXT = True
+DRAWTXT = False
 DRAWLINK = False
-DRAWBUB = True
+DRAWBUB = False
 DRAWCUT = True
 
 # TEXT DETECTION

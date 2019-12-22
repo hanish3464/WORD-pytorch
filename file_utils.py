@@ -1,8 +1,6 @@
 '''file_utils.py'''
-
 # -*- coding: utf-8 -*-
 import os
-import opt
 import numpy as np
 import cv2
 import codecs
@@ -42,42 +40,11 @@ def list_files(in_path):
 def rm_all_dir(dir=None):
     if os.path.isdir(dir): shutil.rmtree(dir)
 
+
 def mkdir(dir=None):
     for folder in dir:
         if not os.path.isdir(folder):
             os.mkdir(folder)
-
-
-def saveResult(img_file, img, boxes, dir1='./prediction/', dir2='./gt/', verticals=None, texts=None):
-
-        img = np.array(img)
-
-        # make result file list
-        filename, file_ext = os.path.splitext(os.path.basename(img_file))
-
-        # result directory
-        gt_file = dir2 + "res_" + filename + '.txt'
-        predict_image_file = dir1 + "res_" + filename + '.jpg'
-
-        with open(gt_file, 'w') as f:
-            for i, box in enumerate(boxes):
-                poly = np.array(box).astype(np.int32).reshape((-1))
-
-                strResult = ','.join([str(p) for p in poly]) + '\r\n'
-                f.write(strResult)
-                poly = poly.reshape(-1, 2)
-                cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=3)
-                ptColor = (0, 255, 255)
-                if verticals is not None:
-                    if verticals[i]:
-                        ptColor = (255, 0, 0)
-                if texts is not None:
-                    font = cv2.FONT_HERSHEY_SIMPLEX
-                    font_scale = 0.5
-                    cv2.putText(img, "{}".format(texts[i]), (poly[0][0]+1, poly[0][1]+1), font, font_scale, (0, 0, 0), thickness=1)
-                    cv2.putText(img, "{}".format(texts[i]), tuple(poly[0]), font, font_scale, (0, 255, 255), thickness=1)
-
-        cv2.imwrite(predict_image_file, img)
 
 
 def saveText(save_to=None, text=None, name=None):
@@ -116,21 +83,18 @@ def saveAllImages(save_to=None, imgs=None, index1=None, ext=None):
             cv2.imwrite(save_to + str(idx1) + ext, img)
 
 
-def saveMask(dir=None, heatmap=None, index1=None):
-    heatmap = (np.clip(heatmap, 0, 1) * 255).astype(np.uint8)
-    heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-    cv2.imwrite(dir + index1 + '.png', heatmap)
-
-
 def drawBBoxOnImage(dir=None, img=None, index1=None, boxes=None, flags=None):
-    BBox_img = dir + index1 + '.png'
+    if dir is not None and index1 is not None:
+        BBox_img = dir + index1 + '.png'
+
     for i, box in enumerate(boxes):
         poly = np.array(box).astype(np.int32).reshape((-1))
         poly = poly.reshape(-1, 2)
         if flags == 'char': cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(0, 255, 0), thickness=2)
         if flags == 'word': cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(0, 0, 255), thickness=1)
         if flags == 'line': cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=1)
-        cv2.imwrite(BBox_img, img)
+        if flags == 'link': cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(255, 255, 0), thickness=2)
+        # cv2.imwrite(BBox_img, img)
 
 
 def loadJson(json_file):

@@ -53,10 +53,8 @@ def test(model=None, demo=None, bubbles=None, dets=None, img_name=None, save_to=
     spacing_word = []
     bubble_order_num = 0
     demo_warp_items = []
-    eng_bubbles = []
 
     for det, bubble in zip(dets, bubbles):
-        alpha_bubble = imgproc.cpImage(bubble)
         name_final = img_name + '_' + str(bubble_order_num)
         bubble = imgproc.delNoiseBorderLine(bubble)
         constant = imgproc.adjustImageRatio(bubble)
@@ -83,8 +81,13 @@ def test(model=None, demo=None, bubbles=None, dets=None, img_name=None, save_to=
 
         lineBBoxes = ltd_utils.link_refine(boxes=charBBoxes, MARGIN=opt.MARGIN)
         xmin, ymin, xmax, ymax = det
+
+        if opt.DRAWTXT is True:
+            file_utils.drawBBoxOnImage(img=demo[ymin:ymax, xmin:xmax, :], boxes=charBBoxes, flags='char')
+        if opt.DRAWLINK is True:
+            file_utils.drawBBoxOnImage(img=demo[ymin:ymax, xmin:xmax, :], boxes=lineBBoxes, flags='link')
+
         demo_warp_items.append([demo[ymin:ymax, xmin:xmax, :], lineBBoxes])
-        #eng_bubbles.append([alpha_bubble, lineBBoxes])
 
         '''MAKE FINAL CHARACTER IMAGE FOR RECOGNITION PROCESS'''
         tmp_charBBoxes = np.array(charBBoxes, dtype=np.float32).reshape(-1, 4, 2).copy()

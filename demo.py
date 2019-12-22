@@ -64,7 +64,7 @@ cnt = 0
 
 # load data
 for k, image_path in enumerate(image_list):
-    print("======TEST IMAGE ({:d}/{:d}): INPUT PATH:[{:s}]======".format(k + 1, len(image_list), image_path), end='\r')
+    print("TEST IMAGE ({:d}/{:d}): INPUT PATH:[{:s}]".format(k + 1, len(image_list), image_path), end='\r')
 
     img = imgproc.loadImage(image_path)
 
@@ -119,9 +119,9 @@ if args.ocr:  # ocr
 if args.papago:  # translation
 
     print('[translating korean to English..]')
-    #papago_translation(load_from='./result/ocr.txt', save_to='./result/english_ocr.txt', id=opt.PAPAGO_ID,
-    #                   pw=opt.PAPAGO_PW)
-    gen_text_to_image(load_from='./english_ocr.txt', warp_item=text_warp_items)
+    papago_translation(load_from='./result/ocr.txt', save_to='./result/english_ocr.txt', id=opt.PAPAGO_ID,
+                       pw=opt.PAPAGO_PW)
+    gen_text_to_image(load_from='./result/english_ocr.txt', warp_item=text_warp_items)
 
 # save final demo images
 file_utils.saveAllImages(save_to='./result/demo/', imgs=demos, ext='.png')
