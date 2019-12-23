@@ -1,6 +1,7 @@
 import numpy as np
 
-# TRANSLATION
+# TRANSLATION 
+# You can get the ID and P/W to https://developers.naver.com/products/nmt/
 PAPAGO_ID = 'id'
 PAPAGO_PW = 'pw'
 
