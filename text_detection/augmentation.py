@@ -1,7 +1,8 @@
 import numpy as np
 import cv2
 import random
-import config
+import opt
+
 class Data_augmentation(object):
 
     def __init__(self, image, region_score_GT, affinity_score_GT, confidence):
@@ -11,9 +12,9 @@ class Data_augmentation(object):
         self.confidence = confidence
 
     def select_augmentation_method(self):
-        if random.random() >= 0.5: self.flip()
-        if random.random() >= 0.5: self.crop() #cropping is some bugs.
-        if random.random() >= 0.5: self.rotate()
+        if random.random() >= 0.5 and opt.flip: self.flip()
+        if random.random() >= 0.5 and opt.crop: self.crop() #cropping is some bugs.
+        if random.random() >= 0.5 and opt.rotate: self.rotate()
         return self.image, self.region_score_GT, self.affinity_score_GT, self.confidence
 
     def flip(self):
@@ -29,12 +30,6 @@ class Data_augmentation(object):
 
         confidence = self.confidence[:, ::-1] if opt == 'left-right' else self.confidence[::-1, :]
         self.confidence = np.ascontiguousarray(confidence, dtype=np.uint8)
-
-        if config.vis:
-            cv2.imwrite('./debug_image/flip/image.jpg', self.image)
-            cv2.imwrite('./debug_image/flip/region.jpg', self.region_score_GT)
-            cv2.imwrite('./debug_image/flip/affinity.jpg', self.affinity_score_GT)
-            cv2.imwrite('./debug_image/flip/confidence.jpg', self.confidence)
 
     def crop(self):
         opt = random.randint(0, 4)
@@ -91,11 +86,6 @@ class Data_augmentation(object):
             half_n_confidence_h, half_n_confidence_w = new_confidence_h // 2, new_affinity_w // 2
             self.confidence = crop_affinity[half_n_confidence_h:new_confidence_h + half_n_confidence_h,
                                    half_n_confidence_w:new_confidence_w + half_n_confidence_w]
-        if config.vis:
-            cv2.imwrite('./debug_image/crop/image.jpg', self.image)
-            cv2.imwrite('./debug_image/crop/region.jpg', self.region_score_GT)
-            cv2.imwrite('./debug_image/crop/affinity.jpg', self.affinity_score_GT)
-            cv2.imwrite('./debug_image/crop/confidence.jpg', self.confidence)
 
     @staticmethod
     def rotate_method(img, angle):
@@ -120,10 +110,4 @@ class Data_augmentation(object):
         for item in items:
             item = self.rotate_method(item, angle)
             store.append(item)
-        if config.vis:
-            cv2.imwrite('./debug_image/rotate/image.jpg', store[0])
-            cv2.imwrite('./debug_image/rotate/region.jpg', store[1])
-            cv2.imwrite('./debug_image/rotate/affinity.jpg', store[2])
-            cv2.imwrite('./debug_image/rotate/confidence.jpg', store[3])
-
 

@@ -70,10 +70,11 @@ def load_net(args):
     models = {}
     if args.object:
         speech_bubble_detector = load_speech_bubble_detector(args)
-        models.update({'bubble_detector': speech_bubble_detector})
-    if args.ocr:
         text_detector = load_text_detector(args)
+        models.update({'bubble_detector': speech_bubble_detector, 'text_detector': text_detector})
+
+    if args.ocr:
         text_recognizer = load_text_recognizer(args)
-        models.update({'text_detector': text_detector, 'text_recognizer': text_recognizer})
+        models.update({'text_recognizer': text_recognizer})
 
     return models

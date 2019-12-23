@@ -11,12 +11,23 @@ DRAWTXT = False
 DRAWLINK = False
 DRAWBUB = False
 DRAWCUT = True
+TRAIN_INDEX_PATH = './train/trainval.txt'
 
 # TEXT DETECTION
+gaussian_region = 0.3
+gaussian_affinity = 0.25
+rotate = False
+flip = False
+crop = False
+DETECTION_TRAIN_IMAGE_PATH = './train/images/'
+DETECTION_TRAIN_LABEL_PATH = './train/labels/'
 text_threshold = 0.6
 low_text = 0.4
 link_threshold = 0.4
 MARGIN = 3
+LEFT_CHAR_LINE = 0
+RIGHT_CHAR_LINE = 2
+TRAIN_DISPLAY = True
 
 # TEXT RECOGNITION
 RECOG_NET_CHANNEL = 1
@@ -44,19 +55,6 @@ TEXT_DETECTOR_MODEL_PATH  = './weights/Line-Text-Detector.pth'
 TEXT_RECOGNIZER_MODEL_PATH = './weights/Line-Text-Recognizer.pth'
 BACKBONE_MODEL_PATH = './pretrained_models/resnet101_caffe.pth'
 
-
-#TRAIN PATH
-TRAIN_INDEX_PATH = './train/trainval.txt'
-
-
-#TEST PATH
-TEST_IMAGE_PATH = './images/'
-TEST_PREDICTION_PATH = './predictions/'
-FINAL_IMAGE_PATH = TEST_PREDICTION_PATH + 'final/'
-BUBBLE_PATH = TEST_PREDICTION_PATH + 'bubble/'
-CUT_PATH = TEST_PREDICTION_PATH + 'cut/'
-RECT_CUT_PATH = TEST_PREDICTION_PATH + 'rect_cut/'
-TEXT_PATH = TEST_PREDICTION_PATH + 'text/'
 
 #TEST HYPERPARAMETER
 TEST_SCALES = (600,)
@@ -91,14 +89,6 @@ BACKBONE = 'res101'
 #CUDA
 cuda = True
 
-
-#threshold
-iou_threshold = 0.4
-
-divide_text_threshold = 0.7
-divide_low_text = 0.4
-divide_link_threshold = 0.4
-
 char_box_width_threshold = -5
 char_box_height_threshold = 3
 
@@ -111,20 +101,6 @@ LNK_KERNEL_SIZE = 50
 MAG_RATIO = 2.5
 MAXIMUM_IMAGE_SIZE = 4000
 TRAIN_IMAGE_SIZE = 512
-poly = False
-show_time = False
-num_of_gpu = 1
-data_augmentation_rotate = True
 
-data_augmentation_crop = True
-pos_crop_bound_threshold = 5
-neg_crop_bound_threshold = -5
 
-pos_link_threshold = 0
-neg_link_threshold = -5
-
-data_augmentation_flip = True
-
-gaussian_region = 0.3
-gaussian_affinity = 0.25
 

@@ -46,7 +46,7 @@ def adjust_lr(optimizer, decay=0.1):
 
 
 def train_net(model=None, data_loader=None, optimizer=None, epoch=50, lr=0.001, lr_decay_step=10,
-              DISPLPAY_INTERVAL=None, SAVE_INTERVAL=None, lr_decay_gamma=None):
+              DISPLPAY_INTERVAL=None, SAVE_INTERVAL=None, lr_decay_gamma=None, save=None):
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     criterion = nn.CrossEntropyLoss()
 
@@ -79,10 +79,10 @@ def train_net(model=None, data_loader=None, optimizer=None, epoch=50, lr=0.001, 
                 start = time.time()
         start = time.time()
         if e % SAVE_INTERVAL == 0:
-            file_utils.mkdir(dir=[save_models])
+            file_utils.mkdir(dir=[save])
             print(
-                'save model ... -> {}'.format(save_models + 'res18' + '-' + str(e) + '.pth'))
-            torch.save(model.state_dict(), save_models + 'res18' + '-' + repr(e) + '.pth')
+                'save model ... -> {}'.format(save + 'res18' + '-' + str(e) + '.pth'))
+            torch.save(model.state_dict(), save + 'res18' + '-' + repr(e) + '.pth')
 
 
 def train(args):
@@ -97,7 +97,7 @@ def train(args):
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     train_net(model=model, data_loader=train_loader, optimizer=optimizer, epoch=args.epoch,
               lr=args.lr, lr_decay_step=args.lr_decay_step, DISPLPAY_INTERVAL=args.display_interval,
-              SAVE_INTERVAL=args.save_interval, lr_decay_gamma=args.lr_decay_gamma)
+              SAVE_INTERVAL=args.save_interval, lr_decay_gamma=args.lr_decay_gamma, save=args.save_models)
 
 
 if __name__ == '__main__':

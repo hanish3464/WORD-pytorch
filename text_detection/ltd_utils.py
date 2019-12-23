@@ -1,9 +1,11 @@
+"""
+ltd_utils.py
+"""
+# -*- coding: utf-8 -*-
 import numpy as np
 import cv2
 import math
 import opt
-
-# -*- coding: utf-8 -*-
 
 
 def link_refine(boxes=None, MARGIN=None):
@@ -17,7 +19,6 @@ def link_refine(boxes=None, MARGIN=None):
             reshape_boxes.append(boxes[s:i + 1])
             s = i + 1
     line_boxes = []
-    MARGIN = 3
     for reshape_box in reshape_boxes:
         xmin, ymin = reshape_box[0][0] - MARGIN, np.min(np.min(reshape_box[:, 1]))
         xmax, ymax = reshape_box[-1][4], np.max(np.max(reshape_box[:, -1]))
@@ -105,15 +106,9 @@ def sortAreaInsideContour(target=None, spacing_word=None):
     return final_char_list, word_re_gt
 
 
-def thresholding(img, img_size=None):
+def thresholding(img):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # print(gray_crop)
-    # img = cv2.bitwise_not(img)
     _, thresh = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
-    # kernel = np.ones((2, 2), np.uint8)
-    # char = cv2.erode(thresh, kernel, iterations=2)
-    # kernel = np.ones((1, 2), np.uint8)
-    # char = cv2.dilate(char, kernel, iterations=2)
     return thresh
 
 
@@ -173,32 +168,11 @@ def labeling(score=None, conectivity=None, map=None, text_thr=None, link_thr=Non
         box = np.roll(box, 4 - startidx, 0)
         box = np.array(box)
         [x1,y1], [x2,y1], [x2,y2], [x1,y2] = box[0], box[1], box[2], box[3]
-        LEFT_MARGIN = 0; RIGHT_MARGIN = 2
-        x1, x2 = x1 + LEFT_MARGIN, x2 + RIGHT_MARGIN
+        x1, x2 = x1 + opt.LEFT_CHAR_LINE, x2 + opt.RIGHT_CHAR_LINE
         box = np.array([[x1,y1],[x2,y1], [x2,y2],[x1,y2]])      
         det.append(box)
 
     return det
-
-
-def getdetReigion_core(image, textmap, linkmap, text_threshold, link_threshold, low_text, np_x):
-    linkmap = linkmap.copy()
-    textmap = textmap.copy()
-    img_h, img_w = textmap.shape
-
-    """ labeling method """
-    ret, text_score = cv2.threshold(textmap, 0.15, 1, 0)
-    ret, link_score = cv2.threshold(linkmap, link_threshold, 1, 0)
-
-    text_score_comb = np.clip(text_score + link_score, 0, 1)
-
-    _, contours, _ = cv2.findContours(text_score_comb.astype(np.uint8), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
-    image = cv2.resize(image, (256, 256), interpolation=cv2.INTER_LINEAR)
-    for i in contours:
-        area = cv2.contourArea(i)
-        hull = cv2.convexHull(i, clockwise=True)
-        if area < 50: continue
-        cv2.drawContours(image, [hull], 0, (255, 255, 0), 2)
 
 
 def getDetBoxes_core(textmap, linkmap, text_threshold, link_threshold, low_text, FLAGS=None):

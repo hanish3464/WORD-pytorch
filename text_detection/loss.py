@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 
-class WTD_LOSS(nn.Module):
+
+class LTD_LOSS(nn.Module):
     def __init__(self):
-        super(WTD_LOSS, self).__init__()
+        super(LTD_LOSS, self).__init__()
 
     def single_image_loss(self, pre_loss, loss_label):
         batch_size = pre_loss.shape[0]

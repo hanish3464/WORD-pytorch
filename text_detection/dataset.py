@@ -1,14 +1,15 @@
-"""train.py"""
-
+"""dataset.py"""
+import os, sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import torch
 from torch.utils.data import Dataset
 import cv2
 import numpy as np
 import file_utils
 import imgproc
-import config
 from augmentation import Data_augmentation
 from gaussian import GenerateGaussian
+import opt
 
 
 class root_dataset(Dataset):
@@ -18,7 +19,7 @@ class root_dataset(Dataset):
         self.image_list, _, _, _ = file_utils.get_files(images_path)
         _, _, self.label_list, _ = file_utils.get_files(labels_path)
 
-        self.gaussian_generator = GenerateGaussian(1024, config.gaussian_region, config.gaussian_affinity)
+        self.gaussian_generator = GenerateGaussian(1024, opt.gaussian_region, opt.gaussian_affinity)
 
     def __len__(self):
         return len(self.image_list)
@@ -43,11 +44,12 @@ class root_dataset(Dataset):
         affinity_score_GT = self.gaussian_generator.affinity(image, char_bboxes)
         region_score_GT, affinity_score_GT = self.train_data_resize(region_score_GT, affinity_score_GT)
         image = imgproc.normalizeMeanVariance(image)
+        image = cv2.resize(image, (self.image_size, self.image_size), interpolation=cv2.INTER_LINEAR)
         confidence = np.ones((region_score_GT.shape[0], region_score_GT.shape[1]), np.float32)
 
         ''' Augment the data for training '''
-        #data_augmentation = Data_augmentation(image, region_score_GT, affinity_score_GT, confidence)
-        #image, region_score_GT, affinity_score_GT, confidence = data_augmentation.select_augmentation_method()
+        data_augmentation = Data_augmentation(image, region_score_GT, affinity_score_GT, confidence)
+        image, region_score_GT, affinity_score_GT, confidence = data_augmentation.select_augmentation_method()
 
         ''' Convert the data for Model prediction '''
         image = torch.from_numpy(image).float().permute(2, 0, 1)

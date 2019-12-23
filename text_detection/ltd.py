@@ -1,13 +1,15 @@
 """
-wtd.py
+ltd.py
 """
 
 # -*- coding: utf-8 -*-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import os, sys
+sys.path.insert(0, os.path.dirname(__file__))
+from backbone.vgg16_bn import vgg16_bn, init_weights
 
-from text_detection.backbone.vgg16_bn import vgg16_bn, init_weights
 
 class double_conv(nn.Module):
     def __init__(self, in_ch, mid_ch, out_ch):

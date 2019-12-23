@@ -6,9 +6,7 @@ import cv2
 import file_utils
 from torch.autograd import Variable
 import text_detection.ltd_utils as ltd_utils
-import os
-#from text_detection import test, file_utils, imgproc, wtd_utils
-#from text_detection import config as cfg
+
 
 def test_net(net, image, text_threshold, link_threshold, low_text, cuda):
     img_resized, target_ratio, size_heatmap = imgproc.resize_aspect_ratio(image, opt.MAXIMUM_IMAGE_SIZE, interpolation=cv2.INTER_LINEAR,
@@ -94,8 +92,8 @@ def test(model=None, demo=None, bubbles=None, dets=None, img_name=None, save_to=
         for j, charBBox in enumerate(tmp_charBBoxes):
             index2 = file_utils.resultNameNumbering(j, len(tmp_charBBoxes))
             char = imgproc.cropBBoxOnImage(copy_img, charBBox)
-            orig_char = imgproc.adjustImageBorder(char, img_size=opt.recognition_input_size, color=opt.white)
-            thresh_char = ltd_utils.thresholding(orig_char, img_size=opt.recognition_input_size)
+            orig_char = imgproc.adjustImageBorder(char, img_size=opt.RECOG_TRAIN_SIZE, color=opt.white)
+            thresh_char = ltd_utils.thresholding(orig_char)
             file_utils.saveImage(save_to=save_to, img=thresh_char, index1=name_final, index2=index2, ext='.png')
         bubble_order_num += 1
         name_final = ''
