@@ -7,7 +7,7 @@ The remaining issues :
 ### Sample Results
 
 ### Overview
-This is Line Text Detection with CRAFT. Firstly, CRAFT detects Line text character of Speech Bubble as shape of gaussian heatmap. Secondly, predicted result post-processed as character, words, line unit for sorting order of characters and adding spacing word to final ocr result. I also implemented [post-process of link-refine](./text_detection/ltd_utils.py) which is used as box coordinates for warpping translated results instead of [link-refiner-model](https://github.com/clovaai/CRAFT-pytorch/blob/master/refinenet.py)
+This is Line Text Detection with CRAFT. Firstly, CRAFT detects Line text character of Speech Bubble as shape of gaussian heatmap. Secondly, predicted result post-processed as character, words, line unit for sorting order of characters and adding spacing word to final ocr result. I also implemented [post-process of link-refine](./ltd_utils.py#L11) which is used as box coordinates for warpping translated results instead of [link-refiner-model](https://github.com/clovaai/CRAFT-pytorch/blob/master/refinenet.py)
 
 `line results: [image source] : header of gangs, cells of Yumi, king of bok-hak, free throw, girl of random chat`
 <img width="1000" height="400" src="./figures/text_demo.gif">
@@ -35,3 +35,7 @@ When you train own your datasets, You have to make labels as json extension only
 * `--rotate`: data augmentation: rotate
 * `--flip`: data augmentation: flip
 * `--crop`: data augmentation: crop
+* `--vis_train`: whether checks model prediction with image
+* `--region`: gaussian heatmap labeling region scope
+* `--affinity`: gaussian heatmap labeling affinity scope
+
