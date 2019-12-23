@@ -27,10 +27,12 @@ parser.add_argument('--lr_decay_gamma', default=0.8, type=float, help='decay gam
 parser.add_argument('--train_size', default=512, type=int, help='train image size, resnet default 224')
 parser.add_argument('--display_interval', default=100, type=int, help='display train log per interval')
 parser.add_argument('--save_interval', default=1, type=int, help='save model interval')
-parser.add_argument('--cuda', action='store_true', default=True, help='cuda for train')
 parser.add_argument('--rotate', action='store_true', default=False, help='data augmentation : rotate')
 parser.add_argument('--flip', action='store_true', default=False, help='data augmentation : flip')
 parser.add_argument('--crop', action='store_true', default=False, help='data augmentation : crop')
+parser.add_argument('--vis_train', action='store_true',default=False, help='model prediction visualization')
+parser.add_argument('--region', default=0.3, type=float, help='gaussian heatmap labeling region scope')
+parser.add_argument('--affinity', default=0.25, type=float, help='gaussian heatmap labeling affinity scope')
 
 args = parser.parse_args()
 opt.flip = args.flip
@@ -47,6 +49,7 @@ def adjust_learning_rate(optimizer, lr, step):
 def train(args):
 
     file_utils.mkdir(dir=[args.save_models])
+    if args.vis_train: file_utils.mkdir(dir=['./vis/'])
 
     ''' MAKE DATASET '''
     datasets = webtoon_dataset(opt.DETECTION_TRAIN_IMAGE_PATH, opt.DETECTION_TRAIN_LABEL_PATH, args.train_size)
@@ -55,9 +58,7 @@ def train(args):
     ''' INITIALIZE MODEL, GPU, OPTIMIZER, and, LOSS '''
 
     model = LTD()
-    if args.cuda:
-        model = model.cuda()
-        model = torch.nn.DataParallel(model).cuda()
+    model = torch.nn.DataParallel(model).cuda()
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.lr_decay_gamma)
     criterion = LTD_LOSS()
 
