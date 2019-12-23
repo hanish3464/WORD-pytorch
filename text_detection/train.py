@@ -34,10 +34,13 @@ parser.add_argument('--vis_train', action='store_true',default=False, help='mode
 parser.add_argument('--region', default=0.3, type=float, help='gaussian heatmap labeling region scope')
 parser.add_argument('--affinity', default=0.25, type=float, help='gaussian heatmap labeling affinity scope')
 
+
 args = parser.parse_args()
 opt.flip = args.flip
 opt.rotate = args.rotate
 opt.crop = args.crop
+opt.gaussian_region = args.region
+opt.gaussian_affinity = args.affinity
 
 
 def adjust_learning_rate(optimizer, lr, step):
@@ -91,7 +94,7 @@ def train(args):
             score_region = y[:, :, :, 0].cuda()
             score_affinity = y[:, :, :, 1].cuda()
 
-            if opt.TRAIN_DISPLAY:
+            if args.vis_train:
                 if idx % 20 == 0 and idx != 0 and e % 2 == 0:
                     for idx2 in range(args.batch):
                         render_img1 = score_region[idx2].cpu().detach().numpy().copy()
