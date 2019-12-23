@@ -35,3 +35,7 @@ When you train own your datasets, You have to make labels as json extension only
 * `--rotate`: data augmentation: rotate
 * `--flip`: data augmentation: flip
 * `--crop`: data augmentation: crop
+* `--vis_train`: whether checks model prediction with image
+* `--region`: gaussian heatmap labeling region scope
+* `--affinity`: gaussian heatmap labeling affinity scope
+
