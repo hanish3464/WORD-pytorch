@@ -12,9 +12,26 @@ This is Line Text Detection with CRAFT. Firstly, CRAFT detects Line text charact
 `line results: [image source] : header of gangs, cells of Yumi, king of bok-hak, free throw, girl of random chat`
 <img width="1000" height="400" src="./figures/text_demo.gif">
 
-## Character Region Awareness for Text Detection
+### Character Region Awareness for Text Detection
 Youngmin Baek, Bado Lee, Dongyoon Han, Sangdoo Yun, Hwalsuk Lee
 (Submitted on 3 Apr 2019) [CRAFT](https://arxiv.org/pdf/1904.01941.pdf)
                                                                                                                                     
-## Train
-`Note: When you train own your datasets, You have to make labels as json ext. Train code is under refining. I will push code and the way to git in the near futures.`                                         
+### Train
+When you train own your datasets, You have to make labels as json extension only. And It doesn't contain [weakly supervision](https://khanrc.tistory.com/entry/Semisupervised-Weaklysupervised) part of original paper because webtoon domain follows things synthetic, not real. So, a labeling doesn't divide characters from word, but can be [generated with train image](https://github.com/Belval/TextRecognitionDataGenerator).
+
+- Run **`python train.py`** together below argument options.
+
+### Arguments for train
+
+* `--save_models`: saving model folder path
+* `--epoch`: epoch
+* `--batch`: batch size
+* `--lr`: learning rate
+* `--lr_decay_step`: learning rate decay step
+* `--lr_decay_gamma`: learning rate decay gamma
+* `--train_size`: train image size
+* `--display_interval`: display train log per display_interval
+* `--save_interval`: save checkpoint per save_interval
+* `--rotate`: data augmentation: rotate
+* `--flip`: data augmentation: flip
+* `--crop`: data augmentation: crop
