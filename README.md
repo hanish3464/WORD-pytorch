@@ -23,6 +23,8 @@ WORD detect objects(speech bubbles, cuts, and line texts) in webtoon or cartoon.
 
 **17 Dec, 2019** : Merged all the code of prejects and added OCR and Translation Results.
 
+**27 Dec, 2019** : Added initially refined train code of each project and updated README.md
+
 ## Install Requirements: 
 
 `Pytorch==1.0.0(only)`
