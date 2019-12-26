@@ -14,11 +14,11 @@ import torch.nn as nn
 import numpy as np
 import math
 import yaml
-from object_detection.lib.model.utils.config import cfg
+from lib.model.utils.config import cfg
 from .generate_anchors import generate_anchors
 from .bbox_transform import bbox_transform_inv, clip_boxes, clip_boxes_batch
 # from model.nms.nms_wrapper import nms
-from object_detection.lib.model.roi_layers import nms
+from lib.model.roi_layers import nms
 import pdb
 
 DEBUG = False

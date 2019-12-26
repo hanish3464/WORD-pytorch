@@ -40,26 +40,15 @@ except NameError:
 
 class pascal_voc(imdb):
     def __init__(self, image_set, year, devkit_path=None):
-        imdb.__init__(self, 'voc_' + year + '_' + image_set)
+        imdb.__init__(self, 'webtoon')
         self._year = year
         self._image_set = image_set
-        self._devkit_path = self._get_default_path() if devkit_path is None \
-            else devkit_path
-        self._data_path = os.path.join(self._devkit_path, 'VOC' + self._year)
+        self._devkit_path = './train/'
+        self._data_path = os.path.join(self._devkit_path, 'images')
         self._classes = ('__background__', 'speech')
-        # self._classes = ('__background__',  # always index 0
-        #                 'aeroplane', 'bicycle', 'bird', 'boat',
-        #                 'bottle', 'bus', 'car', 'cat', 'chair',
-        #                 'cow', 'diningtable', 'dog', 'horse',
-        #                 'motorbike', 'person', 'pottedplant',
-        #                 'sheep', 'sofa', 'train', 'tvmonitor')
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
-        print('class_to_ind : {}'.format(self._class_to_ind))
-        print('classes: {} num_classes: {}'.format(self.classes, self.num_classes))
         self._image_ext = '.jpg'
         self._image_index = self._load_image_set_index()
-        # Default to roidb handler
-        # self._roidb_handler = self.selective_search_roidb
         self._roidb_handler = self.gt_roidb
         self._salt = str(uuid.uuid4())
         self._comp_id = 'comp4'
@@ -93,9 +82,7 @@ class pascal_voc(imdb):
         """
         Construct an image path from the image's "index" identifier.
         """
-        print('index: {}'.format(index))
-        image_path = os.path.join(self._data_path, 'JPEGImages',
-                                  index + self._image_ext)
+        image_path = os.path.join(self._data_path, index + self._image_ext)
         assert os.path.exists(image_path), \
             'Path does not exist: {}'.format(image_path)
         return image_path
@@ -105,10 +92,8 @@ class pascal_voc(imdb):
         Load the indexes listed in this dataset's image set file.
         """
         # Example path to image set file:
-        # self._devkit_path + /VOCdevkit2007/VOC2007/ImageSets/Main/val.txt
-        image_set_file = os.path.join(self._data_path, 'ImageSets', 'Main',
-                                      self._image_set + '.txt')
-        print('image set file :{}'.format(image_set_file))
+
+        image_set_file = './train/trainval.txt'
         assert os.path.exists(image_set_file), \
             'Path does not exist: {}'.format(image_set_file)
         with open(image_set_file) as f:
@@ -127,6 +112,7 @@ class pascal_voc(imdb):
 
         This function loads/saves from/to a cache file to speed up future calls.
         """
+
         cache_file = os.path.join(self.cache_path, self.name + '_gt_roidb.pkl')
         if os.path.exists(cache_file):
             with open(cache_file, 'rb') as fid:
@@ -182,7 +168,6 @@ class pascal_voc(imdb):
 
     def _load_rpn_roidb(self, gt_roidb):
         filename = self.config['rpn_file']
-        print('loading {}'.format(filename))
         assert os.path.exists(filename), \
             'rpn data not found at: {}'.format(filename)
         with open(filename, 'rb') as f:
@@ -213,7 +198,7 @@ class pascal_voc(imdb):
         Load image and bounding boxes info from XML file in the PASCAL VOC
         format.
         """
-        filename = os.path.join(self._data_path, 'Annotations', index + '.xml')
+        filename = os.path.join(self._devkit_path, 'labels', index + '.xml')
         tree = ET.parse(filename)
         objs = tree.findall('object')
         # if not self.config['use_diff']:
@@ -238,8 +223,6 @@ class pascal_voc(imdb):
         w, h = int(wh.find('width').text), int(wh.find('height').text)
         for ix, obj in enumerate(objs):
             bbox = obj.find('bndbox')
-            print("--" * 100)
-            print(bbox)
             # Make pixel indexes 0-based
             x1 = float(bbox.find('xmin').text)
             y1 = float(bbox.find('ymin').text)
@@ -275,7 +258,7 @@ class pascal_voc(imdb):
         return comp_id
 
     def _get_voc_results_file_template(self):
-        # VOCdevkit/results/VOC2007/Main/<comp_id>_det_test_aeroplane.txt
+
         filename = self._get_comp_id() + '_det_' + self._image_set + '_{:s}.txt'
         filedir = os.path.join(self._devkit_path, 'results', 'VOC' + self._year, 'Main')
         if not os.path.exists(filedir):

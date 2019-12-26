@@ -2,8 +2,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from object_detection.lib.model.utils.config import cfg
-from object_detection.lib.model.faster_rcnn.faster_rcnn import _fasterRCNN
+from lib.model.utils.config import cfg
+from lib.model.faster_rcnn.faster_rcnn import _fasterRCNN
 
 import torch
 import torch.nn as nn
@@ -219,7 +219,7 @@ def resnet152(pretrained=False):
 
 class resnet(_fasterRCNN):
   def __init__(self, classes, num_layers=101, pretrained=False, class_agnostic=False):
-    self.model_path = 'data/pretrained_model/resnet101_caffe.pth'
+    self.model_path = './weights/resnet101_caffe.pth'
     self.dout_base_model = 1024
     self.pretrained = pretrained
     self.class_agnostic = class_agnostic
