@@ -149,3 +149,8 @@ def makeLabelMapper(load_from=None):
     return label_mapper
 
 
+def makeTrainIndex(names=None, save_to=None):
+    with open(save_to, 'w') as f:
+        for i in names:
+            f.write(i + '\n')
+    f.close()

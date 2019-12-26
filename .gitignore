@@ -2,6 +2,7 @@
 *.swp
 *.pkl
 *.pth
+train/
 data*
 result*
 weights*
