@@ -5,7 +5,7 @@ SPEECH_BUBBLE_DETECTOR_PATH = './weights/Speech-Bubble-Detector.pth'
 TEXT_DETECTOR_MODEL_PATH  = './weights/Line-Text-Detector.pth'
 TEXT_RECOGNIZER_MODEL_PATH = './weights/Line-Text-Recognizer.pth'
 
-# TRANSLATION 
+# TRANSLATION
 # You can get the ID and P/W to https://developers.naver.com/products/nmt/
 PAPAGO_ID = 'id'
 PAPAGO_PW = 'pw'
@@ -21,6 +21,7 @@ DRAWLINK = False
 DRAWBUB = False
 DRAWCUT = True
 BUBBLE_TRAIN_FLIP = False
+BACKBONE = 'res101'
 
 # TEXT DETECTION
 gaussian_region = 0.3

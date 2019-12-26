@@ -1,5 +1,7 @@
 '''net_utils.py'''
 
+import sys, os
+sys.path.insert(0, os.path.dirname(__file__) + '/object_detection/')
 import torch
 import numpy as np
 from object_detection.lib.model.faster_rcnn.resnet import resnet
