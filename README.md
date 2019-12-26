@@ -52,7 +52,7 @@ Download model and include to `weights/`
 2. Add image files to `data/`
 3. Run demo.py (add `--ocr --papago` options if you want)
 
-- Run **`python demo.py --ocr --papago `**
+- Run **`python demo.py --ocr --papago `** [If you want papago(translation)](https://developers.naver.com/products/nmt/)
 
 ### Arguments
 
