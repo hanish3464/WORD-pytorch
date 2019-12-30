@@ -1,4 +1,4 @@
-'''file_utils.py'''
+"file_utils.py"
 # -*- coding: utf-8 -*-
 import os
 import numpy as np
@@ -6,6 +6,7 @@ import cv2
 import codecs
 import json
 import shutil
+
 
 def get_files(img_dir):
     imgs, masks, xmls, names = list_files(img_dir)
@@ -83,7 +84,7 @@ def saveAllImages(save_to=None, imgs=None, index1=None, ext=None):
             cv2.imwrite(save_to + str(idx1) + ext, img)
 
 
-def drawBBoxOnImage(dir=None, img=None, index1=None, boxes=None, flags=None):
+def drawBBoxes(dir=None, img=None, index1=None, boxes=None, flags=None):
     if dir is not None and index1 is not None:
         BBox_img = dir + index1 + '.png'
 
@@ -94,7 +95,6 @@ def drawBBoxOnImage(dir=None, img=None, index1=None, boxes=None, flags=None):
         if flags == 'word': cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(0, 0, 255), thickness=1)
         if flags == 'line': cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(255, 0, 0), thickness=1)
         if flags == 'link': cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(255, 255, 0), thickness=2)
-        # cv2.imwrite(BBox_img, img)
 
 
 def loadJson(json_file):
@@ -107,8 +107,8 @@ def loadJson(json_file):
     return items
 
 
-def saveCSV(dir=None, dst=None, index=None, label=None, num=None):
-    distorted_image_file = dir + str(index) + '.png'
+def saveCSV(save_to=None, dst=None, index=None, label=None, num=None, ext=None):
+    distorted_image_file = save_to + str(index) + ext
     dst.write(u'{},{},{}\n'.format(distorted_image_file, label, num))
 
 

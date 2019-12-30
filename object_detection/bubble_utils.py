@@ -3,28 +3,6 @@ import numpy as np
 import opt
 import imgproc
 
-def warpEnglishTxtBub(txts, bubs):
-    new = []
-    cnt = 1
-    for txt, bub in zip(txts, bubs):
-
-        bub = imgproc.loadImage(bub)
-        b_h, b_w, _ = np.array(bub).shape
-        t_h, t_w = np.array(txt).shape
-        if t_h <= 50:
-            mid_h = b_h//8
-            mid_w = b_w//4
-        else:
-            mid_h, mid_w = b_h//2, b_w//2
-        txt = cv2.resize(np.array(txt), (mid_w, mid_h))
-        txt = np.expand_dims(txt, axis=2)
-        txt = cv2.cvtColor(txt, cv2.COLOR_GRAY2RGB)
-        txt = imgproc.addImageToAlphaChannel(txt, txt, FLAG='addAlphaLayer')
-        bub[b_h//4:mid_h+b_h//4, b_w//4:mid_w+b_w//4, :] = txt[:,:,:]
-        new.append(bub)
-        cnt+=1
-    return new
-
 
 def alpha_blend_bubble(img, contours, index):
     h, w, c = img.shape
@@ -62,14 +40,15 @@ def adjust_bbox_coord(img, xmin, ymin, xmax, ymax, bg='white'):
 
 
 def find_max_contour(contours=None):
-    maxIdx = 0; maxArea = 0
+    max_idx = 0
+    max_area = 0
     for x, cnt in enumerate(contours):
         area = cv2.contourArea(cnt)
-        if maxArea < area:
-            maxArea = area
-            maxIdx = x
+        if max_area < area:
+            max_area = area
+            max_idx = x
 
-    return maxIdx, maxArea
+    return max_idx, max_area
 
 
 def select_background_color(bg=None):
@@ -91,7 +70,7 @@ def get_cnt_bubble(demo, image, class_name, dets, class_thresh, bg='white'):
     bboxes = []
     scores = []
     dets_bubbles = []
-    for i in range(np.minimum(10, dets.shape[0])):
+    for i in range(np.minimum(10, dets.shape[0])):  # sort bounding box of speech bubble
         bbox = tuple(int(np.round(x)) for x in dets[i, :4])
         score = dets[i, -1]
         if score > class_thresh:
@@ -108,15 +87,17 @@ def get_cnt_bubble(demo, image, class_name, dets, class_thresh, bg='white'):
             thresh, crop = adjust_bbox_coord(image, xmin, ymin, xmax, ymax, bg=bg)
             crop_tmp = crop.copy()
             _, cnts, _ = cv2.findContours(thresh, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
-            maxIdx, maxArea = find_max_contour(contours=cnts)
-            crop_tmp = draw_bubble_contour(crop_tmp, class_name, scores[bub_order], cnts, maxIdx, count)
+            max_idx, max_area = find_max_contour(contours=cnts)
+            crop_tmp = draw_bubble_contour(crop_tmp, class_name, scores[bub_order], cnts, max_idx, count)
             demo[ymin:ymax, xmin:xmax, :] = crop_tmp[:, :, :]
-            bubble = alpha_blend_bubble(crop, cnts, maxIdx)
+            bubble = alpha_blend_bubble(crop, cnts, max_idx)
             bubbles.append(bubble)
             dets_bubbles.append([xmin, ymin, xmax, ymax])
             color = select_background_color(bg=bg)
-            cv2.drawContours(crop, [cnts[maxIdx]], 0, color, -1)
-            cv2.drawContours(crop, [cnts[maxIdx]], 0, color, 10)
+
+            #  remove speech bubble from image by filling background color
+            cv2.drawContours(crop, [cnts[max_idx]], 0, color, -1)
+            cv2.drawContours(crop, [cnts[max_idx]], 0, color, 10)
 
     except Exception as ex: print(ex)
     return demo, image, bubbles, dets_bubbles

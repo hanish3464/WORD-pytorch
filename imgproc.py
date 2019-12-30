@@ -43,14 +43,6 @@ def adjustImageRatio(img):
     return img
 
 
-def createImageBorder(img, img_size=1024, color=[255, 255, 255]):
-    h, w, _ = img.shape
-    l = r = (img_size // 2 - w) // 2
-    t = b = (img_size // 2 - h) // 2
-    constant = cv2.copyMakeBorder(img, t, b, l, r, cv2.BORDER_CONSTANT, value=color)
-    return constant
-
-
 def adjustImageBorder(img, img_size=128, color=[255, 255, 255]):
     h, w, _ = img.shape
     if h > w:

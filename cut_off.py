@@ -2,10 +2,10 @@ import cv2
 import opt
 import imgproc
 
-storage = []
+g_storage = []  # global variable to store divided image information.
 
 
-def search_pixels(img, h_criteria):
+def bfs(img, h_criteria):
     h, w, _ = img.shape
     arr = []
     arr.append(h_criteria)
@@ -33,27 +33,27 @@ def down_size_image(img, width=None):
     return img, criteria_w
 
 
-def bfs(origin=None, copy=None, criteria_h=None, creteria_w=None, name=None, index=None):
-    global storage
+def search_pixels(origin=None, copy=None, criteria_h=None, creteria_w=None, name=None, index=None):
+    global g_storage
     h, _, _ = copy.shape
-    if h <= criteria_h:
+    if h <= criteria_h:  # recursive exit statement
         piece = origin[0:int(h * creteria_w), :, :]
-        if h >= opt.MIN_SIZE:
-            storage.append(piece)
+        if h >= opt.MIN_SIZE:  # If final image is too small, It considers residue of image
+            g_storage.append(piece)
         return
 
-    n_h = search_pixels(copy, criteria_h)
+    n_h = bfs(copy, criteria_h)  # bfs to find 0 or 255 pixels per line
     piece = origin[0:int(n_h * creteria_w), :, :]
-    storage.append(piece)
+    g_storage.append(piece)
 
-    bfs(origin=origin[int(n_h * creteria_w):, :, :], copy=copy[n_h:, :, :], criteria_h=criteria_h, creteria_w=creteria_w,
-        name=name, index=index + 1)
+    search_pixels(origin=origin[int(n_h * creteria_w):, :, :], copy=copy[n_h:, :, :], criteria_h=criteria_h,
+                  creteria_w=creteria_w, name=name, index=index + 1)  # recursive
 
 
 def cut_off_image(image=None, name=None, ratio=None):
-    global storage
-    storage = []
-    if image.shape[1] >= 720:
+    global g_storage
+    g_storage = []
+    if image.shape[1] >= 720:  # If image is too large, reduce size.
         h, w, _ = image.shape
         ratio_h = int((720 * h) // w)
         image = cv2.resize(image, (720, ratio_h), interpolation=cv2.INTER_CUBIC)
@@ -63,6 +63,7 @@ def cut_off_image(image=None, name=None, ratio=None):
     height, width, _ = image.shape
     copy_height, copy_width, _ = copy.shape
     criteria_h = int(copy_width * ratio)
-    bfs(origin=image, copy=copy, criteria_h=criteria_h, creteria_w=criteria_w, name=name, index=0)
+    # Breadth-first search for cutting criteria line.
+    search_pixels(origin=image, copy=copy, criteria_h=criteria_h, creteria_w=criteria_w, name=name, index=0)
 
-    return storage
+    return g_storage

@@ -4,6 +4,7 @@ from math import exp
 import cv2
 import numpy as np
 
+
 class GenerateGaussian(object):
 
     def __init__(self, image_size, region_threshold=0.4, affinity_threshold=0.2):

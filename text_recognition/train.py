@@ -28,6 +28,7 @@ parser.add_argument('--distort', action='store_ture', default=False, help='data 
 
 args = parser.parse_args()
 
+
 def copyStateDict(state_dict):
     if list(state_dict.keys())[0].startswith("module"):
         start_idx = 1

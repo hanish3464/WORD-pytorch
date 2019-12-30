@@ -7,8 +7,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import opt
 
-#Res101 : Bottleneck, [3, 4, 23, 3]
-#Res18 : BasicBlock, [2, 2, 2, 2]
+# Res101 : Bottleneck, [3, 4, 23, 3]
+# Res18 : BasicBlock, [2, 2, 2, 2]
+
 
 class LTR(ResNet): #res101
 
@@ -21,6 +22,7 @@ class LTR(ResNet): #res101
 
     def forward(self, x):
         return super(LTR, self).forward(x)
+
 
 class BasicNet(nn.Module):
     def __init__(self):

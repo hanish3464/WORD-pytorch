@@ -6,6 +6,8 @@ import object_detection.cut_utils as cut_utils
 
 def test_opencv(image=None, demo=None, bg=None, size=None):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    #  threshold as background type
     if bg == 'black':
         _, thresh = cv2.threshold(gray, 0.1, 255, 0)
     elif bg == 'white':
@@ -31,11 +33,11 @@ def test_opencv(image=None, demo=None, bg=None, size=None):
     for i in contours:
         area = cv2.contourArea(i)
         hull = cv2.convexHull(i, clockwise=True)
-        if bg == 'white' and area < size: continue
+        if bg == 'white' and area < size: continue  # size filtering for cut candidate
         hull_lists.append(hull)
-    new_contours = cut_utils.removeNoiseConvexHull(canvas, hull_lists)
-    cuts, dets_cut = cut_utils.cutAlphaBlending(image, new_contours)
-    vis_img, rect_cuts = cut_utils.drawCutConvexHull(image, demo, new_contours)
+    new_contours = cut_utils.remove_noise_convexhull(canvas, hull_lists)  # remove all inner contours
+    cuts, dets_cut = cut_utils.alpha_blend_cut(image, new_contours)  # add transparent attribute by alpha-blending
+    vis_img, rect_cuts = cut_utils.draw_cut_convexhull(image, demo, new_contours)  # draw convexHull
 
     return vis_img, cuts
 

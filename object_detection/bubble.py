@@ -10,12 +10,13 @@ from model.rpn.bbox_transform import bbox_transform_inv
 import object_detection.bubble_utils as bubble_utils
 import os
 import opt
+
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 
 def test_net(model=None, image=None, params=None, bg=None, cls=None):
     blob, scale, label = params
-    with torch.no_grad():
+    with torch.no_grad():  # pre-processing data for passing net
         im_data = Variable(torch.FloatTensor(1).cuda())
         im_info = Variable(torch.FloatTensor(1).cuda())
         num_boxes = Variable(torch.LongTensor(1).cuda())
@@ -26,7 +27,7 @@ def test_net(model=None, image=None, params=None, bg=None, cls=None):
     im_data_pt = im_data_pt.permute(0, 3, 1, 2)
     im_info_pt = torch.from_numpy(im_info_np)
 
-    with torch.no_grad():
+    with torch.no_grad():  # resize
         im_data.resize_(im_data_pt.size()).copy_(im_data_pt)
         im_info.resize_(im_info_pt.size()).copy_(im_info_pt)
         gt_boxes.resize_(1, 1, 5).zero_()
@@ -35,7 +36,7 @@ def test_net(model=None, image=None, params=None, bg=None, cls=None):
     rois, cls_prob, bbox_pred, \
     rpn_loss_cls, rpn_loss_box, \
     RCNN_loss_cls, RCNN_loss_bbox, \
-    rois_label = model(im_data, im_info, gt_boxes, num_boxes)
+    rois_label = model(im_data, im_info, gt_boxes, num_boxes)  # predict
 
     scores = cls_prob.data
     boxes = rois.data[:, :, 1:5]
@@ -62,7 +63,8 @@ def test_net(model=None, image=None, params=None, bg=None, cls=None):
 
     image = np.copy(image[:, :, ::-1])
     demo = image.copy()
-    bubbles = []; dets_bubbles = []
+    bubbles = []
+    dets_bubbles = []
 
     for j in range(1, len(label)):
         inds = torch.nonzero(scores[:, j] > opt.THRESH).view(-1)
@@ -75,7 +77,8 @@ def test_net(model=None, image=None, params=None, bg=None, cls=None):
             cls_dets = cls_dets[order]
             keep = nms(cls_boxes[order, :], cls_scores[order], opt.TEST_NMS)
             cls_dets = cls_dets[keep.view(-1).long()].cpu().numpy()
-            demo, image, bubbles, dets_bubbles = bubble_utils.get_cnt_bubble(image, image.copy(), label[j], cls_dets, cls, bg=bg)
+
+            #  post-processing : get contours of speech bubble
+            demo, image, bubbles, dets_bubbles = bubble_utils.get_cnt_bubble(image, image.copy(), label[j], cls_dets,
+                                                                             cls, bg=bg)
     return demo, image, bubbles, dets_bubbles
-
-

@@ -77,27 +77,27 @@ for k, image_path in enumerate(image_list):
     for img in images:  # image fragments divided from cut_off.py
 
         cnt += 1
-        str_cnt = file_utils.resultNameNumbering(origin=cnt, digit=1000)
+        str_cnt = file_utils.resultNameNumbering(origin=cnt, digit=1000)  # ex: 1 -> 0001, 2 -> 0002
 
         img_blob, img_scale = imgproc.getImageBlob(img)
         f_RCNN_param = [img_blob, img_scale, opt.LABEL]  # LABEL: speech bubble
 
-        demo, image, bubbles, dets_bubbles = bubble_detect(model=models['bubble_detector'], image=img, params=f_RCNN_param,
-                                                          cls=args.cls, bg=args.type)
+        demo, image, bubbles, dets_bubbles = bubble_detect(model=models['bubble_detector'], image=img,
+                                                           params=f_RCNN_param, cls=args.cls, bg=args.type)
 
         demo, cuts = cut_detect(image=image, demo=demo, bg=args.type, size=args.box_size)
 
-        demo, space, warps = line_text_detect(model=models['text_detector'], demo=demo, bubbles=imgproc.cpImage(bubbles),
+        demo, space, warps = line_text_detect(model=models['text_detector'], demo=demo,
+                                              bubbles=imgproc.cpImage(bubbles),
                                               dets=dets_bubbles, img_name=str_cnt, save_to='./result/chars/')
 
         spaces += space  # add temporarily space in an image to total spaces storage
-        text_warp_items += warps  # add temporarily text & bubble image to text_warp_items, kind of storage.
+        text_warp_items += warps  # add temporarily text & bubble image to text_warp_items which is kind of storage.
         demos.append(demo)  # demo image is stored demos storage
 
         # save segmented object(bubble & cut)
         file_utils.saveAllImages(save_to='./result/bubbles/', imgs=bubbles, index1=str_cnt, ext='.png')
         file_utils.saveAllImages(save_to='./result/cuts/', imgs=cuts, index1=str_cnt, ext='.png')
-
 
 if args.ocr:  # ocr
 

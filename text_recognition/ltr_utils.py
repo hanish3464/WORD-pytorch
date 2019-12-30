@@ -1,4 +1,3 @@
-#! /usr/bin/env/ python
 # -*- coding: utf-8 -*-
 
 import codecs
@@ -8,13 +7,15 @@ import cv2
 import math
 import opt
 
+
 def flush(buffer, cnt):
     buffer = ''
     cnt = 0
     return buffer, cnt
 
 
-def DISLPLAY_STDOUT(chars=None, space=None, img_name=None, MODE=None, save_to=None):
+def display_stdout(chars=None, space=None, img_name=None, MODE=None, save_to=None):
+    # save result with regard to spacing words
     str_buffer = ''
     word = 0
     cnt = 0
@@ -52,10 +53,10 @@ def DISLPLAY_STDOUT(chars=None, space=None, img_name=None, MODE=None, save_to=No
             img_idx += 1
 
 
-def getSize(txt, font):
-    testImg = Image.new('L', (1, 1))
-    testDraw = ImageDraw.Draw(testImg)
-    return testDraw.textsize(txt, font)
+def get_size(txt, font):
+    test_img = Image.new('L', (1, 1))
+    test_draw = ImageDraw.Draw(test_img)
+    return test_draw.textsize(txt, font)
 
 
 def parsing(target=None, criteria=None):
@@ -82,31 +83,33 @@ def gen_txt_to_image(load_from=None, warp_item=None):
     item_idx = 0
     for k, text in enumerate(labels):
         try:
-            if text != '':
+            if text != '':  # remove useless blank
                 bubble_image = warp_item[item_idx][0]
                 line_boxes_coordinate = warp_item[item_idx][1]
                 item_idx += 1
             else:
                 continue
 
-            if len(line_boxes_coordinate) == 0:  # It doesn't exist detected line text. but bubbles
+            if len(line_boxes_coordinate) == 0:  # It doesn't exist detected line text, but bubbles
                 item_idx += 1
                 continue
 
+            # rearrange the number of text unit depending on the number of line boxes
             arr = parsing(target=text, criteria=len(line_boxes_coordinate))
             for x, slices in enumerate(arr):
+                # generate image of text
                 if slices == [''] or slices == []: continue
                 slices = ' '.join(slices)
                 fontsize = 24
                 if slices == '': continue
                 cnt += 1
-                colorText = "black"
-                colorBackground = "white"
+                color_text = "black"
+                color_background = "white"
                 font = ImageFont.truetype('./text_recognition/font.ttf', fontsize)
-                width, height = getSize(slices, font)
-                img = Image.new('RGB', (width, height), colorBackground)
+                width, height = get_size(slices, font)
+                img = Image.new('RGB', (width, height), color_background)
                 d = ImageDraw.Draw(img)
-                d.text((0, 0), slices, fill=colorText, font=font)
+                d.text((0, 0), slices, fill=color_text, font=font)
                 img = np.array(img)
                 eng_h, eng_w, _ = img.shape
 
@@ -115,6 +118,7 @@ def gen_txt_to_image(load_from=None, warp_item=None):
                 tmp_ymax, tmp_ymin = orig_ymax, orig_ymin
                 tmp_xmax, tmp_xmin = orig_xmax, orig_xmin
 
+                # generated English text is overwritten to line bounding box location of speech bubbles
                 if eng_h <= orig_ymax - orig_ymin:
 
                     img = cv2.copyMakeBorder(np.array(img), ((orig_ymax - orig_ymin) - eng_h) // 2,
@@ -154,8 +158,8 @@ def gen_txt_to_image(load_from=None, warp_item=None):
                     img = cv2.resize(img, (tmp_xmax - tmp_xmin, tmp_ymax - tmp_ymin), interpolation=cv2.INTER_CUBIC)
                     bubble_image[tmp_ymin:tmp_ymax, tmp_xmin:tmp_xmax, :] = img[:]
 
+            # If there remains leavings of line bounding box, delete the boxes by filling the white color.
             leavings = line_boxes_coordinate[cnt:len(line_boxes_coordinate)]
-
             for leaving in leavings:
                 xmin, ymin = leaving[0]
                 xmax, ymax = leaving[2]
@@ -164,5 +168,3 @@ def gen_txt_to_image(load_from=None, warp_item=None):
 
         except Exception as ex:
             print('[error Info]: {} / ltr_utils.py'.format(type(ex)))
-
-

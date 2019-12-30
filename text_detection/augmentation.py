@@ -3,7 +3,8 @@ import cv2
 import random
 import opt
 
-class Data_augmentation(object):
+
+class Data_Augmentation(object):
 
     def __init__(self, image, region_score_GT, affinity_score_GT, confidence):
         self.image = image
@@ -101,7 +102,6 @@ class Data_augmentation(object):
         M[1, 2] += (new_H / 2) - center_y
 
         return cv2.warpAffine(img, M, (new_W, new_H))
-
 
     def rotate(self):
         items = [self.image, self.region_score_GT, self.affinity_score_GT, self.confidence]

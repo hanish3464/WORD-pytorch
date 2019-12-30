@@ -4,7 +4,7 @@ import opt
 import imgproc
 
 
-def removeNoiseConvexHull(canvas, hull_lists):
+def remove_noise_convexhull(canvas, hull_lists):
     for hull in hull_lists: cv2.drawContours(canvas, [hull], 0, (255, 255, 255), -1)
     kernel = np.ones((7, 7), dtype=np.uint8)
     canvas = cv2.erode(canvas, kernel, iterations=1)
@@ -17,7 +17,7 @@ def removeNoiseConvexHull(canvas, hull_lists):
     return contours
 
 
-def drawCutConvexHull(orig, img, new_contours):
+def draw_cut_convexhull(orig, img, new_contours):
     img = np.array(img)
     cuts = []
     for idx, new_cnt in enumerate(reversed(new_contours)):
@@ -31,7 +31,7 @@ def drawCutConvexHull(orig, img, new_contours):
     return img, cuts
 
 
-def cutAlphaBlending(img, new_contours):
+def alpha_blend_cut(img, new_contours):
     cut_list = []
     det = []
     for idx, new_cnt in enumerate(new_contours):
@@ -46,16 +46,3 @@ def cutAlphaBlending(img, new_contours):
         cut_list.append(alpha_img)
         det.append([x, y, x + w, y + h])
     return cut_list, det
-
-def sortCut(dets):
-    tmp = []; value = []; dets_cut = []
-    for idx, det in enumerate(dets):
-        ymin = int(det[1])
-        value.append(ymin)
-        tmp.append(det)
-    order_k = sorted(range(len(value)), key=lambda k: value[k])
-    for cut_order in order_k:
-        bbox = tmp[cut_order]
-        xmin, ymin, xmax, ymax = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
-        dets_cut.append([xmin,ymin,xmax,ymax])
-    return dets_cut

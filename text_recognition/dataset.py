@@ -45,16 +45,16 @@ class Hangul_Dataset(object):
         image = imgproc.loadImage(self.images[index])
         image = imgproc.cvtColorGray(image)
 
-        #Data Augmentation Method - elastic distotion, image blur
+        # Data Augmentation Method - elastic distortion, image blur
 
         if self.distort:
             if random.randint(0, 1):
-                image = self.distortImage(image)
+                image = self.distort_image(image)
 
         if self.blur:
             if random.randint(0, 1):
                 blur_extent = 1
-                image = self.blurImage(image, blur_extent)
+                image = self.blur_image(image, blur_extent)
 
         image = imgproc.tranformToTensor(img=image, size=self.size)
 
@@ -63,7 +63,7 @@ class Hangul_Dataset(object):
 
         return image, label_num
 
-    def distortImage(self, img):
+    def distort_image(self, img):
 
         alpha = random.randint(opt.ALPHA_MIN, opt.ALPHA_MAX)
         sigma = random.randint(opt.SIGMA_MIN, opt.SIGMA_MAX)
@@ -86,7 +86,7 @@ class Hangul_Dataset(object):
         #image = Image.fromarray(distorted_arr)
         return distorted_arr
 
-    def blurImage(self, img, extent):
+    def blur_image(self, img, extent):
         img = Image.fromarray(img)
         img = img.filter(ImageFilter.GaussianBlur(radius=extent))
         return np.array(img)

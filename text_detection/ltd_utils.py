@@ -27,7 +27,8 @@ def link_refine(boxes=None, MARGIN=None):
 
     return line_boxes
 
-def checkAreaInsideContour(area=None, contour=None):
+
+def check_area_inside_contour(area=None, contour=None):
     four_edges = [[True, True], [False, True], [False, False], [True, False]]
     contour, area, idx = np.array(contour), np.array(area), 0
     area_center = np.mean(area, axis=0)
@@ -48,7 +49,7 @@ def checkAreaInsideContour(area=None, contour=None):
 
         if np.array(areas_inside_contour).all():
             return np.append(contour[i], area).tolist()
-        areas_inside_contour[:] = [];
+        areas_inside_contour[:] = []
         idx = 0
 
     return False
@@ -62,7 +63,7 @@ def bubbles_sort(arr):
     return arr
 
 
-def sortAreaInsideContour(target=None, spacing_word=None):
+def sort_area_inside_contour(target=None, spacing_word=None):
     re_gt = list()
     for idx in range(len(target)):
         if target[idx] is False: continue

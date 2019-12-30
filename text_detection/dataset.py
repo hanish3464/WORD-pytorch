@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 import file_utils
 import imgproc
-from augmentation import Data_augmentation
+from augmentation import Data_Augmentation
 from gaussian import GenerateGaussian
 import opt
 
@@ -48,7 +48,7 @@ class root_dataset(Dataset):
         confidence = np.ones((region_score_GT.shape[0], region_score_GT.shape[1]), np.float32)
 
         ''' Augment the data for training '''
-        data_augmentation = Data_augmentation(image, region_score_GT, affinity_score_GT, confidence)
+        data_augmentation = Data_Augmentation(image, region_score_GT, affinity_score_GT, confidence)
         image, region_score_GT, affinity_score_GT, confidence = data_augmentation.select_augmentation_method()
 
         ''' Convert the data for Model prediction '''

@@ -24,43 +24,33 @@ parser.add_argument('--webtoon_data', action='store_true', default=False, help='
 args = parser.parse_args()
 
 
-
-def adjustImageSize(w, h, orig_w, orig_h):
+def adjust_image_size(w, h, orig_w, orig_h):
     w, h = (orig_w - w) / 2, (orig_h - h) / 2
     return w, h
 
 
-def removeNoise(img=None, arr=None):
-    h, w = img.shape
-    arr[0:5, 0:] = 0
-    arr[h - 5:, 0:] = 0
-    arr[0:, 0:5] = 0
-    arr[0:, w - 5:] = 0
-    return arr
-
-
-def makeCanvas(width=None, height=None, color=None):
+def make_canvas(width=None, height=None, color=None):
     image = Image.new('L', (width, height), color=color)
     drawing = ImageDraw.Draw(image)
     return image, drawing
 
 
-def makeLetter(canvas=None, label=None, width=None, height=None, color=None, font=None):
+def make_letter(canvas=None, label=None, width=None, height=None, color=None, font=None):
     canvas.text((width, height), label, fill=(color), font=font)
 
 
-def determineFontSize(font=None, size=None):
+def determine_font_size(font=None, size=None):
     font = ImageFont.truetype(font, size)
     return font
 
 
-def determineCanvasSize(canvas=None, label=None, font=None):
+def determine_canvas_size(canvas=None, label=None, font=None):
     w, h = canvas.textsize(label, font=font)
-    w, h = adjustImageSize(w, h, opt.RECOG_IMAGE_WIDTH, opt.RECOG_IMAGE_HEIGHT)
+    w, h = adjust_image_size(w, h, opt.RECOG_IMAGE_WIDTH, opt.RECOG_IMAGE_HEIGHT)
     return w, h
 
 
-def saltPepperNoiseGenerator(image):
+def generate_salt_and_pepper_noise(image):
     image = np.array(image)
     row, col = image.shape
     s_vs_p = 0.01
@@ -95,7 +85,7 @@ def saltPepperNoiseGenerator(image):
     return out
 
 
-def chunkNoiseGenerator(copy):
+def generate_chunk_noise(copy):
     copy = np.array(copy)
     chunk = np.array([[0., 255., 255., 255., 0.],
                       [255., 255., 255., 255., 255.],
@@ -144,11 +134,11 @@ def createDataset(args):
 
             for v in range(opt.MORPH_NUM):
 
-                image, drawing = makeCanvas(width=opt.RECOG_IMAGE_WIDTH, height=opt.RECOG_IMAGE_HEIGHT,
+                image, drawing = make_canvas(width=opt.RECOG_IMAGE_WIDTH, height=opt.RECOG_IMAGE_HEIGHT,
                                             color=opt.RECOG_BACKGROUND)
-                font_type = determineFontSize(font=f, size=opt.RECOG_FONT_SIZE)
-                w, h = determineCanvasSize(canvas=drawing, label=character, font=font_type)
-                makeLetter(canvas=drawing, label=character, width=w, height=h, color=opt.RECOG_FONT_COLOR, font=font_type)
+                font_type = determine_font_size(font=f, size=opt.RECOG_FONT_SIZE)
+                w, h = determine_canvas_size(canvas=drawing, label=character, font=font_type)
+                make_letter(canvas=drawing, label=character, width=w, height=h, color=opt.RECOG_FONT_COLOR, font=font_type)
 
                 morph_templete = np.array(image.copy())
                 kernel = np.ones((2, 2), np.uint8)
@@ -164,17 +154,16 @@ def createDataset(args):
                 file_utils.saveCSV(save_to=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k, ext='.png')
 
                 if args.salt_pepper:
-                    cnt += 1
-                    copy = saltPepperNoiseGenerator(copy)
+                    cnt += 11
+                    copy = generate_salt_and_pepper_noise(copy)
                     file_utils.saveImage(save_to=IMAGE_PATH, img=copy, index1=cnt, ext='.png')
                     file_utils.saveCSV(save_to=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k,
                                        ext='.png')
                 if args.chunk_noise:
-                    copy = chunkNoiseGenerator(copy)
+                    copy = generate_chunk_noise(copy)
                     file_utils.saveImage(save_to=IMAGE_PATH, img=copy, index1=cnt, ext='.png')
                     file_utils.saveCSV(save_to=IMAGE_PATH, dst=labels_csv, index=cnt, label=character, num=k,
                                        ext='.png')
-
 
     #  added custom training data difficult to classify from webtoon
 
