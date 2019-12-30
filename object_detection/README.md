@@ -9,7 +9,7 @@ The remaining issues :
 
 ### Overview
 This is Object Detection with Faster RCNN and Image Processing Technology. Firstly, faster RCNN detects bounging boxes of speech bubbles and then, segmentation result of speech bubble is detected by using image processing technologies
-[(max area contours)](./bubble_utils.py#L64). Secondly, Cut is detected from input image detached from speech bubble. I have used [numpy canvas](./cut.py#L30), and [convexHull methods](./cut_utils.py#L7) to detect cut.
+[(max area contours)](./bubble_utils.py#L42). Secondly, Cut is detected from input image detached from speech bubble. I have used [numpy canvas](./cut.py#L32), and [convexHull methods](./cut_utils.py#L7) to detect cut.
 
 `cut results: [image source] : Dragon-Ball, Detective Conan, Naruto, One-Piece`
 <img width="1200" height="500" src="./figures/bubble_demo.gif">
